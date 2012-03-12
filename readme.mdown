@@ -2,7 +2,7 @@
 Overview
 ===
 
-Mono.Data.Sqlite.Orm is an open source library to allow .NET and Mono applications to store data in [http://www.sqlite.org SQLite 3 databases]. It should work in any CLI environment.
+Mono.Data.Sqlite.Orm is an open source library to allow .NET and Mono applications to store data in [SQLite 3 databases](http://www.sqlite.org). It should work in any CLI environment.
 
 Mono.Data.Sqlite.Orm was designed as a quick and convenient database layer. Its design follows from these *goals*:
 
@@ -14,7 +14,7 @@ Mono.Data.Sqlite.Orm was designed as a quick and convenient database layer. Its 
   
 * It works with your data model without forcing you to change your classes. (Contains a small reflection-driven ORM layer.)
   
-* It dependends only on Mono.Data.Sqlite on all platforms except Windows Phone which also requires [http://code.google.com/p/csharp-sqlite C# SQLite]
+* It dependends only on Mono.Data.Sqlite on all platforms except Windows Phone which also requires [C# SQLite](http://code.google.com/p/csharp-sqlite)
 
 * Support for creating entire databases using only compact `Attributes`
 
@@ -48,7 +48,7 @@ The library contains simple attributes that you can use to control the construct
 
 With these, you can automatically generate tables (and update) in your database by calling `CreateTable`:
 
-    var db = new SqliteSession("foofoo");
+    var db = new SqliteSession("database.sqlite");
     db.CreateTable<Stock>();
     db.CreateTable<Valuation>();
 
@@ -87,8 +87,8 @@ Updates must be performed manually using the `Execute` method of `SqliteSession`
 Meta
 ===
 
-This library is based on [mailto:fak@praeclarum.org Frank A. Krueger's] [https://github.com/praeclarum/sqlite-net sqlite-net] library.
+This library is based on [Frank A. Krueger's](mailto:fak@praeclarum.org) [sqlite-net](https://github.com/praeclarum/sqlite-net) library.
 
-This is an open source project that welcomes contributions/suggestions/bug reports from those who use it. If you have any ideas on how to improve the library, please contact [mailto:mattleibowmail@gmail.com Matthew Leibowitz].
+This is an open source project that welcomes contributions/suggestions/bug reports from those who use it. If you have any ideas on how to improve the library, please contact [Matthew Leibowitz](mailto:mattleibowmail@gmail.com).
 
  
