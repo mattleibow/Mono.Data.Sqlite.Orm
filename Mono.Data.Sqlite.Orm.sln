@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 11
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Data.Sqlite.Orm", "Mono.Data.Sqlite.Orm\Mono.Data.Sqlite.Orm.csproj", "{E38C051E-889E-485B-B685-C692D2861E7B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Data.Sqlite.Orm.Tests", "Mono.Data.Sqlite.Orm.Tests\Mono.Data.Sqlite.Orm.Tests.csproj", "{6947A8F1-99BE-4DD1-AD4D-D89425CE67A2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{43965019-C797-442E-BE08-32EA22D76BBB}"
+	ProjectSection(SolutionItems) = preProject
+		Libraries\Mono.Data.Sqlite.dll = Libraries\Mono.Data.Sqlite.dll
+		Libraries\NUnit.Framework.dll = Libraries\NUnit.Framework.dll
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+		Svn-Managed = True
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6947A8F1-99BE-4DD1-AD4D-D89425CE67A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6947A8F1-99BE-4DD1-AD4D-D89425CE67A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6947A8F1-99BE-4DD1-AD4D-D89425CE67A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6947A8F1-99BE-4DD1-AD4D-D89425CE67A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E38C051E-889E-485B-B685-C692D2861E7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E38C051E-889E-485B-B685-C692D2861E7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E38C051E-889E-485B-B685-C692D2861E7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E38C051E-889E-485B-B685-C692D2861E7B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = tests\SQLite.Tests.2010.csproj
+	EndGlobalSection
+EndGlobal
