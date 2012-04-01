@@ -56,8 +56,8 @@
     <Reference Include="Mono.Data.Sqlite">
       <HintPath>..\Libraries\Mono.Data.Sqlite.dll</HintPath>
     </Reference>
-    <Reference Include="NUnit.Framework">
-      <HintPath>..\Libraries\NUnit.Framework.dll</HintPath>
+    <Reference Include="NUnitLite">
+      <HintPath>..\Libraries\NUnitLite.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -67,15 +67,18 @@
     <Compile Include="BooleanTest.cs" />
     <Compile Include="ByteArrayTest.cs" />
     <Compile Include="CollateTest.cs" />
+    <Compile Include="LinqTests.cs" />
     <Compile Include="CreateTableTest.cs" />
     <Compile Include="InsertTest.cs" />
     <Compile Include="InterfaceTests.cs" />
     <Compile Include="MigrateTableTest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="OrmTestSession.cs" />
     <Compile Include="MultiplePKs.cs" />
     <Compile Include="NullableTest.cs" />
+    <Compile Include="OrmTestSession.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SkipTest.cs" />
     <Compile Include="ConnectionTrackingTest.cs" />
     <Compile Include="ContainsTest.cs" />

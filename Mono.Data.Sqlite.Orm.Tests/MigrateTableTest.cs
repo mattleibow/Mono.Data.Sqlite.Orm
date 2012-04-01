@@ -96,7 +96,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
                     db.CreateTable<OrderLine>();
                     Assert.Fail();
                 }
-                catch (InvalidOperationException ex)
+                catch (InvalidOperationException)
                 {
                 }
                 catch (Exception ex)

@@ -7,6 +7,10 @@ using System.Reflection;
 using System.Text;
 using Mono.Data.Sqlite.Orm.ComponentModel;
 
+#if WINDOWS_PHONE || SILVERLIGHT
+using Community.CsharpSqlite.SQLiteClient;
+#endif
+
 namespace Mono.Data.Sqlite.Orm
 {
     public class TableMapping
@@ -27,12 +31,14 @@ namespace Mono.Data.Sqlite.Orm
             OldTableName = OrmHelper.GetOldTableName(MappedType);
             OnPrimaryKeyConflict = OrmHelper.GetOnPrimaryKeyConflict(MappedType);
 
-            _properties =
-                (from p in
-                     MappedType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty)
-                 let ignore = p.GetAttributes<IgnoreAttribute>().Any()
-                 where p.CanWrite && !ignore
-                 select p).ToArray();
+            const BindingFlags flags = BindingFlags.Public |
+                                       BindingFlags.Instance |
+                                       BindingFlags.Static |
+                                       BindingFlags.SetProperty;
+            _properties = (from p in MappedType.GetProperties(flags)
+                           let ignore = p.GetAttributes<IgnoreAttribute>().Any()
+                           where p.CanWrite && !ignore
+                           select p).ToArray();
             Columns = _properties.Select(x => new Column(x)).ToList();
             Checks = MappedType.GetAttributes<CheckAttribute>().Select(x => x.Expression).ToList();
             ForeignKeys = OrmHelper.GetForeignKeys(_properties);
@@ -55,7 +61,7 @@ namespace Mono.Data.Sqlite.Orm
                 Column[] autoInc = PrimaryKeys.Where(c => c.IsAutoIncrement).ToArray();
                 if (autoInc.Count() > 1)
                 {
-                    throw new SqliteException((int) SQLiteErrorCode.Error,
+                    throw new SqliteException((int) SqliteErrorCode.Error,
                                               "Only one property can be an auto incrementing primary key");
                 }
                 AutoIncrementColumn = autoInc.FirstOrDefault();
@@ -297,7 +303,7 @@ namespace Mono.Data.Sqlite.Orm
                     }
                     else if (ColumnType.IsEnum)
                     {
-                        v = Enum.Parse(ColumnType, value.ToString());
+                        v = Enum.Parse(ColumnType, value.ToString(), true);
                     }
                     else
                     {

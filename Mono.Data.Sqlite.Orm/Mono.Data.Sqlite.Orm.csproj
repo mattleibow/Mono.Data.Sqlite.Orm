@@ -40,34 +40,91 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ComponentModel\AutoIncrementAttribute.cs" />
-    <Compile Include="ComponentModel\CheckAttribute.cs" />
-    <Compile Include="ComponentModel\Collation.cs" />
-    <Compile Include="ComponentModel\CollationAttribute.cs" />
-    <Compile Include="ComponentModel\ColumnAttribute.cs" />
-    <Compile Include="ComponentModel\ConflictResolution.cs" />
-    <Compile Include="ComponentModel\RenameTableAttribute.cs" />
-    <Compile Include="ComponentModel\DefaultAttribute.cs" />
-    <Compile Include="ComponentModel\Deferred.cs" />
-    <Compile Include="ComponentModel\Direction.cs" />
-    <Compile Include="ComponentModel\ForeignKeyAction.cs" />
-    <Compile Include="ComponentModel\ForeignKeyAttribute.cs" />
-    <Compile Include="ComponentModel\IgnoreAttribute.cs" />
-    <Compile Include="ComponentModel\IndexAttribute.cs" />
-    <Compile Include="ComponentModel\IndexedAttribute.cs" />
-    <Compile Include="ComponentModel\MaxLengthAttribute.cs" />
-    <Compile Include="ComponentModel\NotNullAttribute.cs" />
-    <Compile Include="ComponentModel\NullMatch.cs" />
-    <Compile Include="ComponentModel\PrimaryKeyAttribute.cs" />
-    <Compile Include="ComponentModel\TableAttribute.cs" />
-    <Compile Include="ComponentModel\UniqueAttribute.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="ITrackConnection.cs" />
-    <Compile Include="OrmHelper.cs" />
+    <Compile Include="ComponentModel\AutoIncrementAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\CheckAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\Collation.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\CollationAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\ColumnAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\ConflictResolution.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\DefaultAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\Deferred.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\Direction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\ForeignKeyAction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\ForeignKeyAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\IgnoreAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\IndexAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\IndexedAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\MaxLengthAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\NotNullAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\NullMatch.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\PrimaryKeyAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\RenameTableAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\TableAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentModel\UniqueAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Extensions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ITrackConnection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OrmHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SqliteSession.cs" />
-    <Compile Include="TableMapping.cs" />
-    <Compile Include="TableQuery.cs" />
+    <Compile Include="SqliteErrorCode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SqliteSession.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TableMapping.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TableQuery.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

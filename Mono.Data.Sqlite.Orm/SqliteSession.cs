@@ -1,7 +1,3 @@
-﻿#if WINDOWS_PHONE
-#define USE_CSHARP_SQLITE
-#endif
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,6 +7,10 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using Mono.Data.Sqlite.Orm.ComponentModel;
+
+#if WINDOWS_PHONE || SILVERLIGHT
+using Community.CsharpSqlite.SQLiteClient;
+#endif
 
 namespace Mono.Data.Sqlite.Orm
 {
@@ -71,8 +71,8 @@ namespace Mono.Data.Sqlite.Orm
             }
         }
 
-        public SqliteTransaction Transaction { get; private set; }
-        public SqliteConnection Connection { get; private set; }
+        public DbTransaction Transaction { get; private set; }
+        public DbConnection Connection { get; private set; }
         public string DatabasePath { get; private set; }
         
         /// <summary>
@@ -113,6 +113,48 @@ namespace Mono.Data.Sqlite.Orm
             return map;
         }
 
+        private void CreateTable(TableMapping map)
+        {
+            int count = 0;
+
+            bool exists = Table<SqliteMasterTable>().Where(t => t.Name == map.TableName).Take(1).Any();
+
+            if (map.OldTableName != map.TableName && !string.IsNullOrEmpty(map.OldTableName))
+            {
+                bool oldExists = Table<SqliteMasterTable>().Where(t => t.Name == map.OldTableName).Take(1).Any();
+                if (!oldExists)
+                {
+                    throw new InvalidOperationException(map.OldTableName + " does not exist.");
+                }
+                if (exists)
+                {
+                    throw new InvalidOperationException(map.TableName + " already exists.");
+                }
+
+                count += Execute(map.GetRenameSql());
+
+                exists = true;
+            }
+
+            if (!exists)
+            {
+                count += Execute(map.GetCreateSql());
+            }
+            else
+            {
+                // Table already exists, migrate it
+                count += MigrateTable(map);
+            }
+
+            // create indexes
+            count += map.Indexes.Sum(index => Execute(index.GetCreateSql(map.TableName)));
+
+            if (Trace)
+            {
+                Console.WriteLine("Updates to the database: {0}", count);
+            }
+        }
+
         /// <summary>
         /// 	Executes a "create table if not exists" on the database. It also
         /// 	creates any specified indexes on the columns of the table. It uses
@@ -127,48 +169,8 @@ namespace Mono.Data.Sqlite.Orm
             // todo - allow index clearing/re-creating
 
             TableMapping map = GetMapping<T>();
-            
-            RunInTransaction(delegate
-                                 {
-                                     int count = 0;
 
-                                     bool exists = Table<SqliteMasterTable>().Where(t => t.Name == map.TableName).Take(1).Any();
-
-                                     if (map.OldTableName != map.TableName && !string.IsNullOrEmpty(map.OldTableName))
-                                     {
-                                         bool oldExists = Table<SqliteMasterTable>().Where(t => t.Name == map.OldTableName).Take(1).Any();
-                                         if (!oldExists)
-                                         {
-                                             throw new InvalidOperationException(map.OldTableName + " does not exist.");
-                                         }
-                                         if (exists)
-                                         {
-                                             throw new InvalidOperationException(map.TableName + " already exists.");
-                                         }
-
-                                         count += Execute(map.GetRenameSql());
-
-                                         exists = true;
-                                     }
-                                     
-                                     if (!exists)
-                                     {
-                                         count += Execute(map.GetCreateSql());
-                                     }
-                                     else
-                                     {
-                                         // Table already exists, migrate it
-                                         count += MigrateTable(map);
-                                     }
-
-                                     // create indexes
-                                     count += map.Indexes.Sum(index => Execute(index.GetCreateSql(map.TableName)));
-
-                                     if (Trace)
-                                     {
-                                         Console.WriteLine("Updates to the database: {0}", count);
-                                     }
-                                 });
+            RunInTransaction(() => CreateTable(map));
         }
 
         private int MigrateTable(TableMapping map)
@@ -208,7 +210,7 @@ namespace Mono.Data.Sqlite.Orm
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities")]
         internal DbCommand CreateCommand(string cmdText, params object[] args)
         {
-            SqliteCommand cmd = Connection.CreateCommand();
+            DbCommand cmd = Connection.CreateCommand();
             cmd.CommandText = cmdText;
             
             AddCommandParameters(cmd, args);
@@ -314,7 +316,7 @@ namespace Mono.Data.Sqlite.Orm
         /// </returns>
         public IEnumerable<T> DeferredQuery<T>(string query, params object[] args) where T : new()
         {
-            var cmd = CreateCommand(query, args);
+            DbCommand cmd = CreateCommand(query, args);
             return ExecuteDeferredQuery<T>(GetMapping<T>(), cmd);
         }
 
@@ -515,7 +517,8 @@ namespace Mono.Data.Sqlite.Orm
         /// </returns>
         public int InsertAll<T>(IEnumerable<T> objects)
         {
-            return RunInTransaction(() => objects.Sum(r => Insert(r)));
+            int result = RunInTransaction(() => objects.Sum(r => Insert(r)));
+            return result;
         }
 
         /// <summary>
@@ -566,19 +569,21 @@ namespace Mono.Data.Sqlite.Orm
 
             if (map.AutoIncrementColumn != null)
             {
-                using (SqliteCommand cmd = Connection.CreateCommand())
-                {
-                    cmd.CommandText = "SELECT last_insert_rowid() as Id";
-
-                    var id = (long) cmd.ExecuteScalar();
-                    if (map.AutoIncrementColumn != null)
-                    {
-                        map.AutoIncrementColumn.SetValue(obj, id);
-                    }
-                }
+                map.AutoIncrementColumn.SetValue(obj, GetLastInsertRowId());
             }
 
             return count;
+        }
+
+        private DbCommand _lastInsertRowIdCommand;
+        private long GetLastInsertRowId()
+        {
+            if (_lastInsertRowIdCommand == null)
+            {
+                _lastInsertRowIdCommand = Connection.CreateCommand();
+                _lastInsertRowIdCommand.CommandText = "SELECT last_insert_rowid() as Id";
+            }
+            return (long)_lastInsertRowIdCommand.ExecuteScalar();
         }
 
         /// <summary>

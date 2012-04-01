@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.20506</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{29AC8AC4-C8B9-4DE7-8AB6-197957CE9135}</ProjectGuid>
+    <ProjectTypeGuids>{C089C8C0-30E0-4E22-80C0-CE093F111A43};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Mono.Data.Sqlite.Orm.Tests.WindowsPhone</RootNamespace>
+    <AssemblyName>Mono.Data.Sqlite.Orm.Tests.WindowsPhone</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
+    <TargetFrameworkProfile>WindowsPhone71</TargetFrameworkProfile>
+    <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
+    <SilverlightApplication>false</SilverlightApplication>
+    <ValidateXaml>true</ValidateXaml>
+    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Community.CsharpSqlite.SQLiteClient.WP">
+      <HintPath>..\Libraries\Community.CsharpSqlite.SQLiteClient.WP.dll</HintPath>
+    </Reference>
+    <Reference Include="NUnitLite, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>J:\Libraries\GitHub\Mono.Data.Sqlite.Orm\Libraries\NUnitLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.Ersatz.WinPhone">
+      <HintPath>..\Libraries\System.Data.Ersatz.WinPhone.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\BooleanTest.cs">
+      <Link>BooleanTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\ByteArrayTest.cs">
+      <Link>ByteArrayTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\CollateTest.cs">
+      <Link>CollateTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\ConnectionTrackingTest.cs">
+      <Link>ConnectionTrackingTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\ContainsTest.cs">
+      <Link>ContainsTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\CreateTableTest.cs">
+      <Link>CreateTableTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\InsertTest.cs">
+      <Link>InsertTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\InterfaceTests.cs">
+      <Link>InterfaceTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\LinqTests.cs">
+      <Link>LinqTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\MigrateTableTest.cs">
+      <Link>MigrateTableTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\MultiplePKs.cs">
+      <Link>MultiplePKs.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\NullableTest.cs">
+      <Link>NullableTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\OrmTestSession.cs">
+      <Link>OrmTestSession.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\SkipTest.cs">
+      <Link>SkipTest.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mono.Data.Sqlite.Orm.WindowsPhone\Mono.Data.Sqlite.Orm.WindowsPhone.csproj">
+      <Project>{0170CF92-AE0D-4B27-A25D-9320E10067A2}</Project>
+      <Name>Mono.Data.Sqlite.Orm.WindowsPhone</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties ProjectLinkReference="6947a8f1-99be-4dd1-ad4d-d89425ce67a2" ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" />
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

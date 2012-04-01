@@ -4,12 +4,16 @@ using System.Linq;
 using Mono.Data.Sqlite.Orm.ComponentModel;
 using NUnit.Framework;
 
+#if WINDOWS_PHONE || SILVERLIGHT
+using Community.CsharpSqlite.SQLiteClient;
+#endif
+
 namespace Mono.Data.Sqlite.Orm.Tests
 {
     [TestFixture]
     public class MultiplePKs
     {
-        private partial class TestObj
+        public partial class TestObj
         {
             [PrimaryKey]
             public int Id { get; set; }
@@ -22,7 +26,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             }
         }
 
-        private partial class TestObj
+        public partial class TestObj
         {
             [PrimaryKey]
             public int SubId { get; set; }
@@ -60,7 +64,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
 			}
 			catch (SqliteException ex)
 			{
-				Assert.AreEqual(SQLiteErrorCode.Constraint, ex.ErrorCode);
+                Assert.AreEqual(SqliteErrorCode.Constraint, (SqliteErrorCode)ex.ErrorCode);
 			}
 
 			// update
@@ -99,12 +103,12 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
 				Assert.Fail();
 			}
-			catch (InvalidOperationException ex)
+			catch (InvalidOperationException)
 			{
 			}
 			catch (Exception ex)
 			{
-				Assert.Fail();
+				Assert.Fail(ex.Message);
 			}
 
             db.Execute("delete from TestObj where SubId=2");

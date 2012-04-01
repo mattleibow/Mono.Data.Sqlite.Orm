@@ -4,6 +4,10 @@ using System.Linq;
 using Mono.Data.Sqlite.Orm.ComponentModel;
 using NUnit.Framework;
 
+#if WINDOWS_PHONE || SILVERLIGHT
+using Community.CsharpSqlite.SQLiteClient;
+#endif
+
 namespace Mono.Data.Sqlite.Orm.Tests
 {
     [TestFixture]
@@ -20,6 +24,11 @@ namespace Mono.Data.Sqlite.Orm.Tests
             {
                 return string.Format("[TestObj: Id={0}, Text={1}]", Id, Text);
             }
+        }
+
+        public class TestObjPlain
+        {
+            public string Text { get; set; }
         }
 
         public class TestObj2
@@ -47,6 +56,33 @@ namespace Mono.Data.Sqlite.Orm.Tests
             {
                 return string.Format("[TestObj: Id={0}, TheDate={1}]", Id, TheDate);
             }
+        }
+
+        [Test]
+        public void InsertALotPlain()
+        {
+            var db = new OrmTestSession();
+            db.CreateTable<TestObjPlain>();
+
+            const int n = 100000;
+            IEnumerable<TestObjPlain> q = Enumerable.Range(1, n).Select(i => new TestObjPlain { Text = "I am" });
+            TestObjPlain[] objs = q.ToArray();
+            int numIn = db.InsertAll(objs);
+
+            Assert.AreEqual(numIn, n, "Num inserted must = num objects");
+
+            TestObjPlain[] inObjs = db.Table<TestObjPlain>().ToArray();
+
+            foreach (TestObjPlain t in inObjs)
+            {
+                Assert.AreEqual("I am", t.Text);
+            }
+
+            int numCount = db.Table<TestObjPlain>().Count();
+
+            Assert.AreEqual(numCount, n, "Num counted must = num objects");
+
+            db.Close();
         }
 
         [Test]

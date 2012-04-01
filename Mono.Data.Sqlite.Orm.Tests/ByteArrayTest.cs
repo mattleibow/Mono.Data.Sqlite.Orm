@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Mono.Data.Sqlite.Orm.ComponentModel;
 using NUnit.Framework;
 
@@ -16,8 +17,9 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             public void AssertEquals(ByteArrayClass other)
             {
-                Assert.AreEqual(other.Id, Id);
-                CollectionAssert.AreEqual(other.Bytes, Bytes);
+                Assert.AreEqual(Id, other.Id);
+                var actual = other.Bytes;
+                CollectionAssert.AreEqual(Bytes, actual);
             }
         }
 
@@ -51,7 +53,13 @@ namespace Mono.Data.Sqlite.Orm.Tests
             //Check they are the same
             for (int i = 0; i < byteArrays.Length; i++)
             {
-                byteArrays[i].AssertEquals(fetchedByteArrays[i]);
+                var byteArrayClass = byteArrays[i];
+                var other = fetchedByteArrays[i];
+
+                var actual = byteArrayClass.Bytes;
+                var expected = other.Bytes;
+
+                byteArrayClass.AssertEquals(other);
             }
         }
 

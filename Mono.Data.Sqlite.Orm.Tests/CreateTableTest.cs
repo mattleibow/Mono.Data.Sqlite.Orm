@@ -33,7 +33,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
                     Assert.Fail();
                 }
-                catch (NotSupportedException ex)
+                catch (NotSupportedException)
                 {
                 }
             }
@@ -238,7 +238,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             public int Indexed { get; set; }
         }
 
-        [Index("IX_MultiIndexedTable", Unique = true)]
+        [Index("IX_MultiIndexedTable")]
         public class MultiIndexedTable
         {
             [Indexed("IX_MultiIndexedTable", Collation = Collation.RTrim)]
@@ -252,26 +252,35 @@ namespace Mono.Data.Sqlite.Orm.Tests
         public void CreateIndexedTable()
         {
             var db = new OrmTestSession();
-
             db.CreateTable<IndexedTable>();
-            db.CreateTable<MultiIndexedTable>();
-            db.CreateTable<IndexedColumnTable>();
-
             TableMapping tableMap = db.GetMapping<IndexedTable>();
-            TableMapping columnMap = db.GetMapping<IndexedColumnTable>();
-            TableMapping multiMap = db.GetMapping<MultiIndexedTable>();
-
-            var colIdx = columnMap.Indexes.Where(i => i.IndexName == "IX_SomeName").ToArray();
-            Assert.AreEqual(1, colIdx.Count());
-            Assert.AreEqual(Collation.RTrim, colIdx.First().Columns.First().Collation);
 
             var tblIdx = tableMap.Indexes.Where(i => i.IndexName == "IX_TabelIndex").ToArray();
             Assert.AreEqual(1, tblIdx.Count());
             Assert.AreEqual(true, tblIdx.First().Unique);
+        }
+
+        [Test]
+        public void CreateIndexedColumnTable()
+        {
+            var db = new OrmTestSession();
+            db.CreateTable<IndexedColumnTable>();
+            TableMapping columnMap = db.GetMapping<IndexedColumnTable>();
+
+            var colIdx = columnMap.Indexes.Where(i => i.IndexName == "IX_SomeName").ToArray();
+            Assert.AreEqual(1, colIdx.Count());
+            Assert.AreEqual(Collation.RTrim, colIdx.First().Columns.First().Collation);
+        }
+
+        [Test]
+        public void CreateMultiIndexedTable()
+        {
+            var db = new OrmTestSession();
+            db.CreateTable<MultiIndexedTable>();
+            TableMapping multiMap = db.GetMapping<MultiIndexedTable>();
 
             var multiIdx = multiMap.Indexes.Where(i => i.IndexName == "IX_MultiIndexedTable").ToArray();
             Assert.AreEqual(1, multiIdx.Count());
-            Assert.AreEqual(true, multiIdx.First().Unique);
             Assert.AreEqual(2, multiIdx.First().Columns.Count());
             Assert.AreEqual(Collation.RTrim, multiIdx.First().Columns.First(c => c.ColumnName == "Indexed").Collation);
         }
