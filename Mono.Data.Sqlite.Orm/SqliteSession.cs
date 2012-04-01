@@ -97,7 +97,21 @@ namespace Mono.Data.Sqlite.Orm
         /// </returns>
         public TableMapping GetMapping<T>()
         {
-            Type type = typeof (T);
+            return GetMapping(typeof (T));
+        }
+
+        /// <summary>
+        /// 	Retrieves the mapping that is automatically generated for the given type.
+        /// </summary>
+        /// <param name="type">
+        ///     The type whose mapping to the database is returned.
+        /// </param>
+        /// <returns>
+        /// 	The mapping represents the schema of the columns of the database and contains 
+        /// 	methods to set and get properties of objects.
+        /// </returns>
+        public TableMapping GetMapping(Type type)
+        {
             string typeFullName = type.FullName ?? string.Empty;
 
             if (_tables == null)
@@ -168,9 +182,12 @@ namespace Mono.Data.Sqlite.Orm
         {
             // todo - allow index clearing/re-creating
 
-            TableMapping map = GetMapping<T>();
+            RunInTransaction(() => CreateTable(GetMapping<T>()));
+        }
 
-            RunInTransaction(() => CreateTable(map));
+        public void CreateTable(Type type)
+        {
+            RunInTransaction(() => CreateTable(GetMapping(type)));
         }
 
         private int MigrateTable(TableMapping map)
@@ -192,6 +209,28 @@ namespace Mono.Data.Sqlite.Orm
                                                                       map.TableName,
                                                                       col.GetCreateSql(map)));
                                      });
+        }
+
+        /// <summary>
+        ///     Executes a "drop table" on the database.  This is non-recoverable.
+        /// </summary>
+        public int DropTable<T>()
+        {
+            return DropTable(typeof (T));
+        }
+
+        /// <summary>
+        ///     Executes a "drop table" on the database.  This is non-recoverable.
+        /// </summary>
+        public int DropTable(Type type)
+        {
+            var map = GetMapping(type);
+
+            var query = string.Format("DROP TABLE IF EXISTS [{0}]", map.TableName);
+
+            var count = Execute(query);
+
+            return count;
         }
 
         /// <summary>

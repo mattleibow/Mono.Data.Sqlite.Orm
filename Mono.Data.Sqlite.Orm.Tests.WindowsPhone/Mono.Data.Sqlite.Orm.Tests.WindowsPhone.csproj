@@ -44,9 +44,13 @@
     <Reference Include="Community.CsharpSqlite.SQLiteClient.WP">
       <HintPath>..\Libraries\Community.CsharpSqlite.SQLiteClient.WP.dll</HintPath>
     </Reference>
+    <Reference Include="Community.CsharpSqlite.WinPhone">
+      <HintPath>..\Libraries\Community.CsharpSqlite.WinPhone.dll</HintPath>
+    </Reference>
     <Reference Include="NUnitLite, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>J:\Libraries\GitHub\Mono.Data.Sqlite.Orm\Libraries\NUnitLite.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
     <Reference Include="System.Data.Ersatz.WinPhone">
       <HintPath>..\Libraries\System.Data.Ersatz.WinPhone.dll</HintPath>
     </Reference>
@@ -70,6 +74,9 @@
     </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\CreateTableTest.cs">
       <Link>CreateTableTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\DropTableTest.cs">
+      <Link>DropTableTest.cs</Link>
     </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\InsertTest.cs">
       <Link>InsertTest.cs</Link>

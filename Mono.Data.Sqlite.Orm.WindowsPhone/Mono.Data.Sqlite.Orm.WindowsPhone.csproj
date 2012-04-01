@@ -44,6 +44,7 @@
     <Reference Include="Community.CsharpSqlite.SQLiteClient.WP">
       <HintPath>..\Libraries\Community.CsharpSqlite.SQLiteClient.WP.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
     <Reference Include="System.Data.Ersatz.WinPhone">
       <HintPath>..\Libraries\System.Data.Ersatz.WinPhone.dll</HintPath>
     </Reference>
@@ -140,7 +141,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties ProjectLinkReference="e38c051e-889e-485b-b685-c692d2861e7b" ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" />
+      <UserProperties ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" ProjectLinkReference="e38c051e-889e-485b-b685-c692d2861e7b" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
