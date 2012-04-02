@@ -102,6 +102,9 @@
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\SkipTest.cs">
       <Link>SkipTest.cs</Link>
     </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\UnicodeTest.cs">
+      <Link>UnicodeTest.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
