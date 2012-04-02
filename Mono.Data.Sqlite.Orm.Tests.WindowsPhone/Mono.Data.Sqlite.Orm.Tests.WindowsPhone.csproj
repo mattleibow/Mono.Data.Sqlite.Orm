@@ -78,6 +78,9 @@
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\DropTableTest.cs">
       <Link>DropTableTest.cs</Link>
     </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\InheritanceTest.cs">
+      <Link>InheritanceTest.cs</Link>
+    </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\InsertTest.cs">
       <Link>InsertTest.cs</Link>
     </Compile>
