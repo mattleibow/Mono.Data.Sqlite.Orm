@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Mono.Data.Sqlite.Orm.ComponentModel;
 using NUnit.Framework;
 
@@ -36,16 +37,16 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(4, CountWithFlag(db, true));
             Assert.AreEqual(6, CountWithFlag(db, false));
 
-            Console.WriteLine("VO with true flag:");
+            Debug.WriteLine("VO with true flag:");
             foreach (Vo vo in db.Query<Vo>("SELECT * FROM VO Where Flag = ?", true))
             {
-                Console.WriteLine(vo.ToString());
+                Debug.WriteLine(vo.ToString());
             }
 
-            Console.WriteLine("VO with false flag:");
+            Debug.WriteLine("VO with false flag:");
             foreach (Vo vo in db.Query<Vo>("SELECT * FROM VO Where Flag = ?", false))
             {
-                Console.WriteLine(vo.ToString());
+                Debug.WriteLine(vo.ToString());
             }
         }
 

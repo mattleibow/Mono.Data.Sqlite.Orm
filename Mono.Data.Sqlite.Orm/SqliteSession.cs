@@ -57,17 +57,16 @@ namespace Mono.Data.Sqlite.Orm
         {
             if (Trace)
             {
-                Console.WriteLine("-- Query --");
-                Console.WriteLine(command.CommandText);
+                Debug.WriteLine("-- Query --");
+                Debug.WriteLine(command.CommandText);
 
-                Console.WriteLine("-- Arguments --");
+                Debug.WriteLine("-- Arguments --");
                 foreach (IDataParameter p in command.Parameters)
                 {
-                    Console.WriteLine(p.Value);
+                    Debug.WriteLine(p.Value);
                 }
 
-                Console.WriteLine("-- End --");
-                Console.WriteLine();
+                Debug.WriteLine("-- End --");
             }
         }
 
@@ -165,7 +164,7 @@ namespace Mono.Data.Sqlite.Orm
 
             if (Trace)
             {
-                Console.WriteLine("Updates to the database: {0}", count);
+                Debug.WriteLine(string.Format("Updates to the database: {0}", count));
             }
         }
 

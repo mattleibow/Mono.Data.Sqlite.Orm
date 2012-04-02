@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -89,7 +90,7 @@ namespace Mono.Data.Sqlite.Orm
             {
                 if(SqliteSession.Trace)
                 {
-                    Console.WriteLine("Destroying Insert command for {0} ({1})", TableName, MappedType);
+                    Debug.WriteLine(string.Format("Destroying Insert command for {0} ({1})", TableName, MappedType));
                 }
 
                 _insertCommand.Dispose();
@@ -102,7 +103,7 @@ namespace Mono.Data.Sqlite.Orm
 
                 if (SqliteSession.Trace)
                 {
-                    Console.WriteLine("Creating Insert command for {0} ({1})", TableName, MappedType);
+                    Debug.WriteLine(string.Format("Creating Insert command for {0} ({1})", TableName, MappedType));
                 }
 
                 _insertCommand = connection.CreateCommand();

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System;
 
 namespace Mono.Data.Sqlite.Orm.Tests
@@ -14,7 +15,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
         {
 #if !SILVERLIGHT && !WINDOWS_PHONE
             Trace = true;
-			Console.WriteLine(Connection.ConnectionString);
+			Debug.WriteLine(Connection.ConnectionString);
 #endif
         }
     }
