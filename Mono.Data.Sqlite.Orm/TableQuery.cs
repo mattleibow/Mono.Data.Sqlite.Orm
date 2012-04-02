@@ -338,7 +338,7 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        /// 	Compiles a BinaryExpression where one of the parameters is null.
+        ///   Compiles a BinaryExpression where one of the parameters is null.
         /// </summary>
         /// <param name = "expression"></param>
         /// <param name = "parameter">The non-null parameter</param>

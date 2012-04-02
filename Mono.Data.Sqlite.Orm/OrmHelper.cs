@@ -12,7 +12,7 @@ namespace Mono.Data.Sqlite.Orm
 
         public static string GetForeignKeyActionString(ForeignKeyAction action)
         {
-            var result = string.Empty;
+            string result = string.Empty;
 
             switch (action)
             {
@@ -83,12 +83,12 @@ namespace Mono.Data.Sqlite.Orm
 
         public static string GetTableName(MemberInfo info)
         {
-            var tableName = info.Name;
+            string tableName = info.Name;
 
-            var attrs = info.GetAttributes<TableAttribute>().ToArray();
+            TableAttribute[] attrs = info.GetAttributes<TableAttribute>().ToArray();
             if (attrs.Any())
             {
-                var attributeTableName = attrs.First().Name;
+                string attributeTableName = attrs.First().Name;
                 if (!string.IsNullOrEmpty(attributeTableName))
                 {
                     tableName = attributeTableName;
@@ -100,13 +100,13 @@ namespace Mono.Data.Sqlite.Orm
 
         public static string GetOldTableName(MemberInfo info)
         {
-            var attrs = info.GetAttributes<RenameTableAttribute>().ToArray();
+            RenameTableAttribute[] attrs = info.GetAttributes<RenameTableAttribute>().ToArray();
             return attrs.Any() ? attrs.First().OldName : string.Empty;
         }
 
         public static ConflictResolution GetOnPrimaryKeyConflict(MemberInfo info)
         {
-            var attrs = info.GetAttributes<TableAttribute>().ToArray();
+            TableAttribute[] attrs = info.GetAttributes<TableAttribute>().ToArray();
             return attrs.Any() ? attrs.First().OnPrimaryKeyConflict : ConflictResolution.Default;
         }
 
@@ -114,22 +114,22 @@ namespace Mono.Data.Sqlite.Orm
         {
             var indices = new List<TableMapping.Index>();
 
-            var tblAtt = info.GetAttributes<IndexAttribute>().FirstOrDefault();
+            IndexAttribute tblAtt = info.GetAttributes<IndexAttribute>().FirstOrDefault();
             if (tblAtt != null)
             {
                 if (indices.Any(i => i.IndexName == tblAtt.Name))
                 {
                     throw new NotSupportedException("Only one index attribute per index allowed on a table class.");
                 }
-                
+
                 indices.Add(new TableMapping.Index(tblAtt.Name) {Unique = tblAtt.Unique});
             }
 
-            foreach (var prop in properties)
+            foreach (PropertyInfo prop in properties)
             {
-                foreach (var att in prop.GetAttributes<IndexedAttribute>())
+                foreach (IndexedAttribute att in prop.GetAttributes<IndexedAttribute>())
                 {
-                    var index = indices.FirstOrDefault(x => x.IndexName == att.Name);
+                    TableMapping.Index index = indices.FirstOrDefault(x => x.IndexName == att.Name);
                     if (index == null)
                     {
                         index = new TableMapping.Index(att.Name);
@@ -160,14 +160,14 @@ namespace Mono.Data.Sqlite.Orm
                                              {
                                                  Attribute = att,
                                                  Property = p,
-                                                 Order = att.Order
+                                                 att.Order
                                              })
                              orderby attribute.Order
                              select attribute;
 
             foreach (var att in attributes)
             {
-                var key = foreignKeys.FirstOrDefault(fk => fk.Name == att.Attribute.Name);
+                TableMapping.ForeignKey key = foreignKeys.FirstOrDefault(fk => fk.Name == att.Attribute.Name);
                 if (key == null)
                 {
                     key = new TableMapping.ForeignKey
@@ -190,24 +190,24 @@ namespace Mono.Data.Sqlite.Orm
 
         public static string GetDefaultValue(MemberInfo info)
         {
-            var attrs = info.GetAttributes<DefaultAttribute>().ToArray();
+            DefaultAttribute[] attrs = info.GetAttributes<DefaultAttribute>().ToArray();
             return attrs.Any() ? attrs.First().Value : null;
         }
 
         public static Collation GetCollation(MemberInfo info)
         {
-            var attrs = info.GetAttributes<CollationAttribute>().ToArray();
+            CollationAttribute[] attrs = info.GetAttributes<CollationAttribute>().ToArray();
             return attrs.Any() ? attrs.First().Collation : Collation.Default;
         }
 
         public static string GetColumnName(MemberInfo info)
         {
-            var name = info.Name;
+            string name = info.Name;
 
-            var attrs = info.GetAttributes<ColumnAttribute>().ToArray();
+            ColumnAttribute[] attrs = info.GetAttributes<ColumnAttribute>().ToArray();
             if (attrs.Any())
             {
-                var attributeName = attrs.First().Name;
+                string attributeName = attrs.First().Name;
                 if (!string.IsNullOrEmpty(attributeName))
                 {
                     name = attributeName;
@@ -219,8 +219,8 @@ namespace Mono.Data.Sqlite.Orm
 
         public static int GetMaxStringLength(MemberInfo info)
         {
-            var attrs = info.GetAttributes<MaxLengthAttribute>().ToArray();
-            var maxLength = attrs.Any()
+            MaxLengthAttribute[] attrs = info.GetAttributes<MaxLengthAttribute>().ToArray();
+            int maxLength = attrs.Any()
                                 ? attrs.First().Length
                                 : DefaultMaxStringLength;
             return maxLength;

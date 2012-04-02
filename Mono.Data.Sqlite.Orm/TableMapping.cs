@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -83,12 +84,12 @@ namespace Mono.Data.Sqlite.Orm
             return Columns.FirstOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities")]
+        [SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities")]
         internal DbCommand GetInsertCommand(DbConnection connection, ConflictResolution extra)
         {
             if (_insertCommand != null && _insertExtra != extra)
             {
-                if(SqliteSession.Trace)
+                if (SqliteSession.Trace)
                 {
                     Debug.WriteLine(string.Format("Destroying Insert command for {0} ({1})", TableName, MappedType));
                 }
@@ -107,7 +108,7 @@ namespace Mono.Data.Sqlite.Orm
                 }
 
                 _insertCommand = connection.CreateCommand();
-                var columns = string.Join(",", EditableColumns.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}]", c.Name)).ToArray());
+                string columns = string.Join(",", EditableColumns.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}]", c.Name)).ToArray());
                 _insertCommand.CommandText = string.Format(CultureInfo.InvariantCulture, "INSERT {3} INTO [{0}] ({1}) VALUES ({2})",
                                                            TableName,
                                                            columns,
@@ -127,40 +128,40 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         internal string GetUpdateSql<T>(T obj, ConflictResolution extra, List<object> args)
-		{
-			if (!PrimaryKeys.Any())
-			{
-				throw new NotSupportedException("Cannot update " + TableName + ": it has no primary keys");
-			}
+        {
+            if (!PrimaryKeys.Any())
+            {
+                throw new NotSupportedException("Cannot update " + TableName + ": it has no primary keys");
+            }
 
-			if (!string.IsNullOrEmpty(_updateSql) && _updateExtra != extra)
-			{
-				_updateSql = string.Empty;
-			}
+            if (!string.IsNullOrEmpty(_updateSql) && _updateExtra != extra)
+            {
+                _updateSql = string.Empty;
+            }
 
-			if (string.IsNullOrEmpty(_updateSql))
-			{
-				_updateExtra = extra;
+            if (string.IsNullOrEmpty(_updateSql))
+            {
+                _updateExtra = extra;
 
                 string col = string.Join(", ", EditableColumns.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}] = ?", c.Name)).ToArray());
                 string pks = string.Join(" AND ", PrimaryKeys.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}] = ?", c.Name)).ToArray());
                 _updateSql = string.Format(CultureInfo.InvariantCulture, "UPDATE {3} [{0}] SET {1} WHERE {2}",
-                                           TableName, 
-				                           col, 
-				                           pks,
-				                           extra == ConflictResolution.Default
-				                             ? string.Empty
-                                             : string.Format(CultureInfo.InvariantCulture, "OR {0}", extra));
-			}
+                                           TableName,
+                                           col,
+                                           pks,
+                                           extra == ConflictResolution.Default
+                                               ? string.Empty
+                                               : string.Format(CultureInfo.InvariantCulture, "OR {0}", extra));
+            }
 
-			if (args != null)
-			{
-				args.AddRange(EditableColumns.Select(c => c.GetValue(obj)));
-				args.AddRange(PrimaryKeys.Select(c => c.GetValue(obj)));
-			}
+            if (args != null)
+            {
+                args.AddRange(EditableColumns.Select(c => c.GetValue(obj)));
+                args.AddRange(PrimaryKeys.Select(c => c.GetValue(obj)));
+            }
 
-			return _updateSql;
-		}
+            return _updateSql;
+        }
 
         internal string GetDeleteSql<T>(T obj, List<object> args)
         {
@@ -184,8 +185,8 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         internal string GetUpdateSql(string propertyName, object propertyValue,
-		                             List<object> args, 
-		                             object pk, params object[] pks)
+                                     List<object> args,
+                                     object pk, params object[] pks)
         {
             if (!PrimaryKeys.Any())
             {
@@ -210,31 +211,31 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         internal string GetCreateSql()
-		{
-			var constraints = new List<string>
+        {
+            var constraints = new List<string>
                                   {
                                       string.Join(",\n", Columns.Select(c => c.GetCreateSql(this)).ToArray())
                                   };
-			if (PrimaryKeys.Count() > 1)
-			{
+            if (PrimaryKeys.Count() > 1)
+            {
                 constraints.Add(string.Format(CultureInfo.InvariantCulture, "PRIMARY KEY ({0}) {1}",
                                               string.Join(", ", PrimaryKeys.Select(pk => pk.Name).ToArray()),
                                               OnPrimaryKeyConflict == ConflictResolution.Default
-				                                ? string.Empty
-                                                : string.Format(CultureInfo.InvariantCulture, "ON CONFLICT {0}", OnPrimaryKeyConflict)));
-			}
-			if (Checks.Any())
-			{
+                                                  ? string.Empty
+                                                  : string.Format(CultureInfo.InvariantCulture, "ON CONFLICT {0}", OnPrimaryKeyConflict)));
+            }
+            if (Checks.Any())
+            {
                 constraints.Add(string.Join(" ", Checks.Select(c => string.Format(CultureInfo.InvariantCulture, "CHECK ({0})", c)).ToArray()));
-			}
-			if (ForeignKeys.Any())
-			{
-				constraints.Add(string.Join(" ", ForeignKeys.Select(fk => fk.GetCreateSql()).ToArray()));
-			}
-			string definition = string.Join(",\n", constraints.ToArray()); // cols, pk, fk, chk
+            }
+            if (ForeignKeys.Any())
+            {
+                constraints.Add(string.Join(" ", ForeignKeys.Select(fk => fk.GetCreateSql()).ToArray()));
+            }
+            string definition = string.Join(",\n", constraints.ToArray()); // cols, pk, fk, chk
 
             return string.Format(CultureInfo.InvariantCulture, "CREATE TABLE [{0}] (\n{1});", TableName, definition);
-		}
+        }
 
         #region Nested type: Column
 
@@ -288,8 +289,8 @@ namespace Mono.Data.Sqlite.Orm
                     else
                     {
                         throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,
-                            "Unable to assign a NULL value to non nullable column: {0}.{1} ({2})",
-                            GetType().Name, Name, ColumnType));
+                                                                          "Unable to assign a NULL value to non nullable column: {0}.{1} ({2})",
+                                                                          GetType().Name, Name, ColumnType));
                     }
                 }
                 else
@@ -444,16 +445,16 @@ namespace Mono.Data.Sqlite.Orm
 
             internal string GetCreateSql(string tableName)
             {
-                var cols = from c in Columns
-                           orderby c.Order
-                           select string.Format(CultureInfo.InvariantCulture, "[{0}] {1} {2}",
-                                                c.ColumnName,
-                                                c.Collation == Collation.Default
-                                                    ? string.Empty
-                                                    : string.Format(CultureInfo.InvariantCulture, "COLLATE {0}", c.Collation),
-                                                c.Direction == Direction.Default
-                                                    ? string.Empty
-                                                    : c.Direction.ToString());
+                IEnumerable<string> cols = from c in Columns
+                                           orderby c.Order
+                                           select string.Format(CultureInfo.InvariantCulture, "[{0}] {1} {2}",
+                                                                c.ColumnName,
+                                                                c.Collation == Collation.Default
+                                                                    ? string.Empty
+                                                                    : string.Format(CultureInfo.InvariantCulture, "COLLATE {0}", c.Collation),
+                                                                c.Direction == Direction.Default
+                                                                    ? string.Empty
+                                                                    : c.Direction.ToString());
                 string columnDefs = string.Join(",\n", cols.ToArray());
 
                 return string.Format(CultureInfo.InvariantCulture, "CREATE {0} INDEX [{1}] on [{2}] (\n{3});",

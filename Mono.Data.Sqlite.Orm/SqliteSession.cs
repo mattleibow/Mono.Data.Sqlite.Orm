@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using Mono.Data.Sqlite.Orm.ComponentModel;
@@ -15,15 +16,17 @@ using Community.CsharpSqlite.SQLiteClient;
 namespace Mono.Data.Sqlite.Orm
 {
     /// <summary>
-    /// 	Represents an open connection to a SQLite database.
+    ///   Represents an open connection to a SQLite database.
     /// </summary>
     public class SqliteSession : IDisposable
     {
         /// <summary>
-        /// 	Used to list some code that we want the MonoTouch linker
-        /// 	to see, but that we never want to actually execute.
+        ///   Used to list some code that we want the MonoTouch linker
+        ///   to see, but that we never want to actually execute.
         /// </summary>
         private static readonly bool PreserveDuringLinkMagic = true;
+
+        private DbCommand _lastInsertRowIdCommand;
 
         private Dictionary<string, TableMapping> _tables;
 
@@ -37,10 +40,10 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        /// 	Constructs a new SqliteSession and opens a SQLite database specified by databasePath.
+        ///   Constructs a new SqliteSession and opens a SQLite database specified by databasePath.
         /// </summary>
         /// <param name = "databasePath">
-        /// 	Specifies the path to the database file.
+        ///   Specifies the path to the database file.
         /// </param>
         public SqliteSession(string databasePath)
         {
@@ -51,6 +54,23 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         public static bool Trace { get; set; }
+
+        public DbTransaction Transaction { get; private set; }
+        public DbConnection Connection { get; private set; }
+        public string DatabasePath { get; private set; }
+
+        #region IDisposable Members
+
+        /// <summary>
+        ///   Whether <see cref = "BeginTransaction" /> has been called and the database is waiting for a <see cref = "Commit" />.
+        /// </summary>
+        //public bool IsInTransaction { get; private set; }
+        public void Dispose()
+        {
+            Close();
+        }
+
+        #endregion
 
         [Conditional("DEBUG")]
         private static void TraceCommand(IDbCommand command)
@@ -70,29 +90,15 @@ namespace Mono.Data.Sqlite.Orm
             }
         }
 
-        public DbTransaction Transaction { get; private set; }
-        public DbConnection Connection { get; private set; }
-        public string DatabasePath { get; private set; }
-        
         /// <summary>
-        /// 	Whether <see cref = "BeginTransaction" /> has been called and the database is waiting for a <see cref = "Commit" />.
-        /// </summary>
-        //public bool IsInTransaction { get; private set; }
-
-        public void Dispose()
-        {
-            Close();
-        }
-
-        /// <summary>
-        /// 	Retrieves the mapping that is automatically generated for the given type.
+        ///   Retrieves the mapping that is automatically generated for the given type.
         /// </summary>
         /// <typeparam name = "T">
-        /// 	The type whose mapping to the database is returned.
+        ///   The type whose mapping to the database is returned.
         /// </typeparam>
         /// <returns>
-        /// 	The mapping represents the schema of the columns of the database and contains 
-        /// 	methods to set and get properties of objects.
+        ///   The mapping represents the schema of the columns of the database and contains 
+        ///   methods to set and get properties of objects.
         /// </returns>
         public TableMapping GetMapping<T>()
         {
@@ -100,14 +106,14 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        /// 	Retrieves the mapping that is automatically generated for the given type.
+        ///   Retrieves the mapping that is automatically generated for the given type.
         /// </summary>
-        /// <param name="type">
-        ///     The type whose mapping to the database is returned.
+        /// <param name = "type">
+        ///   The type whose mapping to the database is returned.
         /// </param>
         /// <returns>
-        /// 	The mapping represents the schema of the columns of the database and contains 
-        /// 	methods to set and get properties of objects.
+        ///   The mapping represents the schema of the columns of the database and contains 
+        ///   methods to set and get properties of objects.
         /// </returns>
         public TableMapping GetMapping(Type type)
         {
@@ -169,13 +175,13 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        /// 	Executes a "create table if not exists" on the database. It also
-        /// 	creates any specified indexes on the columns of the table. It uses
-        /// 	a schema automatically generated from the specified type. You can
-        /// 	later access this schema by calling GetMapping.
+        ///   Executes a "create table if not exists" on the database. It also
+        ///   creates any specified indexes on the columns of the table. It uses
+        ///   a schema automatically generated from the specified type. You can
+        ///   later access this schema by calling GetMapping.
         /// </summary>
         /// <returns>
-        /// 	The number of entries added to the database schema.
+        ///   The number of entries added to the database schema.
         /// </returns>
         public void CreateTable<T>()
         {
@@ -195,7 +201,7 @@ namespace Mono.Data.Sqlite.Orm
 
             List<TableInfo> existingCols = Query<TableInfo>(query);
 
-            var toBeAdded = map.Columns.Where(p => existingCols.All(e => e.Name != p.Name)).ToList();
+            List<TableMapping.Column> toBeAdded = map.Columns.Where(p => existingCols.All(e => e.Name != p.Name)).ToList();
 
             return toBeAdded.Sum(col =>
                                      {
@@ -211,7 +217,7 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        ///     Executes a "drop table" on the database.  This is non-recoverable.
+        ///   Executes a "drop table" on the database.  This is non-recoverable.
         /// </summary>
         public int DropTable<T>()
         {
@@ -219,38 +225,38 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        ///     Executes a "drop table" on the database.  This is non-recoverable.
+        ///   Executes a "drop table" on the database.  This is non-recoverable.
         /// </summary>
         public int DropTable(Type type)
         {
-            var map = GetMapping(type);
+            TableMapping map = GetMapping(type);
 
-            var query = string.Format("DROP TABLE IF EXISTS [{0}]", map.TableName);
+            string query = string.Format("DROP TABLE IF EXISTS [{0}]", map.TableName);
 
-            var count = Execute(query);
+            int count = Execute(query);
 
             return count;
         }
 
         /// <summary>
-        /// 	Creates a new SQLiteCommand given the command text with arguments. Place a '?'
-        /// 	in the command text for each of the arguments.
+        ///   Creates a new SQLiteCommand given the command text with arguments. Place a '?'
+        ///   in the command text for each of the arguments.
         /// </summary>
         /// <param name = "cmdText">
-        /// 	The fully escaped SQL.
+        ///   The fully escaped SQL.
         /// </param>
         /// <param name = "args">
-        /// 	Arguments to substitute for the occurences of '?' in the command text.
+        ///   Arguments to substitute for the occurences of '?' in the command text.
         /// </param>
         /// <returns>
-        /// 	A <see cref = "DbCommand" />
+        ///   A <see cref = "DbCommand" />
         /// </returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities")]
+        [SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities")]
         internal DbCommand CreateCommand(string cmdText, params object[] args)
         {
             DbCommand cmd = Connection.CreateCommand();
             cmd.CommandText = cmdText;
-            
+
             AddCommandParameters(cmd, args);
 
             return cmd;
@@ -289,25 +295,25 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        /// 	Creates a SQLiteCommand given the command text (SQL) with arguments. Place a '?'
-        /// 	in the command text for each of the arguments and then executes that command.
-        /// 	Use this method instead of Query when you don't expect rows back. Such cases include
-        /// 	INSERTs, UPDATEs, and DELETEs.
-        /// 	You can set the Trace or TimeExecution properties of the connection
-        /// 	to profile execution.
+        ///   Creates a SQLiteCommand given the command text (SQL) with arguments. Place a '?'
+        ///   in the command text for each of the arguments and then executes that command.
+        ///   Use this method instead of Query when you don't expect rows back. Such cases include
+        ///   INSERTs, UPDATEs, and DELETEs.
+        ///   You can set the Trace or TimeExecution properties of the connection
+        ///   to profile execution.
         /// </summary>
         /// <param name = "query">
-        /// 	The fully escaped SQL.
+        ///   The fully escaped SQL.
         /// </param>
         /// <param name = "args">
-        /// 	Arguments to substitute for the occurences of '?' in the query.
+        ///   Arguments to substitute for the occurences of '?' in the query.
         /// </param>
         /// <returns>
-        /// 	The number of rows modified in the database as a result of this execution.
+        ///   The number of rows modified in the database as a result of this execution.
         /// </returns>
         public int Execute(string query, params object[] args)
         {
-            using (var cmd = CreateCommand(query, args))
+            using (DbCommand cmd = CreateCommand(query, args))
             {
                 TraceCommand(cmd);
 
@@ -316,19 +322,19 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        /// 	Creates a SQLiteCommand given the command text (SQL) with arguments. Place a '?'
-        /// 	in the command text for each of the arguments and then executes that command.
-        /// 	It returns each row of the result using the mapping automatically generated for
-        /// 	the given type.
+        ///   Creates a SQLiteCommand given the command text (SQL) with arguments. Place a '?'
+        ///   in the command text for each of the arguments and then executes that command.
+        ///   It returns each row of the result using the mapping automatically generated for
+        ///   the given type.
         /// </summary>
         /// <param name = "queryText">
-        /// 	The fully escaped SQL.
+        ///   The fully escaped SQL.
         /// </param>
         /// <param name = "args">
-        /// 	Arguments to substitute for the occurences of '?' in the query.
+        ///   Arguments to substitute for the occurences of '?' in the query.
         /// </param>
         /// <returns>
-        /// 	An enumerable with one result for each row returned by the query.
+        ///   An enumerable with one result for each row returned by the query.
         /// </returns>
         public List<T> Query<T>(string queryText, params object[] args) where T : new()
         {
@@ -336,21 +342,21 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        /// 	Creates a SQLiteCommand given the command text (SQL) with arguments. Place a '?'
-        /// 	in the command text for each of the arguments and then executes that command.
-        /// 	It returns each row of the result using the mapping automatically generated for
-        /// 	the given type.
+        ///   Creates a SQLiteCommand given the command text (SQL) with arguments. Place a '?'
+        ///   in the command text for each of the arguments and then executes that command.
+        ///   It returns each row of the result using the mapping automatically generated for
+        ///   the given type.
         /// </summary>
         /// <param name = "query">
-        /// 	The fully escaped SQL.
+        ///   The fully escaped SQL.
         /// </param>
         /// <param name = "args">
-        /// 	Arguments to substitute for the occurences of '?' in the query.
+        ///   Arguments to substitute for the occurences of '?' in the query.
         /// </param>
         /// <returns>
-        /// 	An enumerable with one result for each row returned by the query.
-        /// 	The enumerator will call sqlite3_step on each call to MoveNext, so the database
-        /// 	connection must remain open for the lifetime of the enumerator.
+        ///   An enumerable with one result for each row returned by the query.
+        ///   The enumerator will call sqlite3_step on each call to MoveNext, so the database
+        ///   connection must remain open for the lifetime of the enumerator.
         /// </returns>
         public IEnumerable<T> DeferredQuery<T>(string query, params object[] args) where T : new()
         {
@@ -364,55 +370,55 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         internal IEnumerable<T> ExecuteDeferredQuery<T>(TableMapping map, DbCommand cmd)
-		{
+        {
             TraceCommand(cmd);
 
             using (DbDataReader reader = cmd.ExecuteReader())
-			{
-				var cols = new TableMapping.Column[reader.FieldCount];
+            {
+                var cols = new TableMapping.Column[reader.FieldCount];
 
-				for (int i = 0; i < cols.Length; i++)
-				{
-					cols[i] = map.FindColumn(reader.GetName(i));
-				}
+                for (int i = 0; i < cols.Length; i++)
+                {
+                    cols[i] = map.FindColumn(reader.GetName(i));
+                }
 
-				while (reader.Read())
-				{
-					object obj = Activator.CreateInstance(map.MappedType);
-					for (int i = 0; i < cols.Length; i++)
-					{
-						if (cols[i] != null)
-						{
-							object value = reader.GetValue(i);
-							cols[i].SetValue(obj, value);
-						}
-					}
+                while (reader.Read())
+                {
+                    object obj = Activator.CreateInstance(map.MappedType);
+                    for (int i = 0; i < cols.Length; i++)
+                    {
+                        if (cols[i] != null)
+                        {
+                            object value = reader.GetValue(i);
+                            cols[i].SetValue(obj, value);
+                        }
+                    }
 
-				    var tracked = obj as ITrackConnection;
+                    var tracked = obj as ITrackConnection;
                     if (tracked != null)
                     {
                         tracked.Connection = this;
                     }
 
-					yield return (T) obj;
-				}
-			}
-		}
+                    yield return (T) obj;
+                }
+            }
+        }
 
         /// <summary>
-        /// 	Executes the query and returns the value in the first column of the first row.
-        /// 	All other fields are ignored.
+        ///   Executes the query and returns the value in the first column of the first row.
+        ///   All other fields are ignored.
         /// </summary>
         /// <param name = "cmdText">
-        /// 	The fully escaped SQL.
+        ///   The fully escaped SQL.
         /// </param>
         /// <param name = "args">
-        /// 	Arguments to substitute for the occurences of '?' in the command text.
+        ///   Arguments to substitute for the occurences of '?' in the command text.
         /// </param>
         /// <returns>The value in the first column of the first row.</returns>
         public T ExecuteScalar<T>(string cmdText, params object[] args)
         {
-            using (var cmd = CreateCommand(cmdText, args))
+            using (DbCommand cmd = CreateCommand(cmdText, args))
             {
                 return ExecuteScalar<T>(cmd);
             }
@@ -425,11 +431,11 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        /// 	Returns a queryable interface to the table represented by the given type.
+        ///   Returns a queryable interface to the table represented by the given type.
         /// </summary>
         /// <returns>
-        /// 	A queryable object that is able to translate Where, OrderBy, and Take
-        /// 	queries into native SQL.
+        ///   A queryable object that is able to translate Where, OrderBy, and Take
+        ///   queries into native SQL.
         /// </returns>
         public TableQuery<T> Table<T>() where T : new()
         {
@@ -437,10 +443,10 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        /// 	Retrieves the objects matching the given primary key(s) from the table
-        /// 	associated with the specified type. Use of this method requires that
-        /// 	the given type has one or more designated PrimaryKey(s) (using the
-        /// 	PrimaryKeyAttribute or PrimaryKeyNamesAttribute).
+        ///   Retrieves the objects matching the given primary key(s) from the table
+        ///   associated with the specified type. Use of this method requires that
+        ///   the given type has one or more designated PrimaryKey(s) (using the
+        ///   PrimaryKeyAttribute or PrimaryKeyNamesAttribute).
         /// </summary>
         /// <param name = "pk">The primary key for 'T'.</param>
         /// <param name = "pks">Any addition primary keys for multiple primaryKey tables</param>
@@ -449,16 +455,16 @@ namespace Mono.Data.Sqlite.Orm
         {
             TableMapping map = GetMapping<T>();
 
-            var columns = map.PrimaryKeys.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}] = ?", c.Name)).ToArray();
-            var query = string.Format(CultureInfo.InvariantCulture, "SELECT * FROM [{0}] WHERE {1}", map.TableName, string.Join(" AND ", columns));
+            string[] columns = map.PrimaryKeys.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}] = ?", c.Name)).ToArray();
+            string query = string.Format(CultureInfo.InvariantCulture, "SELECT * FROM [{0}] WHERE {1}", map.TableName, string.Join(" AND ", columns));
 
             return Query<T>(query, new[] {pk}.Concat(pks).ToArray());
         }
 
         /// <summary>
-        /// 	Attempts to retrieve an object with the given primary key from the table
-        /// 	associated with the specified type. Use of this method requires that
-        /// 	the given type have a designated PrimaryKey (using the PrimaryKeyAttribute).
+        ///   Attempts to retrieve an object with the given primary key from the table
+        ///   associated with the specified type. Use of this method requires that
+        ///   the given type have a designated PrimaryKey (using the PrimaryKeyAttribute).
         /// </summary>
         /// <param name = "primaryKey">The primary key for 'T'.</param>
         /// <param name = "primaryKeys">Any addition primary keys for multiple primaryKey tables</param>
@@ -469,7 +475,7 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        /// 	Begins a new transaction. Call <see cref = "Commit" /> to end the transaction.
+        ///   Begins a new transaction. Call <see cref = "Commit" /> to end the transaction.
         /// </summary>
         public void BeginTransaction()
         {
@@ -480,7 +486,7 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        /// 	Rolls back the transaction that was begun by <see cref = "BeginTransaction" />.
+        ///   Rolls back the transaction that was begun by <see cref = "BeginTransaction" />.
         /// </summary>
         public void Rollback()
         {
@@ -492,11 +498,11 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        /// 	Commits the transaction that was begun by <see cref = "BeginTransaction" />.
+        ///   Commits the transaction that was begun by <see cref = "BeginTransaction" />.
         /// </summary>
         public void Commit()
         {
-            if (Transaction!=null)
+            if (Transaction != null)
             {
                 Transaction.Commit();
                 Transaction = null;
@@ -504,13 +510,13 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        /// 	Executes <paramref name = "action" /> within a transaction and automatically rollsback the transaction       
-        /// 	if an exception occurs. The exception is rethrown.
+        ///   Executes <paramref name = "action" /> within a transaction and automatically rollsback the transaction       
+        ///   if an exception occurs. The exception is rethrown.
         /// </summary>
         /// <param name = "action">
-        /// 	The <see cref = "Action" /> to perform within a transaction. <paramref name = "action" /> can contain 
-        /// 	any number of operations on the connection but should never call <see cref = "BeginTransaction" />,
-        /// 	<see cref = "Rollback" />, or <see cref = "Commit" />.
+        ///   The <see cref = "Action" /> to perform within a transaction. <paramref name = "action" /> can contain 
+        ///   any number of operations on the connection but should never call <see cref = "BeginTransaction" />,
+        ///   <see cref = "Rollback" />, or <see cref = "Commit" />.
         /// </param>
         public void RunInTransaction(Action action)
         {
@@ -526,6 +532,7 @@ namespace Mono.Data.Sqlite.Orm
                 throw;
             }
         }
+
         public T RunInTransaction<T>(Func<T> action)
         {
             T result;
@@ -545,13 +552,13 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        /// 	Inserts all specified objects.
+        ///   Inserts all specified objects.
         /// </summary>
         /// <param name = "objects">
-        /// 	An <see cref = "IEnumerable" /> of the objects to insert.
+        ///   An <see cref = "IEnumerable" /> of the objects to insert.
         /// </param>
         /// <returns>
-        /// 	The number of rows added to the table.
+        ///   The number of rows added to the table.
         /// </returns>
         public int InsertAll<T>(IEnumerable<T> objects)
         {
@@ -560,14 +567,14 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        /// 	Inserts the given object and retrieves its
-        /// 	auto incremented primary key if it has one.
+        ///   Inserts the given object and retrieves its
+        ///   auto incremented primary key if it has one.
         /// </summary>
         /// <param name = "obj">
-        /// 	The object to insert.
+        ///   The object to insert.
         /// </param>
         /// <returns>
-        /// 	The number of rows added to the table.
+        ///   The number of rows added to the table.
         /// </returns>
         public int Insert<T>(T obj)
         {
@@ -575,24 +582,24 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        /// 	Inserts the given object and retrieves its
-        /// 	auto incremented primary key if it has one.
+        ///   Inserts the given object and retrieves its
+        ///   auto incremented primary key if it has one.
         /// </summary>
         /// <param name = "obj">
-        /// 	The object to insert.
+        ///   The object to insert.
         /// </param>
         /// <param name = "extra">
-        /// 	Literal SQL code that gets placed into the command. INSERT {extra} INTO ...
+        ///   Literal SQL code that gets placed into the command. INSERT {extra} INTO ...
         /// </param>
         /// <returns>
-        /// 	The number of rows added to the table.
+        ///   The number of rows added to the table.
         /// </returns>
         public int Insert<T>(T obj, ConflictResolution extra)
         {
             TableMapping map = GetMapping<T>();
             object[] args = map.EditableColumns.Select(x => x.GetValue(obj)).ToArray();
 
-            var insertCmd = map.GetInsertCommand(Connection, extra);
+            DbCommand insertCmd = map.GetInsertCommand(Connection, extra);
             AddCommandParameters(insertCmd, args);
 
             TraceCommand(insertCmd);
@@ -613,7 +620,6 @@ namespace Mono.Data.Sqlite.Orm
             return count;
         }
 
-        private DbCommand _lastInsertRowIdCommand;
         private long GetLastInsertRowId()
         {
             if (_lastInsertRowIdCommand == null)
@@ -621,19 +627,19 @@ namespace Mono.Data.Sqlite.Orm
                 _lastInsertRowIdCommand = Connection.CreateCommand();
                 _lastInsertRowIdCommand.CommandText = "SELECT last_insert_rowid() as Id";
             }
-            return (long)_lastInsertRowIdCommand.ExecuteScalar();
+            return (long) _lastInsertRowIdCommand.ExecuteScalar();
         }
 
         /// <summary>
-        /// 	Updates all of the columns of a table using the specified object
-        /// 	except for its primary key(s).
-        /// 	The object is required to have at least one primary key.
+        ///   Updates all of the columns of a table using the specified object
+        ///   except for its primary key(s).
+        ///   The object is required to have at least one primary key.
         /// </summary>
         /// <param name = "obj">
-        /// 	The object to update. It must have one or more primary keys designated using the PrimaryKeyAttribute.
+        ///   The object to update. It must have one or more primary keys designated using the PrimaryKeyAttribute.
         /// </param>
         /// <returns>
-        /// 	The number of rows updated.
+        ///   The number of rows updated.
         /// </returns>
         public int Update<T>(T obj)
         {
@@ -644,42 +650,42 @@ namespace Mono.Data.Sqlite.Orm
             }
 
             var args = new List<object>();
-            var sql = GetMapping<T>().GetUpdateSql(obj, args);
+            string sql = GetMapping<T>().GetUpdateSql(obj, args);
             return Execute(sql, args.ToArray());
         }
 
         /// <summary>
-        /// 	Updates just the field specified by the propertyName with the values passed in the propertyValue
-        /// 	The type of object to update is given by T and the primary key(s) by (primaryKey, primaryKeys)
+        ///   Updates just the field specified by the propertyName with the values passed in the propertyValue
+        ///   The type of object to update is given by T and the primary key(s) by (primaryKey, primaryKeys)
         /// </summary>
         /// <returns>Number of rows affected</returns>
         public int Update<T>(string propertyName, object propertyValue, object primaryKey, params object[] primaryKeys)
         {
             var args = new List<object>();
-            var sql = GetMapping<T>().GetUpdateSql(propertyName, propertyValue, args, primaryKey, primaryKeys);
+            string sql = GetMapping<T>().GetUpdateSql(propertyName, propertyValue, args, primaryKey, primaryKeys);
             return Execute(sql, args.ToArray());
         }
 
         /// <summary>
-        /// 	Updates just the field specified by 'propertyName' with the
-        /// 	value 'propertyValue' for all objects of type T
+        ///   Updates just the field specified by 'propertyName' with the
+        ///   value 'propertyValue' for all objects of type T
         /// </summary>
         /// <returns>Number of rows affected</returns>
         public int UpdateAll<T>(string propertyName, object propertyValue)
         {
             var args = new List<object>();
-            var sql = GetMapping<T>().GetUpdateAllSql(propertyName, propertyValue, args);
+            string sql = GetMapping<T>().GetUpdateAllSql(propertyName, propertyValue, args);
             return Execute(sql, args.ToArray());
         }
 
         /// <summary>
-        /// 	Deletes the given object from the database using its primary key.
+        ///   Deletes the given object from the database using its primary key.
         /// </summary>
         /// <param name = "obj">
-        /// 	The object to delete. It must have a primary key designated using the PrimaryKeyAttribute.
+        ///   The object to delete. It must have a primary key designated using the PrimaryKeyAttribute.
         /// </param>
         /// <returns>
-        /// 	The number of rows deleted.
+        ///   The number of rows deleted.
         /// </returns>
         public int Delete<T>(T obj)
         {
@@ -690,7 +696,7 @@ namespace Mono.Data.Sqlite.Orm
             }
 
             var args = new List<object>();
-            var sql = GetMapping<T>().GetDeleteSql(obj, args);
+            string sql = GetMapping<T>().GetDeleteSql(obj, args);
             return Execute(sql, args.ToArray());
         }
 
@@ -712,20 +718,7 @@ namespace Mono.Data.Sqlite.Orm
             return Query<IndexList>(string.Format(CultureInfo.InvariantCulture, "pragma index_list({0});", tableName)).FirstOrDefault();
         }
 
-        #region Nested type: SqliteMasterTable
-
-        [Table("sqlite_master")]
-        public class SqliteMasterTable
-        {
-            public int RootPage { get; set; }
-            public string Name { get; set; }
-            public string Type { get; set; }
-
-            [Column("tbl_name")]
-            public string TableName { get; set; }
-
-            public string Sql { get; set; }
-        }
+        #region Nested type: IndexInfo
 
         public class IndexInfo
         {
@@ -738,6 +731,10 @@ namespace Mono.Data.Sqlite.Orm
             [Column("name")]
             public string ColumnName { get; set; }
         }
+
+        #endregion
+
+        #region Nested type: IndexList
 
         public class IndexList
         {
@@ -753,6 +750,23 @@ namespace Mono.Data.Sqlite.Orm
 
         #endregion
 
+        #region Nested type: SqliteMasterTable
+
+        [Table("sqlite_master")]
+        public class SqliteMasterTable
+        {
+            public int RootPage { get; set; }
+            public string Name { get; set; }
+            public string Type { get; set; }
+
+            [Column("tbl_name")]
+            public string TableName { get; set; }
+
+            public string Sql { get; set; }
+        }
+
+        #endregion
+
         #region Nested type: TableInfo
 
         public class TableInfo
@@ -761,8 +775,10 @@ namespace Mono.Data.Sqlite.Orm
             public int Id { get; set; }
 
             public string Name { get; set; }
+
             [Column("type")]
             public string ObjectType { get; set; }
+
             public int NotNull { get; set; }
 
             [Column("dflt_value")]
