@@ -62,6 +62,9 @@ namespace Mono.Data.Sqlite.Orm.Tests
         public void InsertALotPlain()
         {
             var db = new OrmTestSession();
+            
+            SqliteSession.Trace = false;
+
             db.CreateTable<TestObjPlain>();
 
             const int n = 100000;
@@ -89,6 +92,9 @@ namespace Mono.Data.Sqlite.Orm.Tests
         public void InsertALot()
         {
             var db = new OrmTestSession();
+
+            SqliteSession.Trace = false;
+
             db.CreateTable<TestObj>();
 
             const int n = 100000;

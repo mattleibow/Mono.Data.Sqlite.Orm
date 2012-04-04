@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.IO;
 using System;
 
@@ -13,10 +13,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
             : base("Data Source=" + Path.GetTempFileName() + ";DefaultTimeout=100")
 #endif
         {
-#if !SILVERLIGHT && !WINDOWS_PHONE
             Trace = true;
 			Debug.WriteLine(Connection.ConnectionString);
-#endif
         }
     }
 }
