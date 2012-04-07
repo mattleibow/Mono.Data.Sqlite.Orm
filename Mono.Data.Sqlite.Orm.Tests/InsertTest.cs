@@ -58,6 +58,18 @@ namespace Mono.Data.Sqlite.Orm.Tests
             }
         }
 
+        public class DefaultsObject
+        {
+            [PrimaryKey, AutoIncrement]
+            public int Id { get; set; }
+
+            [Default("33")]
+            public int Number { get; set; }
+
+            [Default("'Default Text'")]
+            public string Text { get; set; }
+        }
+
         [Test]
         public void InsertALotPlain()
         {
@@ -265,6 +277,22 @@ namespace Mono.Data.Sqlite.Orm.Tests
             TestObj inObjs = db.Query<TestObj>("select * from TestObj").First();
 
             Assert.AreEqual(insertItem.Text, inObjs.Text);
+        }
+
+        [Test]
+        public void DefaultsTest()
+        {
+            var db = new OrmTestSession();
+            db.CreateTable<DefaultsObject>();
+
+            int numIn = db.Insert<DefaultsObject>();
+
+            Assert.AreEqual(numIn, 1, "Num inserted must = 1");
+
+            var inObjs = db.Get<DefaultsObject>(1);
+
+            Assert.AreEqual("Default Text", inObjs.Text);
+            Assert.AreEqual(33, inObjs.Number);
         }
     }
 }

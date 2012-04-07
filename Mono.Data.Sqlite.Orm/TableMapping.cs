@@ -85,7 +85,7 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         [SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities")]
-        internal DbCommand GetInsertCommand(DbConnection connection, ConflictResolution extra)
+        internal DbCommand GetInsertCommand(DbConnection connection, ConflictResolution extra, bool withDefaults)
         {
             if (_insertCommand != null && _insertExtra != extra)
             {
@@ -108,18 +108,39 @@ namespace Mono.Data.Sqlite.Orm
                 }
 
                 _insertCommand = connection.CreateCommand();
-                string columns = string.Join(",", EditableColumns.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}]", c.Name)).ToArray());
-                _insertCommand.CommandText = string.Format(CultureInfo.InvariantCulture, "INSERT {3} INTO [{0}] ({1}) VALUES ({2})",
-                                                           TableName,
-                                                           columns,
-                                                           string.Join(",", EditableColumns.Select(c => "?").ToArray()),
-                                                           extra == ConflictResolution.Default
-                                                               ? string.Empty
-                                                               : string.Format(CultureInfo.InvariantCulture, "OR {0}", extra));
+                _insertCommand.CommandText = GetInsertSql(extra, withDefaults);
                 _insertCommand.Prepare();
             }
 
             return _insertCommand;
+        }
+
+        private string GetInsertSql(ConflictResolution extra, bool withDefaults)
+        {
+            var extraText = extra == ConflictResolution.Default
+                                ? string.Empty
+                                : string.Format(CultureInfo.InvariantCulture, "OR {0}", extra);
+
+            string commandText;
+
+            if (withDefaults)
+            {
+                commandText = string.Format(CultureInfo.InvariantCulture, "INSERT {1} INTO [{0}] DEFAULT VALUES",
+                                            TableName,
+                                            extraText);
+            }
+            else
+            {
+                var colNames = EditableColumns.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}]", c.Name));
+                string columns = string.Join(",", colNames.ToArray());
+                commandText = string.Format(CultureInfo.InvariantCulture, "INSERT {3} INTO [{0}] ({1}) VALUES ({2})",
+                                            TableName,
+                                            columns,
+                                            string.Join(",", EditableColumns.Select(c => "?").ToArray()),
+                                            extraText);
+            }
+
+            return commandText;
         }
 
         internal string GetUpdateSql<T>(T obj, List<object> args)

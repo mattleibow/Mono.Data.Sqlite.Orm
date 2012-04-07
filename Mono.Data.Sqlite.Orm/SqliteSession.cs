@@ -569,6 +569,18 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
+        ///   Inserts a record in the table with the specified defaults as the column values.
+        /// </summary>
+        /// <returns>
+        ///   The number of rows added to the table.
+        /// </returns>
+        public int Insert<T>()
+            where T : class
+        {
+            return Insert<T>(null);
+        }
+
+        /// <summary>
         ///   Inserts the given object and retrieves its
         ///   auto incremented primary key if it has one.
         /// </summary>
@@ -599,24 +611,33 @@ namespace Mono.Data.Sqlite.Orm
         public int Insert<T>(T obj, ConflictResolution extra)
         {
             TableMapping map = GetMapping<T>();
-            object[] args = map.EditableColumns.Select(x => x.GetValue(obj)).ToArray();
 
-            DbCommand insertCmd = map.GetInsertCommand(Connection, extra);
-            AddCommandParameters(insertCmd, args);
+            var instance = obj as object;
+
+            DbCommand insertCmd = map.GetInsertCommand(Connection, extra, instance == null);
+
+            if (instance != null)
+            {
+                var args = map.EditableColumns.Select(x => x.GetValue(obj)).ToArray();
+                AddCommandParameters(insertCmd, args);
+            }
 
             TraceCommand(insertCmd);
 
             int count = insertCmd.ExecuteNonQuery();
 
-            var tracked = obj as ITrackConnection;
-            if (tracked != null)
+            if (instance != null)
             {
-                tracked.Connection = this;
-            }
+                var tracked = obj as ITrackConnection;
+                if (tracked != null)
+                {
+                    tracked.Connection = this;
+                }
 
-            if (map.AutoIncrementColumn != null)
-            {
-                map.AutoIncrementColumn.SetValue(obj, GetLastInsertRowId());
+                if (map.AutoIncrementColumn != null)
+                {
+                    map.AutoIncrementColumn.SetValue(obj, GetLastInsertRowId());
+                }
             }
 
             return count;
