@@ -106,6 +106,7 @@
     <Compile Include="Extensions.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="InstanceCreatedEventArgs.cs" />
     <Compile Include="ITrackConnection.cs">
       <SubType>Code</SubType>
     </Compile>

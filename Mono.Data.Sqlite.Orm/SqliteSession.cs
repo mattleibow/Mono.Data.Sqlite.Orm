@@ -400,6 +400,8 @@ namespace Mono.Data.Sqlite.Orm
                         tracked.Connection = this;
                     }
 
+                    OnInstanceCreated(new InstanceCreatedEventArgs(obj));     
+
                     yield return (T) obj;
                 }
             }
@@ -716,6 +718,16 @@ namespace Mono.Data.Sqlite.Orm
         internal IndexList GetIndexList(string tableName)
         {
             return Query<IndexList>(string.Format(CultureInfo.InvariantCulture, "pragma index_list({0});", tableName)).FirstOrDefault();
+        }
+
+        public event EventHandler<InstanceCreatedEventArgs> InstanceCreated;
+
+        protected virtual void OnInstanceCreated(InstanceCreatedEventArgs e)
+        {
+            if (InstanceCreated != null)
+            {
+                InstanceCreated(this, e);
+            }
         }
 
         #region Nested type: IndexInfo
