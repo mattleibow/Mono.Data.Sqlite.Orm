@@ -203,6 +203,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
             db.Close();
         }
 
+        // BUG: Excetions ar silently swallowed in Silverlight
+        //  - http://code.google.com/p/csharp-sqlite/issues/detail?id=130
         [Test]
         public void InsertWithExtra()
         {

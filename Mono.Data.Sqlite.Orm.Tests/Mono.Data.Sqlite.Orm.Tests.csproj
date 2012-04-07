@@ -67,6 +67,7 @@
     <Compile Include="BooleanTest.cs" />
     <Compile Include="ByteArrayTest.cs" />
     <Compile Include="CollateTest.cs" />
+    <Compile Include="ColumnTypesTest.cs" />
     <Compile Include="DropTableTest.cs" />
     <Compile Include="InheritanceTest.cs" />
     <Compile Include="LinqTests.cs" />

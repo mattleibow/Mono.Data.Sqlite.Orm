@@ -248,6 +248,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
             public int Second { get; set; }
         }
 
+        // BUG: Creating a Unique Index within a Transaction causes MethodAccessException in Silverlight
+        //  - http://code.google.com/p/csharp-sqlite/issues/detail?id=150
         [Test]
         public void CreateIndexedTable()
         {

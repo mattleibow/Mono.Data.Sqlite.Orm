@@ -23,6 +23,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
             }
         }
 
+        // BUG: zero length arrays returned as null in Silverlight 
+        //  - http://code.google.com/p/csharp-sqlite/issues/detail?id=149
         [Test]
         [Description("Create objects with various byte arrays and check they can be stored and retrieved correctly")]
         public void ByteArrays()
