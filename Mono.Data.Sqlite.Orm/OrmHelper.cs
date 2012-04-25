@@ -8,7 +8,7 @@ namespace Mono.Data.Sqlite.Orm
 {
     public static class OrmHelper
     {
-        public const int DefaultMaxStringLength = 140;
+        public const int DefaultMaxStringLength = -1;
 
         public static string GetForeignKeyActionString(ForeignKeyAction action)
         {
@@ -63,7 +63,9 @@ namespace Mono.Data.Sqlite.Orm
             if (clrType == typeof (String))
             {
                 int len = p.MaxStringLength;
-                return "varchar(" + len + ")";
+                return (len <= 0)
+                           ? "text"
+                           : "varchar(" + len + ")";
             }
             if (clrType == typeof (DateTime))
             {
