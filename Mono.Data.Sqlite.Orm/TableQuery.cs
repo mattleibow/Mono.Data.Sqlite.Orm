@@ -103,6 +103,11 @@ namespace Mono.Data.Sqlite.Orm
             return q;
         }
 
+        public T ElementAt(int index)
+        {
+            return Skip(index).Take(1).First();
+        }
+
         public TableQuery<T> OrderBy<U>(Expression<Func<T, U>> orderExpr)
         {
             return AddOrderBy(orderExpr, true);
