@@ -273,7 +273,7 @@ namespace Mono.Data.Sqlite.Orm
                 Name = OrmHelper.GetColumnName(prop);
                 // If this type is Nullable<T> then Nullable.GetUnderlyingType returns the T,
                 // otherwise it returns null, so get the the actual type instead
-                ColumnType = nullableType ?? prop.PropertyType;
+                ColumnType = OrmHelper.GetColumnType(prop);
                 Collation = OrmHelper.GetCollation(prop);
                 PrimaryKey = prop.GetAttributes<PrimaryKeyAttribute>().FirstOrDefault();
                 IsNullable = PrimaryKey == null &&

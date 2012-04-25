@@ -618,8 +618,14 @@ namespace Mono.Data.Sqlite.Orm
 
             if (instance != null)
             {
-                var args = map.EditableColumns.Select(x => x.GetValue(obj)).ToArray();
-                AddCommandParameters(insertCmd, args);
+                var args = map.EditableColumns.Select(x =>
+                                                          {
+                                                              var value = x.GetValue(obj);
+                                                              return value == null
+                                                                         ? null
+                                                                         : Convert.ChangeType(value, x.ColumnType);
+                                                          });
+                AddCommandParameters(insertCmd, args.ToArray());
             }
 
             TraceCommand(insertCmd);

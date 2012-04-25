@@ -39,6 +39,13 @@ namespace Mono.Data.Sqlite.Orm
         public static string SqlType(TableMapping.Column p)
         {
             Type clrType = p.ColumnType;
+            int len = p.MaxStringLength;
+            if (clrType == typeof(Char))
+            {
+                clrType = typeof (String);
+                len = 1;
+            }
+
             if (clrType == typeof (Boolean) ||
                 clrType == typeof (Byte) ||
                 clrType == typeof (UInt16) ||
@@ -60,9 +67,8 @@ namespace Mono.Data.Sqlite.Orm
             {
                 return "float";
             }
-            if (clrType == typeof (String))
+            if (clrType == typeof(String))
             {
-                int len = p.MaxStringLength;
                 return (len <= 0)
                            ? "text"
                            : "varchar(" + len + ")";
@@ -71,7 +77,7 @@ namespace Mono.Data.Sqlite.Orm
             {
                 return "datetime";
             }
-            if (clrType == typeof (byte[]))
+            if (clrType == typeof (Byte[]))
             {
                 return "blob";
             }
@@ -226,6 +232,20 @@ namespace Mono.Data.Sqlite.Orm
                                 ? attrs.First().Length
                                 : DefaultMaxStringLength;
             return maxLength;
+        }
+
+        public static Type GetColumnType(PropertyInfo prop)
+        {
+            Type nullableType = Nullable.GetUnderlyingType(prop.PropertyType);
+            var type = nullableType ?? prop.PropertyType;
+
+            if (type.IsEnum)
+            {
+                var attribute = prop.GetAttributes<EnumAffinityAttribute>().FirstOrDefault();
+                type = attribute == null ? typeof (int) : attribute.Type;
+            }
+
+            return type;
         }
     }
 }
