@@ -67,6 +67,7 @@
     <Compile Include="ComponentModel\Direction.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ComponentModel\EnumAffinityAttribute.cs" />
     <Compile Include="ComponentModel\ForeignKeyAction.cs">
       <SubType>Code</SubType>
     </Compile>

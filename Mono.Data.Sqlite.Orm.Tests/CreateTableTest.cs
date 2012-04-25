@@ -51,6 +51,50 @@ namespace Mono.Data.Sqlite.Orm.Tests
             }
         }
 
+        public class EnumTable
+        {
+            [EnumAffinity(typeof(char))]
+            public PersonType Type { get; set; }
+            public PersonAge Age { get; set; }
+            [EnumAffinity(typeof(string))]
+            public PersonKind Kind { get; set; }
+
+            public enum PersonType
+            {
+                Child = 'C',
+                Adult = 'A',
+                Senior = 'S'
+            }
+
+            public enum PersonAge
+            {
+                ChildAge = 3,
+                AdultAge = 21,
+                SeniorAge = 40
+            }
+
+            public enum PersonKind
+            {
+                Senior,
+                Junior
+            }
+        }
+
+        [Test]
+        public void CreateEnumTable()
+        {
+            using (var db = new OrmTestSession())
+            {
+                db.CreateTable<EnumTable>();
+                db.Insert(new EnumTable
+                              {
+                                  Type = EnumTable.PersonType.Child,
+                                  Age = EnumTable.PersonAge.ChildAge,
+                                  Kind = EnumTable.PersonKind.Junior
+                              });
+            }
+        }
+
         [Table("DifferentName")]
         public class CustomTable
         {
