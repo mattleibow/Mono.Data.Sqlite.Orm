@@ -103,6 +103,11 @@ namespace Mono.Data.Sqlite.Orm
             return q;
         }
 
+        public T ElementAt(int index)
+        {
+            return Skip(index).Take(1).First();
+        }
+
         public TableQuery<T> OrderBy<U>(Expression<Func<T, U>> orderExpr)
         {
             return AddOrderBy(orderExpr, true);
@@ -220,6 +225,11 @@ namespace Mono.Data.Sqlite.Orm
                 else if (call.Method.Name == "Contains" && args.Length == 2)
                 {
                     sqlCall = "(" + args[1].CommandText + " in " + args[0].CommandText + ")";
+                }
+                else if (call.Method.Name == "Contains" && args.Length == 1)
+                {
+                    var obj = call.Object != null ? CompileExpr(call.Object, queryArgs) : null;
+                    sqlCall = "(" + args[0].CommandText + " in " + obj.CommandText + ")";
                 }
                 else
                 {

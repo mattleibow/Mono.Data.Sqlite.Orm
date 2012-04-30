@@ -78,6 +78,9 @@
     <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\Direction.cs">
       <Link>ComponentModel\Direction.cs</Link>
     </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\EnumAffinityAttribute.cs">
+      <Link>ComponentModel\EnumAffinityAttribute.cs</Link>
+    </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\ForeignKeyAction.cs">
       <Link>ComponentModel\ForeignKeyAction.cs</Link>
     </Compile>
