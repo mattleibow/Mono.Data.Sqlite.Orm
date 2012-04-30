@@ -282,12 +282,12 @@ namespace Mono.Data.Sqlite.Orm
                     //
                     object val = null;
 
-                    if (mem.Member.MemberType == MemberTypes.Property)
+                    if (mem.Member is PropertyInfo)
                     {
                         var m = (PropertyInfo) mem.Member;
                         val = m.GetValue(obj, null);
                     }
-                    else if (mem.Member.MemberType == MemberTypes.Field)
+                    else if (mem.Member is FieldInfo)
                     {
 #if SILVERLIGHT
                         val = Expression.Lambda(expr).Compile().DynamicInvoke();
@@ -298,7 +298,7 @@ namespace Mono.Data.Sqlite.Orm
                     }
                     else
                     {
-                        throw new NotSupportedException("MemberExpr: " + mem.Member.MemberType.ToString());
+                        throw new NotSupportedException("MemberExpr: " + mem.Member.GetType().Name);
                     }
 
                     //
