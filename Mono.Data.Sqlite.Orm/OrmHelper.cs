@@ -52,7 +52,7 @@ namespace Mono.Data.Sqlite.Orm
                 clrType == typeof (SByte) ||
                 clrType == typeof (Int16) ||
                 clrType == typeof (Int32) ||
-                clrType.IsEnum)
+                clrType.GetTypeInfo().IsEnum)
             {
                 return "integer";
             }
@@ -89,11 +89,11 @@ namespace Mono.Data.Sqlite.Orm
             throw new NotSupportedException("Don't know about " + clrType);
         }
 
-        public static string GetTableName(MemberInfo info)
+        public static string GetTableName(Type info)
         {
             string tableName = info.Name;
 
-            TableAttribute[] attrs = info.GetAttributes<TableAttribute>().ToArray();
+            TableAttribute[] attrs = info.GetTypeInfo().GetAttributes<TableAttribute>().ToArray();
             if (attrs.Any())
             {
                 string attributeTableName = attrs.First().Name;
@@ -106,23 +106,23 @@ namespace Mono.Data.Sqlite.Orm
             return tableName;
         }
 
-        public static string GetOldTableName(MemberInfo info)
+        public static string GetOldTableName(Type info)
         {
-            RenameTableAttribute[] attrs = info.GetAttributes<RenameTableAttribute>().ToArray();
+            RenameTableAttribute[] attrs = info.GetTypeInfo().GetAttributes<RenameTableAttribute>().ToArray();
             return attrs.Any() ? attrs.First().OldName : string.Empty;
         }
 
-        public static ConflictResolution GetOnPrimaryKeyConflict(MemberInfo info)
+        public static ConflictResolution GetOnPrimaryKeyConflict(Type info)
         {
-            TableAttribute[] attrs = info.GetAttributes<TableAttribute>().ToArray();
+            TableAttribute[] attrs = info.GetTypeInfo().GetAttributes<TableAttribute>().ToArray();
             return attrs.Any() ? attrs.First().OnPrimaryKeyConflict : ConflictResolution.Default;
         }
 
-        public static IList<TableMapping.Index> GetIndexes(MemberInfo info, PropertyInfo[] properties)
+        public static IList<TableMapping.Index> GetIndexes(Type info, PropertyInfo[] properties)
         {
             var indices = new List<TableMapping.Index>();
 
-            IndexAttribute tblAtt = info.GetAttributes<IndexAttribute>().FirstOrDefault();
+            IndexAttribute tblAtt = info.GetTypeInfo().GetAttributes<IndexAttribute>().FirstOrDefault();
             if (tblAtt != null)
             {
                 if (indices.Any(i => i.IndexName == tblAtt.Name))

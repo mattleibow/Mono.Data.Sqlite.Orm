@@ -1,7 +1,7 @@
 ﻿using Mono.Data.Sqlite.Orm.ComponentModel;
 using NUnit.Framework;
 
-#if SILVERLIGHT || WINDOWS_PHONE
+#if SILVERLIGHT || WINDOWS_PHONE || NETFX_CORE
 using Community.CsharpSqlite.SQLiteClient;
 #endif
 
