@@ -623,7 +623,7 @@ namespace Mono.Data.Sqlite.Orm
                                                               var value = x.GetValue(obj);
                                                               return value == null
                                                                          ? null
-                                                                         : Convert.ChangeType(value, x.ColumnType);
+                                                                         : Convert.ChangeType(value, x.ColumnType, CultureInfo.InvariantCulture);
                                                           });
                 AddCommandParameters(insertCmd, args.ToArray());
             }

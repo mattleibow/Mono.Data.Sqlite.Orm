@@ -6,13 +6,11 @@
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{4E36AE00-971B-4062-94C5-77379FCE045A}</ProjectGuid>
-    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TestRunner.Silverlight</RootNamespace>
     <AssemblyName>TestRunner.Silverlight</AssemblyName>
-    <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
     <SilverlightApplication>true</SilverlightApplication>
     <SupportedCultures>
@@ -61,15 +59,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
-    <Reference Include="NUnitLite, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>J:\Libraries\GitHub\Mono.Data.Sqlite.Orm\Libraries\NUnitLite.dll</HintPath>
+    <Reference Include="NUnitLite">
+      <HintPath>..\Libraries\NUnitLite.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows" />
-    <Reference Include="system" />
     <Reference Include="System.Core">
       <HintPath>$(TargetFrameworkDirectory)System.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Browser" />
+    <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -92,12 +90,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AppManifest.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Mono.Data.Sqlite.Orm.Tests.WindowsPhone\Mono.Data.Sqlite.Orm.Tests.WindowsPhone.csproj">
-      <Project>{29AC8AC4-C8B9-4DE7-8AB6-197957CE9135}</Project>
-      <Name>Mono.Data.Sqlite.Orm.Tests.WindowsPhone</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -47,14 +47,14 @@
     <Reference Include="Community.CsharpSqlite.WinPhone">
       <HintPath>..\Libraries\Community.CsharpSqlite.WinPhone.dll</HintPath>
     </Reference>
-    <Reference Include="NUnitLite, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>J:\Libraries\GitHub\Mono.Data.Sqlite.Orm\Libraries\NUnitLite.dll</HintPath>
+    <Reference Include="NUnitLite">
+      <HintPath>..\Libraries\NUnitLite.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Core" />
     <Reference Include="System.Data.Ersatz.WinPhone">
       <HintPath>..\Libraries\System.Data.Ersatz.WinPhone.dll</HintPath>
     </Reference>
-    <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\BooleanTest.cs">
@@ -126,7 +126,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" ProjectLinkReference="6947a8f1-99be-4dd1-ad4d-d89425ce67a2" />
+      <UserProperties ProjectLinkReference="6947a8f1-99be-4dd1-ad4d-d89425ce67a2" ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

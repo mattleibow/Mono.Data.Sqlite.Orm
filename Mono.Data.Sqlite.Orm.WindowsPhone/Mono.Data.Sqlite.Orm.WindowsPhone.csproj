@@ -41,14 +41,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Community.CsharpSqlite.SQLiteClient.WP">
+    <Reference Include="Community.CsharpSqlite.SQLiteClient.WP, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\Libraries\Community.CsharpSqlite.SQLiteClient.WP.dll</HintPath>
     </Reference>
+    <Reference Include="Community.CsharpSqlite.WinPhone, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\Libraries\Community.CsharpSqlite.WinPhone.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Data.Ersatz.WinPhone">
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Ersatz.WinPhone, Version=3.7.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\Libraries\System.Data.Ersatz.WinPhone.dll</HintPath>
     </Reference>
-    <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\AutoIncrementAttribute.cs">
@@ -144,7 +147,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" ProjectLinkReference="e38c051e-889e-485b-b685-c692d2861e7b" />
+      <UserProperties ProjectLinkReference="e38c051e-889e-485b-b685-c692d2861e7b" ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

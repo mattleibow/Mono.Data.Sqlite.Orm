@@ -49,8 +49,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Phone" />
-    <Reference Include="NUnitLite, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>J:\Libraries\GitHub\Mono.Data.Sqlite.Orm\Libraries\NUnitLite.dll</HintPath>
+    <Reference Include="NUnitLite">
+      <HintPath>..\Libraries\NUnitLite.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows" />
     <Reference Include="system" />
@@ -96,6 +96,7 @@
       <Name>Mono.Data.Sqlite.Orm.Tests.WindowsPhone</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
