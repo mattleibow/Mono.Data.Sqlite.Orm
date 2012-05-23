@@ -208,35 +208,61 @@ namespace Mono.Data.Sqlite.Orm
             }
             else if (expr.NodeType == ExpressionType.Call)
             {
-                var call = (MethodCallExpression) expr;
+                var call = (MethodCallExpression)expr;
                 var args = new CompileResult[call.Arguments.Count];
+                var obj = call.Object != null ? CompileExpr(call.Object, queryArgs) : null;
+                string methodName = call.Method.Name;
+                string sqlCall = string.Empty;
 
                 for (int i = 0; i < args.Length; i++)
                 {
                     args[i] = CompileExpr(call.Arguments[i], queryArgs);
                 }
 
-                string sqlCall = "";
+                if (methodName == "Contains")
+                {
+                    if (args.Length == 1)
+                    {
+                        // string.Contains("xxx") or list.Contains(x)
+                        if (call.Object != null && call.Object.Type == typeof(string))
+                        {
+                            sqlCall = "({0} like ('%' || {1} || '%'))";
+                        }
+                        else
+                        {
+                            sqlCall = "({1} in {0})";
+                        }
 
-                if (call.Method.Name == "Like" && args.Length == 2)
-                {
-                    sqlCall = "(" + args[0].CommandText + " like " + args[1].CommandText + ")";
+                        sqlCall = string.Format(sqlCall, obj.CommandText, args[0].CommandText);
+                    }
+                    else if (args.Length == 2)
+                    {
+                        sqlCall = string.Format("({0} in {1})", args[1].CommandText, args[0].CommandText);
+                    }
                 }
-                else if (call.Method.Name == "Contains" && args.Length == 2)
+                else if (methodName == "StartsWith" || methodName == "EndsWith")
                 {
-                    sqlCall = "(" + args[1].CommandText + " in " + args[0].CommandText + ")";
-                }
-                else if (call.Method.Name == "Contains" && args.Length == 1)
-                {
-                    var obj = call.Object != null ? CompileExpr(call.Object, queryArgs) : null;
-                    sqlCall = "(" + args[0].CommandText + " in " + obj.CommandText + ")";
+                    if (args.Length == 1)
+                    {
+                        if (methodName == "StartsWith")
+                        {
+                            sqlCall = "({0} like ({1} || '%'))";
+                        }
+                        else if (methodName == "EndsWith")
+                        {
+                            sqlCall = "({0} like ('%' || {1}))";
+                        }
+
+                        sqlCall = string.Format(sqlCall, obj.CommandText, args[0].CommandText);
+                    }
                 }
                 else
                 {
-                    sqlCall = call.Method.Name.ToLower() + "(" +
-                              string.Join(",", args.Select(a => a.CommandText).ToArray()) + ")";
+                    var arguments = string.Join(",", args.Select(a => a.CommandText).ToArray());
+                    sqlCall = string.Format("{0}({1})", methodName.ToLower(), arguments);
                 }
-                return new CompileResult {CommandText = sqlCall};
+
+                return new CompileResult { CommandText = sqlCall };
             }
             else if (expr.NodeType == ExpressionType.Constant)
             {

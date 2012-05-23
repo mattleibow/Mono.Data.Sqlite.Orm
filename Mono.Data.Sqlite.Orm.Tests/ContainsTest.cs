@@ -45,5 +45,53 @@ namespace Mono.Data.Sqlite.Orm.Tests
 			List<TestObj> more = (from o in db.Table<TestObj>() where moreq.Contains(o.Name) select o).ToList();
 			Assert.AreEqual(2, more.Count);
 		}
+
+        [Test]
+        public void StringContains()
+        {
+            var db = new OrmTestSession();
+            db.CreateTable<TestObj>();
+
+            var testObj = new TestObj { Name = "This is a Good name" };
+            db.Insert(testObj);
+
+            var stringContainsTest = (from n in db.Table<TestObj>() where n.Name.Contains("Good") select n).Single();
+            Assert.AreEqual(testObj.Id, stringContainsTest.Id);
+            var finder = "good";
+            stringContainsTest = (from n in db.Table<TestObj>() where n.Name.Contains(finder) select n).Single();
+            Assert.AreEqual(testObj.Id, stringContainsTest.Id);
+        }
+
+        [Test]
+        public void StringStartsWith()
+        {
+            var db = new OrmTestSession();
+            db.CreateTable<TestObj>();
+
+            var testObj = new TestObj { Name = "This is a Good name" };
+            db.Insert(testObj);
+
+            var stringContainsTest = (from n in db.Table<TestObj>() where n.Name.StartsWith("This") select n).Single();
+            Assert.AreEqual(testObj.Id, stringContainsTest.Id);
+            var finder = "name";
+            stringContainsTest = (from n in db.Table<TestObj>() where n.Name.StartsWith(finder) select n).SingleOrDefault();
+            Assert.IsNull(stringContainsTest);
+        }
+
+        [Test]
+        public void StringEndsWith()
+        {
+            var db = new OrmTestSession();
+            db.CreateTable<TestObj>();
+
+            var testObj = new TestObj { Name = "This is a Good name" };
+            db.Insert(testObj);
+
+            var stringContainsTest = (from n in db.Table<TestObj>() where n.Name.EndsWith("NAME") select n).Single();
+            Assert.AreEqual(testObj.Id, stringContainsTest.Id);
+            var finder = "is";
+            stringContainsTest = (from n in db.Table<TestObj>() where n.Name.EndsWith(finder) select n).SingleOrDefault();
+            Assert.IsNull(stringContainsTest);
+        }
     }
 }
