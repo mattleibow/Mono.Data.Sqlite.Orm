@@ -90,6 +90,19 @@ namespace Mono.Data.Sqlite.Orm
                     });
         }
 
+        public Task<T> FindAsync<T>(object pk, params object[] primaryKeys) where T : new()
+        {
+            return Task.Factory.StartNew(
+                () =>
+                    {
+                        SqliteSession conn = this.GetAsyncConnection();
+                        using (conn.Lock())
+                        {
+                            return conn.Find<T>(pk, primaryKeys);
+                        }
+                    });
+        }
+
         public Task<int> InsertAllAsync<T>(IEnumerable<T> items)
         {
             return Task.Factory.StartNew(
@@ -164,7 +177,7 @@ namespace Mono.Data.Sqlite.Orm
                         SqliteSession conn = this.GetAsyncConnection();
                         using (conn.Lock())
                         {
-                            RunInTransaction(action);
+                            conn.RunInTransaction(action);
                         }
                     });
         }

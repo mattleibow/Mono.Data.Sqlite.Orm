@@ -65,6 +65,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="AsyncTests.cs" />
     <Compile Include="BooleanTest.cs" />
     <Compile Include="ByteArrayTest.cs" />
     <Compile Include="CollateTest.cs" />
@@ -81,6 +82,7 @@
     </Compile>
     <Compile Include="MultiplePKs.cs" />
     <Compile Include="NullableTest.cs" />
+    <Compile Include="OrmAsyncTestSession.cs" />
     <Compile Include="OrmTestSession.cs">
       <SubType>Code</SubType>
     </Compile>

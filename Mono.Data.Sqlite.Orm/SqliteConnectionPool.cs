@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Mono.Data.Sqlite.Orm
 {
-    internal class SqliteConnectionPool 
+    public class SqliteConnectionPool 
     {
         private static readonly SqliteConnectionPool _shared;
 
@@ -41,7 +41,7 @@ namespace Mono.Data.Sqlite.Orm
             {
                 if (!this._entries.ContainsKey(connectionString))
                 {
-                    this._entries[connectionString] = new SqliteSession(connectionString);
+                    this._entries.Add(connectionString, new SqliteSession(connectionString));
                 }
 
                 return this._entries[connectionString];

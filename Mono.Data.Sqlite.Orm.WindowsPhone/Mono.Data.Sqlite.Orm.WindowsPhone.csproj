@@ -132,11 +132,20 @@
     <Compile Include="..\Mono.Data.Sqlite.Orm\OrmHelper.cs">
       <Link>OrmHelper.cs</Link>
     </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteConnectionPool.cs">
+      <Link>SqliteConnectionPool.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteSession.Async.cs">
+      <Link>SqliteSession.Async.cs</Link>
+    </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteSession.cs">
       <Link>SqliteSession.cs</Link>
     </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\TableMapping.cs">
       <Link>TableMapping.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm\TableQuery.Async.cs">
+      <Link>TableQuery.Async.cs</Link>
     </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\TableQuery.cs">
       <Link>TableQuery.cs</Link>
@@ -147,7 +156,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties ProjectLinkReference="e38c051e-889e-485b-b685-c692d2861e7b" ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" />
+      <UserProperties ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" ProjectLinkReference="e38c051e-889e-485b-b685-c692d2861e7b" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

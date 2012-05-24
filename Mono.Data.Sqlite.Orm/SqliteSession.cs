@@ -20,6 +20,8 @@ namespace Mono.Data.Sqlite.Orm
     /// </summary>
     public partial class SqliteSession : IDisposable
     {
+        public readonly Guid SessionGuid = Guid.NewGuid();
+
         /// <summary>
         ///   Used to list some code that we want the MonoTouch linker
         ///   to see, but that we never want to actually execute.
@@ -73,10 +75,13 @@ namespace Mono.Data.Sqlite.Orm
         #endregion
 
         [Conditional("DEBUG")]
-        private static void TraceCommand(IDbCommand command)
+        private void TraceCommand(IDbCommand command)
         {
             if (Trace)
             {
+                Debug.WriteLine("-- Session --");
+                Debug.WriteLine(this.SessionGuid);
+
                 Debug.WriteLine("-- Query --");
                 Debug.WriteLine(command.CommandText);
 
@@ -479,12 +484,27 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
+        ///   Attempts to retrieve an object with the given primary key from the table
+        ///   associated with the specified type. Use of this method requires that
+        ///   the given type have a designated PrimaryKey (using the PrimaryKeyAttribute).
+        /// </summary>
+        /// <param name = "primaryKey">The primary key for 'T'.</param>
+        /// <param name = "primaryKeys">Any addition primary keys for multiple primaryKey tables</param>
+        /// <returns>The object with the given primary key or null if the object is not found.</returns>
+        public T Find<T>(object primaryKey, params object[] primaryKeys) where T : new()
+        {
+            return GetList<T>(primaryKey, primaryKeys).FirstOrDefault();
+        }
+
+        /// <summary>
         ///   Begins a new transaction. Call <see cref = "Commit" /> to end the transaction.
         /// </summary>
         public void BeginTransaction()
         {
             if (Transaction == null)
             {
+                Debug.WriteLine("BEGIN TRANSACTION");
+
                 Transaction = Connection.BeginTransaction();
             }
         }
@@ -496,6 +516,8 @@ namespace Mono.Data.Sqlite.Orm
         {
             if (Transaction != null)
             {
+                Debug.WriteLine("ROLLBACK TRANSACTION");
+
                 Transaction.Rollback();
                 Transaction = null;
             }
@@ -508,6 +530,8 @@ namespace Mono.Data.Sqlite.Orm
         {
             if (Transaction != null)
             {
+                Debug.WriteLine("COMMIT TRANSACTION");
+
                 Transaction.Commit();
                 Transaction = null;
             }

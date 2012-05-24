@@ -57,6 +57,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\AsyncTests.cs">
+      <Link>AsyncTests.cs</Link>
+    </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\BooleanTest.cs">
       <Link>BooleanTest.cs</Link>
     </Compile>
@@ -105,6 +108,9 @@
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\NullableTest.cs">
       <Link>NullableTest.cs</Link>
     </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\OrmAsyncTestSession.cs">
+      <Link>OrmAsyncTestSession.cs</Link>
+    </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\OrmTestSession.cs">
       <Link>OrmTestSession.cs</Link>
     </Compile>
@@ -126,7 +132,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties ProjectLinkReference="6947a8f1-99be-4dd1-ad4d-d89425ce67a2" ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" />
+      <UserProperties ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" ProjectLinkReference="6947a8f1-99be-4dd1-ad4d-d89425ce67a2" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
