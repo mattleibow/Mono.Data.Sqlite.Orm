@@ -75,7 +75,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(testObj.Id, stringContainsTest.Id);
             var finder = "name";
             stringContainsTest = (from n in db.Table<TestObj>() where n.Name.StartsWith(finder) select n).SingleOrDefault();
-            Assert.IsNull(stringContainsTest);
+            Assert.Null(stringContainsTest);
         }
 
         [Test]
@@ -91,7 +91,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(testObj.Id, stringContainsTest.Id);
             var finder = "is";
             stringContainsTest = (from n in db.Table<TestObj>() where n.Name.EndsWith(finder) select n).SingleOrDefault();
-            Assert.IsNull(stringContainsTest);
+            Assert.Null(stringContainsTest);
         }
     }
 }

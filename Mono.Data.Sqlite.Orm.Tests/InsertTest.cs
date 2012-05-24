@@ -79,7 +79,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             db.CreateTable<TestObjPlain>();
 
-            const int n = 100000;
+            const int n = 10000;
             IEnumerable<TestObjPlain> q = Enumerable.Range(1, n).Select(i => new TestObjPlain { Text = "I am" });
             TestObjPlain[] objs = q.ToArray();
             int numIn = db.InsertAll(objs);
@@ -109,7 +109,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             db.CreateTable<TestObj>();
 
-            const int n = 100000;
+            const int n = 10000;
             IEnumerable<TestObj> q = Enumerable.Range(1, n).Select(i => new TestObj {Text = "I am"});
             TestObj[] objs = q.ToArray();
             int numIn = db.InsertAll(objs);

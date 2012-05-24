@@ -18,7 +18,7 @@ namespace Mono.Data.Sqlite.Orm
     /// <summary>
     ///   Represents an open connection to a SQLite database.
     /// </summary>
-    public class SqliteSession : IDisposable
+    public partial class SqliteSession : IDisposable
     {
         /// <summary>
         ///   Used to list some code that we want the MonoTouch linker
@@ -40,16 +40,16 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        ///   Constructs a new SqliteSession and opens a SQLite database specified by databasePath.
+        ///   Constructs a new SqliteSession and opens a SQLite database specified by connectionString.
         /// </summary>
-        /// <param name = "databasePath">
+        /// <param name = "connectionString">
         ///   Specifies the path to the database file.
         /// </param>
-        public SqliteSession(string databasePath)
+        public SqliteSession(string connectionString)
         {
-            DatabasePath = databasePath;
+            this.ConnectionString = connectionString;
 
-            Connection = new SqliteConnection(DatabasePath);
+            Connection = new SqliteConnection(this.ConnectionString);
             Connection.Open();
         }
 
@@ -57,7 +57,7 @@ namespace Mono.Data.Sqlite.Orm
 
         public DbTransaction Transaction { get; private set; }
         public DbConnection Connection { get; private set; }
-        public string DatabasePath { get; private set; }
+        public string ConnectionString { get; private set; }
 
         #region IDisposable Members
 
@@ -132,7 +132,7 @@ namespace Mono.Data.Sqlite.Orm
             return map;
         }
 
-        private void CreateTable(TableMapping map)
+        private int CreateTable(TableMapping map)
         {
             int count = 0;
 
@@ -170,8 +170,10 @@ namespace Mono.Data.Sqlite.Orm
 
             if (Trace)
             {
-                Debug.WriteLine(string.Format("Updates to the database: {0}", count));
+                Debug.WriteLine("Updates to the database: {0}", count);
             }
+
+            return count;
         }
 
         /// <summary>
@@ -183,16 +185,16 @@ namespace Mono.Data.Sqlite.Orm
         /// <returns>
         ///   The number of entries added to the database schema.
         /// </returns>
-        public void CreateTable<T>()
+        public int CreateTable<T>()
         {
             // todo - allow index clearing/re-creating
 
-            RunInTransaction(() => CreateTable(GetMapping<T>()));
+           return RunInTransaction(() => CreateTable(GetMapping<T>()));
         }
 
-        public void CreateTable(Type type)
+        public int CreateTable(Type type)
         {
-            RunInTransaction(() => CreateTable(GetMapping(type)));
+            return RunInTransaction(() => CreateTable(GetMapping(type)));
         }
 
         private int MigrateTable(TableMapping map)

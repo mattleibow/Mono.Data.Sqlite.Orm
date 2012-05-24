@@ -25,6 +25,8 @@ namespace TestRunner.WindowsPhone
 
         private void RunTests(object state)
         {
+            var fail = 0;
+
             Type testAssembly = typeof (BooleanTest);
 
             Type[] types = testAssembly.Assembly.GetTypes();
@@ -53,11 +55,14 @@ namespace TestRunner.WindowsPhone
                     catch (Exception ex)
                     {
                         message += ex.InnerException.Message;
+                        fail++;
                     }
 
                     Dispatcher.BeginInvoke(() => listBox1.Items.Add(fixture.Name + "." + test1.Name + message));
                 }
             }
+
+            Dispatcher.BeginInvoke(() => listBox1.Items.Add("Fails: " + fail));
         }
     }
 }

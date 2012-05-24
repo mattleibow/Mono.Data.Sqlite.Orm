@@ -29,6 +29,9 @@
     <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
     <LinkedServerProject>
     </LinkedServerProject>
+    <SignManifests>false</SignManifests>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <!-- This property group is only here to support building this project using the 
        MSBuild 3.5 toolset. In order to work correctly with this older toolset, it needs 
@@ -90,6 +93,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AppManifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mono.Data.Sqlite.Orm.Tests.WindowsPhone\Mono.Data.Sqlite.Orm.Tests.WindowsPhone.csproj">
+      <Project>{29AC8AC4-C8B9-4DE7-8AB6-197957CE9135}</Project>
+      <Name>Mono.Data.Sqlite.Orm.Tests.WindowsPhone</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mono.Data.Sqlite.Orm.WindowsPhone\Mono.Data.Sqlite.Orm.WindowsPhone.csproj">
+      <Project>{0170CF92-AE0D-4B27-A25D-9320E10067A2}</Project>
+      <Name>Mono.Data.Sqlite.Orm.WindowsPhone</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

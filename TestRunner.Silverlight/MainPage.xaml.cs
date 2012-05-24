@@ -50,7 +50,7 @@ namespace TestRunner.Silverlight
                     Type fixture = testFixture;
                     MethodInfo test1 = test;
 
-                    Dispatcher.BeginInvoke(() => listBox1.Items.Add("Testing: " + fixture.Name + "." + test1.Name));
+                    Dispatcher.BeginInvoke((Action)(() => listBox1.Items.Add("Testing: " + fixture.Name + "." + test1.Name)));
 
                     string message = " - fail: ";
                     try
@@ -64,7 +64,7 @@ namespace TestRunner.Silverlight
                         message += ex.InnerException.Message;
                     }
 
-                    Dispatcher.BeginInvoke(() => listBox1.Items.Add(fixture.Name + "." + test1.Name + message));
+                    Dispatcher.BeginInvoke((Action)(() => listBox1.Items.Add(fixture.Name + "." + test1.Name + message)));
                 }
             }
         }

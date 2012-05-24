@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Mono.Data.Sqlite.Orm
 {
-    public class TableQuery<T> : IEnumerable<T>
+    public partial class TableQuery<T> : IEnumerable<T>
         where T : new()
     {
         private bool _deferred;
