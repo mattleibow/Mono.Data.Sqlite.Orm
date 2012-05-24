@@ -54,5 +54,46 @@ namespace Mono.Data.Sqlite.Orm.Tests
                 Assert.Fail();
             }
         }
+
+        [Test]
+        public void ClearTableTest()
+        {
+            // setup
+            var db = new OrmTestSession();
+            db.CreateTable<Product>();
+
+            // insert
+            db.Insert(new Product
+            {
+                Name = "Hello",
+                Price = 16,
+            });
+            db.Insert(new Product
+            {
+                Name = "Hello",
+                Price = 16,
+            });
+
+            // confirm
+            Assert.AreEqual(2, db.Table<Product>().Count());
+            db.Get<Product>(1);
+
+            // clear
+            Assert.AreEqual(2, db.ClearTable<Product>());
+
+            // confirm
+            Assert.AreEqual(0, db.Table<Product>().Count());
+
+            // insert
+            db.Insert(new Product
+            {
+                Name = "Hello",
+                Price = 16,
+            });
+
+            // confirm that the Ids have not reset
+            Assert.AreEqual(1, db.Table<Product>().Count());
+            db.Get<Product>(3);
+        }
     }
 }

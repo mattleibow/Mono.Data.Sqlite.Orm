@@ -50,6 +50,19 @@ namespace Mono.Data.Sqlite.Orm
                     });
         }
 
+        public Task<int> ClearTableAsync<T>() where T : new()
+        {
+            return Task.Factory.StartNew(
+                () =>
+                    {
+                        SqliteSession conn = this.GetAsyncConnection();
+                        using (conn.Lock())
+                        {
+                            return conn.ClearTable<T>();
+                        }
+                    });
+        }
+
         public Task<int> ExecuteAsync(string query, params object[] args)
         {
             return Task<int>.Factory.StartNew(

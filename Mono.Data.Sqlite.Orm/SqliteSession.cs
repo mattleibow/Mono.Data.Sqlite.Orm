@@ -244,6 +244,27 @@ namespace Mono.Data.Sqlite.Orm
 
             return count;
         }
+        /// <summary>
+        ///   Executes a "delete from table" on the database. This is non-recoverable.
+        /// </summary>
+        public int ClearTable<T>()
+        {
+            return ClearTable(typeof(T));
+        }
+
+        /// <summary>
+        ///   Executes a "delete from table" on the database. This is non-recoverable.
+        /// </summary>
+        public int ClearTable(Type type)
+        {
+            TableMapping map = GetMapping(type);
+
+            string query = string.Format("DELETE FROM [{0}]", map.TableName);
+
+            int count = Execute(query);
+
+            return count;
+        }
 
         /// <summary>
         ///   Creates a new SQLiteCommand given the command text with arguments. Place a '?'
