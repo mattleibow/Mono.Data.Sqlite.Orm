@@ -20,7 +20,10 @@ namespace Mono.Data.Sqlite.Orm
     /// </summary>
     public partial class SqliteSession : IDisposable
     {
-        public readonly Guid SessionGuid = Guid.NewGuid();
+        /// <summary>
+        /// The unique id of this session.
+        /// </summary>
+        public readonly Guid SessionGuid;
 
         /// <summary>
         ///   Used to list some code that we want the MonoTouch linker
@@ -42,23 +45,41 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        ///   Constructs a new SqliteSession and opens a SQLite database specified by connectionString.
+        ///   Constructs a new SqliteSession and opens a SQLite database 
+        ///   specified by <paramref name="connectionString"/>.
         /// </summary>
         /// <param name = "connectionString">
         ///   Specifies the path to the database file.
         /// </param>
         public SqliteSession(string connectionString)
         {
+            SessionGuid = Guid.NewGuid();
+
             this.ConnectionString = connectionString;
 
             Connection = new SqliteConnection(this.ConnectionString);
             Connection.Open();
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to write all command 
+        /// information to the debug log.
+        /// </summary>
         public static bool Trace { get; set; }
 
+        /// <summary>
+        /// Gets the current transaction. Null if no curent transaction.
+        /// </summary>
         public DbTransaction Transaction { get; private set; }
+
+        /// <summary>
+        /// Gets the current connection to the database.
+        /// </summary>
         public DbConnection Connection { get; private set; }
+
+        /// <summary>
+        /// Gets the database connction string for this connection.
+        /// </summary>
         public string ConnectionString { get; private set; }
 
         #region IDisposable Members
@@ -74,6 +95,10 @@ namespace Mono.Data.Sqlite.Orm
 
         #endregion
 
+        /// <summary>
+        /// Write all the details about a command to the debug log.
+        /// </summary>
+        /// <param name="command">The command to log.</param>
         [Conditional("DEBUG")]
         private void TraceCommand(IDbCommand command)
         {
@@ -181,21 +206,49 @@ namespace Mono.Data.Sqlite.Orm
             return count;
         }
 
+        /// <summary>
+        /// Checks to see if a particular table exists.
+        /// </summary>
+        /// <typeparam name="T">The table to check for.</typeparam>
+        /// <returns>
+        /// True if the table exists in the database, otherwise False.
+        /// </returns>
         public bool TableExists<T>()
         {
             return TableExists(GetMapping<T>());
         }
-        
+
+        /// <summary>
+        /// Checks to see if a particular table exists.
+        /// </summary>
+        /// <param name="type">The table to check for.</param>
+        /// <returns>
+        /// True if the table exists in the database, otherwise False.
+        /// </returns>
         public bool TableExists(Type type)
         {
             return TableExists(GetMapping(type));
         }
-        
+
+        /// <summary>
+        /// Checks to see if a particular table exists.
+        /// </summary>
+        /// <param name="map">The table mapping to use.</param>
+        /// <returns>
+        /// True if the table exists in the database, otherwise False.
+        /// </returns>
         private bool TableExists(TableMapping map)
         {
             return this.TableExists(map.TableName);
         }
-        
+
+        /// <summary>
+        /// Checks to see if a particular table exists.
+        /// </summary>
+        /// <param name="tableName">The table to check for.</param>
+        /// <returns>
+        /// True if the table exists in the database, otherwise False.
+        /// </returns>
         private bool TableExists(string tableName)
         {
             return this.Table<SqliteMasterTable>().Where(t => t.Name == tableName && t.Type == "table").Take(1).Any();
@@ -207,6 +260,7 @@ namespace Mono.Data.Sqlite.Orm
         ///   a schema automatically generated from the specified type. You can
         ///   later access this schema by calling GetMapping.
         /// </summary>
+        /// <typeparam name="T">The table to create.</typeparam>
         /// <returns>
         ///   The number of entries added to the database schema.
         /// </returns>
@@ -217,6 +271,16 @@ namespace Mono.Data.Sqlite.Orm
            return RunInTransaction(() => CreateTable(GetMapping<T>()));
         }
 
+        /// <summary>
+        ///   Executes a "create table if not exists" on the database. It also
+        ///   creates any specified indexes on the columns of the table. It uses
+        ///   a schema automatically generated from the specified type. You can
+        ///   later access this schema by calling GetMapping.
+        /// </summary>
+        /// <param name="type">The table to create.</param>
+        /// <returns>
+        ///   The number of entries added to the database schema.
+        /// </returns>
         public int CreateTable(Type type)
         {
             return RunInTransaction(() => CreateTable(GetMapping(type)));
@@ -246,6 +310,7 @@ namespace Mono.Data.Sqlite.Orm
         /// <summary>
         ///   Executes a "drop table" on the database.  This is non-recoverable.
         /// </summary>
+        /// <typeparam name="T">The table to drop.</typeparam>
         public int DropTable<T>()
         {
             return DropTable(typeof (T));
@@ -254,6 +319,7 @@ namespace Mono.Data.Sqlite.Orm
         /// <summary>
         ///   Executes a "drop table" on the database.  This is non-recoverable.
         /// </summary>
+        /// <param name="type">The table to drop.</param>
         public int DropTable(Type type)
         {
             TableMapping map = GetMapping(type);
@@ -267,6 +333,7 @@ namespace Mono.Data.Sqlite.Orm
         /// <summary>
         ///   Executes a "delete from table" on the database. This is non-recoverable.
         /// </summary>
+        /// <typeparam name="T">The table to clear.</typeparam>
         public int ClearTable<T>()
         {
             return ClearTable(typeof(T));
@@ -275,6 +342,7 @@ namespace Mono.Data.Sqlite.Orm
         /// <summary>
         ///   Executes a "delete from table" on the database. This is non-recoverable.
         /// </summary>
+        /// <param name="type">The table to clear.</param>
         public int ClearTable(Type type)
         {
             TableMapping map = GetMapping(type);
@@ -310,6 +378,13 @@ namespace Mono.Data.Sqlite.Orm
             return cmd;
         }
 
+        /// <summary>
+        /// Add the specified arguments to the specified command.
+        /// </summary>
+        /// <param name="cmd">
+        /// The command that will recieve the arguments.
+        /// </param>
+        /// <param name="args">The arguments to add.</param>
         private static void AddCommandParameters(DbCommand cmd, params object[] args)
         {
             if (args != null)
@@ -474,6 +549,14 @@ namespace Mono.Data.Sqlite.Orm
             }
         }
 
+        /// <summary>
+        ///   Executes the command and returns the value in the first column of the first row.
+        ///   All other fields are ignored.
+        /// </summary>
+        /// <param name = "command">
+        ///   The database commnd that contains the sql and the arguments
+        /// </param>
+        /// <returns>The value in the first column of the first row.</returns>
         public T ExecuteScalar<T>(DbCommand command)
         {
             object scalar = command.ExecuteScalar();
@@ -602,13 +685,25 @@ namespace Mono.Data.Sqlite.Orm
             }
         }
 
-        public T RunInTransaction<T>(Func<T> action)
+        /// <summary>
+        ///   Executes <paramref name = "function" /> within a transaction and automatically rollsback the transaction       
+        ///   if an exception occurs. The exception is rethrown.
+        /// </summary>
+        /// <param name = "function">
+        ///   The <see cref = "Action" /> to perform within a transaction. <paramref name = "function" /> can contain 
+        ///   any number of operations on the connection but should never call <see cref = "BeginTransaction" />,
+        ///   <see cref = "Rollback" />, or <see cref = "Commit" />.
+        /// </param>
+        /// <returns>
+        ///   The value <paramref name="function"/> returns.
+        /// </returns>
+        public T RunInTransaction<T>(Func<T> function)
         {
             T result;
             try
             {
                 BeginTransaction();
-                result = action();
+                result = function();
                 Commit();
             }
             catch (Exception)
@@ -716,6 +811,12 @@ namespace Mono.Data.Sqlite.Orm
             return count;
         }
 
+        /// <summary>
+        /// Returns the id of last inserted record.
+        /// </summary>
+        /// <returns>
+        /// The autogenerated id.
+        /// </returns>
         private long GetLastInsertRowId()
         {
             if (_lastInsertRowIdCommand == null)
@@ -796,6 +897,9 @@ namespace Mono.Data.Sqlite.Orm
             return Execute(sql, args.ToArray());
         }
 
+        /// <summary>
+        /// Closes the connectiion to the database.
+        /// </summary>
         public void Close()
         {
             if (Connection.State == ConnectionState.Open)
@@ -804,18 +908,47 @@ namespace Mono.Data.Sqlite.Orm
             }
         }
 
-        internal IndexInfo GetIndexInfo(string indexName)
+        /// <summary>
+        /// Returns relevant information for a particular index.
+        /// </summary>
+        /// <param name="indexName">
+        /// The index name to find.
+        /// </param>
+        /// <returns>
+        /// The nformation relting to the index.
+        /// </returns>
+        public IList<IndexInfo> GetIndexInfo(string indexName)
         {
-            return Query<IndexInfo>(string.Format(CultureInfo.InvariantCulture, "pragma index_info({0});", indexName)).FirstOrDefault();
+            return Query<IndexInfo>(string.Format(CultureInfo.InvariantCulture, "pragma index_info({0});", indexName)).ToList();
         }
 
-        internal IndexList GetIndexList(string tableName)
+        /// <summary>
+        /// Returns a list of indexes for the specified table.
+        /// </summary>
+        /// <param name="tableName">
+        /// The table name to use.
+        /// </param>
+        /// <returns>
+        /// The list of indexes.
+        /// </returns>
+        public IList<IndexListItem> GetIndexList(string tableName)
         {
-            return Query<IndexList>(string.Format(CultureInfo.InvariantCulture, "pragma index_list({0});", tableName)).FirstOrDefault();
+            return Query<IndexListItem>(string.Format(CultureInfo.InvariantCulture, "pragma index_list({0});", tableName)).ToList();
         }
 
+        /// <summary>
+        /// This event is triggered whenever this connection is finished 
+        /// creating a new object from a database record.
+        /// </summary>
         public event EventHandler<InstanceCreatedEventArgs> InstanceCreated;
 
+        /// <summary>
+        /// Raises the <see cref="InstanceCreated"/> event with the specified 
+        /// event arguments.
+        /// </summary>
+        /// <param name="e">
+        /// The event arguments to send.
+        /// </param>
         protected virtual void OnInstanceCreated(InstanceCreatedEventArgs e)
         {
             if (InstanceCreated != null)
@@ -826,6 +959,9 @@ namespace Mono.Data.Sqlite.Orm
 
         #region Nested type: IndexInfo
 
+        /// <summary>
+        /// Represents an index in the database
+        /// </summary>
         public class IndexInfo
         {
             [Column("seqno")]
@@ -840,9 +976,12 @@ namespace Mono.Data.Sqlite.Orm
 
         #endregion
 
-        #region Nested type: IndexList
+        #region Nested type: IndexListItem
 
-        public class IndexList
+        /// <summary>
+        /// Represents an index of a particular table.
+        /// </summary>
+        public class IndexListItem
         {
             [Column("seq")]
             public int Index { get; set; }
@@ -858,6 +997,9 @@ namespace Mono.Data.Sqlite.Orm
 
         #region Nested type: SqliteMasterTable
 
+        /// <summary>
+        /// Represents the sqlite master table
+        /// </summary>
         [Table("sqlite_master")]
         public class SqliteMasterTable
         {
@@ -875,6 +1017,9 @@ namespace Mono.Data.Sqlite.Orm
 
         #region Nested type: TableInfo
 
+        /// <summary>
+        /// Represents a table in the database.
+        /// </summary>
         public class TableInfo
         {
             [Column("cid")]
