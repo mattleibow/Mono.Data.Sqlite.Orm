@@ -141,11 +141,11 @@ namespace Mono.Data.Sqlite.Orm
         {
             int count = 0;
 
-            bool exists = Table<SqliteMasterTable>().Where(t => t.Name == map.TableName).Take(1).Any();
+            bool exists = this.TableExists(map);
 
             if (map.OldTableName != map.TableName && !string.IsNullOrEmpty(map.OldTableName))
             {
-                bool oldExists = Table<SqliteMasterTable>().Where(t => t.Name == map.OldTableName).Take(1).Any();
+                bool oldExists = this.TableExists(map.OldTableName);
                 if (!oldExists)
                 {
                     throw new InvalidOperationException(map.OldTableName + " does not exist.");
@@ -179,6 +179,26 @@ namespace Mono.Data.Sqlite.Orm
             }
 
             return count;
+        }
+
+        public bool TableExists<T>()
+        {
+            return TableExists(GetMapping<T>());
+        }
+        
+        public bool TableExists(Type type)
+        {
+            return TableExists(GetMapping(type));
+        }
+        
+        private bool TableExists(TableMapping map)
+        {
+            return this.TableExists(map.TableName);
+        }
+        
+        private bool TableExists(string tableName)
+        {
+            return this.Table<SqliteMasterTable>().Where(t => t.Name == tableName && t.Type == "table").Take(1).Any();
         }
 
         /// <summary>

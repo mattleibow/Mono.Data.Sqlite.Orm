@@ -84,8 +84,7 @@ namespace Mono.Data.Sqlite.Orm
                         SqliteSession conn = this.GetAsyncConnection();
                         using (conn.Lock())
                         {
-                            DbCommand command = conn.CreateCommand(sql, args);
-                            return (T)command.ExecuteScalar();
+                            return conn.ExecuteScalar<T>(sql, args);
                         }
                     });
         }

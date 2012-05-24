@@ -345,9 +345,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             using (var check = OrmAsyncTestSession.GetConnection(conn.ConnectionString))
             {
                 // load it back and check - should be missing
-                var command =
-                    check.ExecuteScalar<string>("select name from sqlite_master where type='table' and name='customer'");
-                Assert.IsNull(command);
+                Assert.False(check.TableExists<Customer>());
             }
         }
 
@@ -380,12 +378,12 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var conn = OrmAsyncTestSession.GetConnection();
             conn.CreateTableAsync<Customer>().Wait();
 
+            conn.Insert(new Customer {FirstName = "Hello"});
+
             // check...
-            Task<object> task =
-                conn.ExecuteScalarAsync<object>("select name from sqlite_master where type='table' and name='customer'");
+            var task = conn.ExecuteScalarAsync<int>("SELECT Id FROM Customer WHERE FirstName = ?", "Hello");
             task.Wait();
-            object name = task.Result;
-            Assert.AreNotEqual("Customer", name);
+            Assert.AreEqual(1, task.Result);
         }
 
         [Test]
