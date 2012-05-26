@@ -239,7 +239,12 @@ namespace Mono.Data.Sqlite.Orm
             Type nullableType = Nullable.GetUnderlyingType(prop.PropertyType);
             var type = nullableType ?? prop.PropertyType;
 
-            if (type.GetTypeInfo().IsEnum)
+            DataConverterAttribute[] attrs = prop.GetAttributes<DataConverterAttribute>().ToArray();
+            if (attrs.Any())
+            {
+                type = attrs.First().StorageType;
+            }
+            else if (type.GetTypeInfo().IsEnum)
             {
                 var attribute = prop.GetAttributes<EnumAffinityAttribute>().FirstOrDefault();
                 type = attribute == null ? typeof (int) : attribute.Type;

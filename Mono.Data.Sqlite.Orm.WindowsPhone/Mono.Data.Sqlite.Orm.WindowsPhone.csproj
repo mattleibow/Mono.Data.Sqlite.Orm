@@ -72,6 +72,9 @@
     <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\ConflictResolution.cs">
       <Link>ComponentModel\ConflictResolution.cs</Link>
     </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\DataConverterAttribute.cs">
+      <Link>ComponentModel\DataConverterAttribute.cs</Link>
+    </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\DefaultAttribute.cs">
       <Link>ComponentModel\DefaultAttribute.cs</Link>
     </Compile>
@@ -120,6 +123,9 @@
     <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\UniqueAttribute.cs">
       <Link>ComponentModel\UniqueAttribute.cs</Link>
     </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm\DataConverter\IDataConverter.cs">
+      <Link>DataConverter\IDataConverter.cs</Link>
+    </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\Extensions.cs">
       <Link>Extensions.cs</Link>
     </Compile>
@@ -156,7 +162,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" ProjectLinkReference="e38c051e-889e-485b-b685-c692d2861e7b" />
+      <UserProperties ProjectLinkReference="e38c051e-889e-485b-b685-c692d2861e7b" ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

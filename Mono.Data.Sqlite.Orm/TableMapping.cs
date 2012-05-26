@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Mono.Data.Sqlite.Orm.ComponentModel;
+using Mono.Data.Sqlite.Orm.DataConverter;
 
 #if WINDOWS_PHONE || SILVERLIGHT || NETFX_CORE
 using Community.CsharpSqlite.SQLiteClient;
@@ -257,10 +258,12 @@ namespace Mono.Data.Sqlite.Orm
         public class Column
         {
             private readonly PropertyInfo _prop;
+            private IDataConverter _dataConverter;
 
             internal Column(PropertyInfo prop)
             {
                 _prop = prop;
+                this._dataConverter = null;
 
                 Type nullableType = Nullable.GetUnderlyingType(prop.PropertyType);
 
@@ -278,6 +281,7 @@ namespace Mono.Data.Sqlite.Orm
                 MaxStringLength = OrmHelper.GetMaxStringLength(prop);
                 Checks = prop.GetAttributes<CheckAttribute>().Select(x => x.Expression).ToArray();
                 DefaultValue = OrmHelper.GetDefaultValue(prop);
+                this.DataConverterAttribute = prop.GetAttributes<DataConverterAttribute>().FirstOrDefault();
             }
 
             public string Name { get; private set; }
@@ -291,9 +295,29 @@ namespace Mono.Data.Sqlite.Orm
             public string DefaultValue { get; private set; }
             public IList<string> Checks { get; private set; }
 
+            public DataConverterAttribute DataConverterAttribute { get; private set; }
+            public IDataConverter DataConverter
+            {
+                get
+                {
+                    if (this._dataConverter == null && this.DataConverterAttribute != null)
+                    {
+                        var dc = Activator.CreateInstance(this.DataConverterAttribute.DataConverter);
+                        this._dataConverter = (IDataConverter) dc;
+                    }
+
+                    return this._dataConverter;
+                }
+            }
+
             internal void SetValue(object obj, object val)
             {
                 object value = val == DBNull.Value ? null : val;
+
+                if (this.DataConverter != null)
+                {
+                    value = DataConverter.ConvertBack(value, _prop.PropertyType, this.DataConverterAttribute.Parameter);
+                }
 
                 if (value == null)
                 {
@@ -310,12 +334,17 @@ namespace Mono.Data.Sqlite.Orm
                 }
                 else
                 {
-                    string text = value.ToString();
+                    if (this.DataConverter != null)
+                    {
+                        _prop.SetValue(obj, value, null);
+                        return;
+                    }
 
                     object v;
 
                     if (ColumnType == typeof (Guid))
                     {
+                        string text = value.ToString();
                         v = text.Length > 0 ? new Guid(text) : Guid.Empty;
                     }
                     else if (ColumnType.GetTypeInfo().IsEnum)
@@ -333,7 +362,18 @@ namespace Mono.Data.Sqlite.Orm
 
             internal object GetValue(object obj)
             {
-                return _prop.GetValue(obj, null);
+                object value = _prop.GetValue(obj, null);
+
+                if (this.DataConverter != null)
+                {
+                    value = DataConverter.Convert(value, _prop.PropertyType, this.DataConverterAttribute.Parameter);
+                }
+                else if (value != null)
+                {
+                    value = Convert.ChangeType(value, this.ColumnType, CultureInfo.InvariantCulture);
+                }
+
+                return value;
             }
 
             internal string GetCreateSql(TableMapping table)

@@ -799,13 +799,8 @@ namespace Mono.Data.Sqlite.Orm
 
             if (instance != null)
             {
-                var args = map.EditableColumns.Select(x =>
-                                                          {
-                                                              var value = x.GetValue(obj);
-                                                              return value == null
-                                                                         ? null
-                                                                         : Convert.ChangeType(value, x.ColumnType, CultureInfo.InvariantCulture);
-                                                          });
+                var args = map.EditableColumns.Select(x => x.GetValue(obj));
+                                                         
                 AddCommandParameters(insertCmd, args.ToArray());
             }
 
