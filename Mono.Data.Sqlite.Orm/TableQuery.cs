@@ -155,32 +155,51 @@ namespace Mono.Data.Sqlite.Orm
 
         private DbCommand GenerateCommand(string selectionList)
         {
-            string cmdText = "select " + selectionList + " from [" + Table.TableName + "]";
             var args = new List<object>();
+
+            var sb = new StringBuilder("SELECT ");
+            sb.Append(selectionList);
+            sb.AppendLine();
+            sb.Append("FROM [");
+            sb.Append(Table.TableName);
+            sb.Append("]");
+            sb.AppendLine();
+
             if (_where != null)
             {
                 CompileResult w = CompileExpr(_where, args);
-                cmdText += " where " + w.CommandText;
+                sb.Append("WHERE ");
+                sb.Append(w.CommandText);
+                sb.AppendLine();
             }
-            if ((_orderBys != null) && (_orderBys.Count > 0))
+
+            if (this._orderBys != null && this._orderBys.Count > 0)
             {
-                var orderBys = _orderBys.Select(o => "[" + o.ColumnName + "]" + (o.Ascending ? "" : " desc"));
-                string t = string.Join(", ", orderBys);
-                cmdText += " order by " + t;
+                var orderBys = _orderBys.Select(o => string.Format("[{0}]{1}", o.ColumnName, (o.Ascending ? "" : " DESC")));
+                string orderByColumns = string.Join(", ", orderBys);
+                sb.Append("ORDER BY ");
+                sb.Append(orderByColumns);
+                sb.AppendLine();
             }
+
             if (_limit.HasValue)
             {
-                cmdText += " limit " + _limit.Value;
+                sb.Append("LIMIT ");
+                sb.Append(this._limit.Value);
+                sb.AppendLine();
             }
+
             if (_offset.HasValue)
             {
-                if (!_limit.HasValue)
-                {
-                    cmdText += " limit -1 ";
-                }
-                cmdText += " offset " + _offset.Value;
+                sb.Append("LIMIT ");
+                sb.Append(_limit ?? -1);
+                sb.AppendLine();
+                sb.Append("OFFSET ");
+                sb.Append(this._offset.Value);
+                sb.AppendLine();
             }
-            return Session.CreateCommand(cmdText, args.ToArray());
+
+            return Session.CreateCommand(sb.ToString(), args.ToArray());
         }
 
         private CompileResult CompileExpr(Expression expr, List<object> queryArgs)
