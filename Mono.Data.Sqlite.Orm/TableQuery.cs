@@ -38,7 +38,9 @@ namespace Mono.Data.Sqlite.Orm
 
         public IEnumerator<T> GetEnumerator()
         {
-            DbCommand command = GenerateCommand("*");
+            var columns = Table.Columns.Select(c => string.Format("[{0}]", c.Name));
+
+            DbCommand command = GenerateCommand(string.Join(", ", columns));
 
             return _deferred
                        ? Session.ExecuteDeferredQuery<T>(Table, command).GetEnumerator()
@@ -153,7 +155,7 @@ namespace Mono.Data.Sqlite.Orm
 
         private DbCommand GenerateCommand(string selectionList)
         {
-            string cmdText = "select " + selectionList + " from \"" + Table.TableName + "\"";
+            string cmdText = "select " + selectionList + " from [" + Table.TableName + "]";
             var args = new List<object>();
             if (_where != null)
             {
@@ -162,9 +164,8 @@ namespace Mono.Data.Sqlite.Orm
             }
             if ((_orderBys != null) && (_orderBys.Count > 0))
             {
-                string t = string.Join(", ",
-                                       _orderBys.Select(o => "\"" + o.ColumnName + "\"" + (o.Ascending ? "" : " desc")).
-                                           ToArray());
+                var orderBys = _orderBys.Select(o => "[" + o.ColumnName + "]" + (o.Ascending ? "" : " desc"));
+                string t = string.Join(", ", orderBys);
                 cmdText += " order by " + t;
             }
             if (_limit.HasValue)
