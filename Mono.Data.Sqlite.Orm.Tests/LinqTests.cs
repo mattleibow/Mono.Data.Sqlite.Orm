@@ -18,6 +18,12 @@ namespace Mono.Data.Sqlite.Orm.Tests
             public decimal Price { get; set; }
         }
 
+        public class CoolTable
+        {
+            public string Name { get; set; }
+            public decimal Price { get; set; }
+        }
+
         private OrmTestSession CreateDb()
         {
             var db = new OrmTestSession();
@@ -163,6 +169,28 @@ namespace Mono.Data.Sqlite.Orm.Tests
             task.Wait();
             
             Assert.AreEqual(20, task.Result.Price);
+        }
+
+        [Test]
+        public void DistinctTest()
+        {
+            var db = new OrmTestSession();
+
+            db.CreateTable<CoolTable>();
+
+            db.Insert(new CoolTable { Name = "A", Price = 20 });
+            db.Insert(new CoolTable { Name = "A", Price = 20 });
+            db.Insert(new CoolTable { Name = "A", Price = 20 });
+
+            Console.WriteLine("Normal items");
+            Assert.AreEqual(3, db.Table<CoolTable>().ToArray().Length);
+            Console.WriteLine("Distinct items");
+            Assert.AreEqual(1, db.Table<CoolTable>().Distinct().ToArray().Length);
+
+            Console.WriteLine("Normal count");
+            Assert.AreEqual(3, db.Table<CoolTable>().Count());
+            Console.WriteLine("Distinct count");
+            Assert.AreEqual(1, db.Table<CoolTable>().Distinct().Count());
         }
     }
 }

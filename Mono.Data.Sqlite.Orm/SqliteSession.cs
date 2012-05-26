@@ -560,6 +560,8 @@ namespace Mono.Data.Sqlite.Orm
         /// <returns>The value in the first column of the first row.</returns>
         public T ExecuteScalar<T>(DbCommand command)
         {
+            TraceCommand(command);
+
             object scalar = command.ExecuteScalar();
             return (T) Convert.ChangeType(scalar, typeof (T), CultureInfo.CurrentCulture);
         }

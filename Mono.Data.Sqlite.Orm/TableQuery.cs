@@ -13,6 +13,7 @@ namespace Mono.Data.Sqlite.Orm
         where T : new()
     {
         private bool _deferred;
+        private bool _distinct;
         private int? _limit;
         private int? _offset;
         private List<Ordering> _orderBys;
@@ -38,9 +39,7 @@ namespace Mono.Data.Sqlite.Orm
 
         public IEnumerator<T> GetEnumerator()
         {
-            var columns = Table.Columns.Select(c => string.Format("[{0}]", c.Name));
-
-            DbCommand command = GenerateCommand(string.Join(", ", columns));
+            DbCommand command = this.GetSelectCommand();
 
             return _deferred
                        ? Session.ExecuteDeferredQuery<T>(Table, command).GetEnumerator()
@@ -105,6 +104,13 @@ namespace Mono.Data.Sqlite.Orm
             return q;
         }
 
+        public TableQuery<T> Distinct()
+        {
+            TableQuery<T> q = Clone();
+            q._distinct = true;
+            return q;
+        }
+
         public T ElementAt(int index)
         {
             return Skip(index).Take(1).First();
@@ -158,6 +164,10 @@ namespace Mono.Data.Sqlite.Orm
             var args = new List<object>();
 
             var sb = new StringBuilder("SELECT ");
+            if (_distinct)
+            {
+                sb.Append("DISTINCT ");
+            }
             sb.Append(selectionList);
             sb.AppendLine();
             sb.Append("FROM [");
@@ -191,9 +201,13 @@ namespace Mono.Data.Sqlite.Orm
 
             if (_offset.HasValue)
             {
-                sb.Append("LIMIT ");
-                sb.Append(_limit ?? -1);
-                sb.AppendLine();
+                if (!_limit.HasValue)
+                {
+                    sb.Append("LIMIT ");
+                    sb.Append(_limit ?? -1);
+                    sb.AppendLine();
+                }
+
                 sb.Append("OFFSET ");
                 sb.Append(this._offset.Value);
                 sb.AppendLine();
@@ -461,9 +475,25 @@ namespace Mono.Data.Sqlite.Orm
 
         public int Count()
         {
-            DbCommand command = GenerateCommand("count(*)");
+            DbCommand command;
+
+            if (this._distinct)
+            {
+                command = this.GetSelectCommand();
+                command.CommandText = string.Format("SELECT COUNT(*) FROM ({0})", command.CommandText);
+            }
+            else
+            {
+                command = GenerateCommand("COUNT(*)");
+            }
 
             return Session.ExecuteScalar<int>(command);
+        }
+
+        private DbCommand GetSelectCommand()
+        {
+            var columns = this.Table.Columns.Select(c => string.Format("[{0}]", c.Name));
+            return this.GenerateCommand(string.Join(", ", columns));
         }
 
         #region Nested type: CompileResult
