@@ -192,5 +192,31 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Console.WriteLine("Distinct count");
             Assert.AreEqual(1, db.Table<CoolTable>().Distinct().Count());
         }
+
+        [Test]
+        public void TestElementAtOrDefault()
+        {
+            OrmTestSession db = CreateDb();
+
+            db.Insert(new Product
+            {
+                Name = "A",
+                Price = 20,
+            });
+
+            db.Insert(new Product
+            {
+                Name = "B",
+                Price = 10,
+            });
+
+            Assert.AreEqual(2, db.Table<Product>().Count());
+
+            var correct = db.Table<Product>().ElementAtOrDefault(1);
+            Assert.AreEqual("B", correct.Name);
+
+            var incorrect = db.Table<Product>().ElementAtOrDefault(2);
+            Assert.Null(incorrect);
+        }
     }
 }

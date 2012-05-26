@@ -30,6 +30,18 @@
                     });
         }
 
+        public Task<T> ElementAtOrDefaultAsync(int index)
+        {
+            return Task<T>.Factory.StartNew(
+                () =>
+                    {
+                        using (this.Session.Lock())
+                        {
+                            return this.ElementAtOrDefault(index);
+                        }
+                    });
+        }
+
         public Task<List<T>> ToListAsync()
         {
             return Task<List<T>>.Factory.StartNew(
