@@ -646,7 +646,10 @@ namespace Mono.Data.Sqlite.Orm
         {
             if (Transaction == null)
             {
-                Debug.WriteLine("BEGIN TRANSACTION");
+                if (Trace)
+                {
+                    Debug.WriteLine("BEGIN TRANSACTION");
+                }
 
                 Transaction = Connection.BeginTransaction();
             }
@@ -659,7 +662,10 @@ namespace Mono.Data.Sqlite.Orm
         {
             if (Transaction != null)
             {
-                Debug.WriteLine("ROLLBACK TRANSACTION");
+                if (Trace)
+                {
+                    Debug.WriteLine("ROLLBACK TRANSACTION");
+                }
 
                 Transaction.Rollback();
                 Transaction = null;
@@ -673,7 +679,10 @@ namespace Mono.Data.Sqlite.Orm
         {
             if (Transaction != null)
             {
-                Debug.WriteLine("COMMIT TRANSACTION");
+                if (Trace)
+                {
+                    Debug.WriteLine("COMMIT TRANSACTION");
+                }
 
                 Transaction.Commit();
                 Transaction = null;
