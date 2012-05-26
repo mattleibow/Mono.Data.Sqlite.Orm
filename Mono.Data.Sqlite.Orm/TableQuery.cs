@@ -116,6 +116,16 @@ namespace Mono.Data.Sqlite.Orm
             return Skip(index).Take(1).First();
         }
 
+        public T First()
+        {
+            return Take(1).ToList().First();
+        }
+
+        public T FirstOrDefault()
+        {
+            return Take(1).ToList().FirstOrDefault();
+        }
+
         public T ElementAtOrDefault(int index)
         {
             return Skip(index).Take(1).FirstOrDefault();

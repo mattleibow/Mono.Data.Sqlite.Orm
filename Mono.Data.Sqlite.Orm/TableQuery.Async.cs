@@ -42,6 +42,30 @@
                     });
         }
 
+        public Task<T> FirstAsync()
+        {
+            return Task<T>.Factory.StartNew(
+                () =>
+                    {
+                        using (this.Session.Lock())
+                        {
+                            return this.First();
+                        }
+                    });
+        }
+
+        public Task<T> FirstOrDefaultAsync()
+        {
+            return Task<T>.Factory.StartNew(
+                () =>
+                    {
+                        using (this.Session.Lock())
+                        {
+                            return this.FirstOrDefault();
+                        }
+                    });
+        }
+
         public Task<List<T>> ToListAsync()
         {
             return Task<List<T>>.Factory.StartNew(

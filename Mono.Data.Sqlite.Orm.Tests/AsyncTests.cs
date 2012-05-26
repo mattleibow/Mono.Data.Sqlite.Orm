@@ -623,5 +623,52 @@ namespace Mono.Data.Sqlite.Orm.Tests
                 Assert.AreEqual(newEmail, loaded.Email);
             }
         }
+
+        [Test]
+        public void FirstAsyncTest()
+        {
+            var db = OrmAsyncTestSession.GetConnection();
+            db.CreateTableAsync<Customer>().Wait();
+
+            db.InsertAsync(new Customer {FirstName = "First"}).Wait();
+
+            var firstAsync = db.Table<Customer>().FirstAsync();
+            firstAsync.Wait();
+            Assert.AreEqual("First", firstAsync.Result.FirstName);
+
+            db.ClearTableAsync<Customer>().Wait();
+
+            try
+            {
+                var task = db.Table<Customer>().FirstAsync();
+                task.Wait();
+
+                Assert.Fail();
+            }
+            catch (AggregateException ex)
+            {
+                if (ex.InnerException as InvalidOperationException == null)
+                    throw;
+            }
+        }
+
+        [Test]
+        public void FirstOrDefaultAsyncTest()
+        {
+            var db = OrmAsyncTestSession.GetConnection();
+            db.CreateTableAsync<Customer>().Wait();
+
+            db.InsertAsync(new Customer {FirstName = "First"}).Wait();
+
+            var firstAsync = db.Table<Customer>().FirstOrDefaultAsync();
+            firstAsync.Wait();
+            Assert.AreEqual("First", firstAsync.Result.FirstName);
+
+            db.ClearTableAsync<Customer>().Wait();
+
+            var task = db.Table<Customer>().FirstOrDefaultAsync();
+            task.Wait();
+            Assert.Null(task.Result);
+        }
     }
 }

@@ -218,5 +218,42 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var incorrect = db.Table<Product>().ElementAtOrDefault(2);
             Assert.Null(incorrect);
         }
+
+        [Test]
+        public void FirstTest()
+        {
+            OrmTestSession db = CreateDb();
+
+            db.Insert(new Product {Name = "A", Price = 20});
+
+            Assert.AreEqual("A", db.Table<Product>().First().Name);
+
+            db.ClearTable<Product>();
+
+            try
+            {
+                db.Table<Product>().First();
+
+                Assert.Fail();
+            }
+            catch (InvalidOperationException)
+            {
+                
+            }
+        }
+
+        [Test]
+        public void FirstOrDefaultTest()
+        {
+            OrmTestSession db = CreateDb();
+
+            db.Insert(new Product {Name = "A", Price = 20});
+
+            Assert.AreEqual("A", db.Table<Product>().FirstOrDefault().Name);
+
+            db.ClearTable<Product>();
+
+            Assert.Null(db.Table<Product>().FirstOrDefault());
+        }
     }
 }
