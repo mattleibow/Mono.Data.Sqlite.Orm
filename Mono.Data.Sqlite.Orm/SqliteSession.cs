@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using Mono.Data.Sqlite.Orm.ComponentModel;
 
 #if WINDOWS_PHONE || SILVERLIGHT || NETFX_CORE
@@ -605,6 +606,22 @@ namespace Mono.Data.Sqlite.Orm
         public T Get<T>(object primaryKey, params object[] primaryKeys) where T : new()
         {
             return GetList<T>(primaryKey, primaryKeys).First();
+        }
+
+        /// <summary>
+        ///   Attempts to retrieve an object with the given LINQ exprsion from 
+        ///   the table associated with the specified type.
+        /// </summary>
+        /// <param name = "expression">The LINQ expression to use.</param>
+        /// <returns>
+        ///   The object that matches the given LINQ expression. 
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        ///   The object is not found.
+        /// </exception>
+        public T Get<T>(Expression<Func<T, bool>> expression) where T : new()
+        {
+            return Table<T>().Where(expression).First();
         }
 
         /// <summary>

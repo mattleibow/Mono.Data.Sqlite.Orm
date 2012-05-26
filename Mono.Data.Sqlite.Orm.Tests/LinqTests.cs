@@ -126,5 +126,43 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(1, r.Count);
             Assert.AreEqual("A", r[0].Name);
         }
+
+        [Test]
+        public void GetWithExpressionTest()
+        {
+            OrmTestSession db = CreateDb();
+
+            db.Insert(new Product {Name = "A", Price = 20});
+
+            var product = db.Get<Product>(x => x.Name == "A");
+
+            Assert.AreEqual(20, product.Price);
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void GetWithExpressionFailsTest()
+        {
+            OrmTestSession db = CreateDb();
+
+            db.Insert(new Product {Name = "A", Price = 20});
+
+            var product = db.Get<Product>(x => x.Name == "B");
+        }
+
+        [Test]
+        public void GetWithExpressionAsyncTest()
+        {
+            var db = OrmAsyncTestSession.GetConnection();
+
+            db.CreateTableAsync<Product>().Wait();
+
+            db.InsertAsync(new Product {Name = "A", Price = 20}).Wait();
+
+            var task = db.GetAsync<Product>(x => x.Name == "A");
+            task.Wait();
+            
+            Assert.AreEqual(20, task.Result.Price);
+        }
     }
 }

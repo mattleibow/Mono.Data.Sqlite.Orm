@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Mono.Data.Sqlite.Orm.ComponentModel;
@@ -98,6 +99,19 @@ namespace Mono.Data.Sqlite.Orm
                         using (conn.Lock())
                         {
                             return conn.Get<T>(pk, primaryKeys);
+                        }
+                    });
+        }
+
+        public Task<T> GetAsync<T>(Expression<Func<T, bool>> expression) where T : new()
+        {
+            return Task.Factory.StartNew(
+                () =>
+                    {
+                        SqliteSession conn = this.GetAsyncConnection();
+                        using (conn.Lock())
+                        {
+                            return conn.Get(expression);
                         }
                     });
         }
