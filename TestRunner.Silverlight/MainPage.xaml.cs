@@ -23,7 +23,7 @@ namespace TestRunner.Silverlight
             try
             {
                 IsolatedStorageFile.GetUserStoreForApplication().Remove();
-                IsolatedStorageFile.GetUserStoreForApplication().IncreaseQuotaTo(20 * 1024 * 1024);
+                IsolatedStorageFile.GetUserStoreForApplication().IncreaseQuotaTo(100 * 1024 * 1024);
             }
             catch
             {
@@ -34,39 +34,42 @@ namespace TestRunner.Silverlight
 
         private void RunTests(object state)
         {
-            Type testAssembly = typeof (BooleanTest);
+            Type testAssembly = typeof(BooleanTest);
 
             Type[] types = testAssembly.Assembly.GetTypes();
 
-            IEnumerable<Type> testFixtures = types.Where(x => x.GetCustomAttributes(typeof (TestFixtureAttribute), true).Any());
+            IEnumerable<Type> testFixtures = types.Where(x => x.GetCustomAttributes(typeof(TestFixtureAttribute), true).Any());
             foreach (Type testFixture in testFixtures)
             {
                 object theTestFixture = Activator.CreateInstance(testFixture);
 
-                IEnumerable<MethodInfo> tests = testFixture.GetMethods().Where(x => x.GetCustomAttributes(typeof (TestAttribute), true).Any());
+                IEnumerable<MethodInfo> tests = testFixture.GetMethods().Where(x => x.GetCustomAttributes(typeof(TestAttribute), true).Any());
 
                 foreach (MethodInfo test in tests)
                 {
                     Type fixture = testFixture;
                     MethodInfo test1 = test;
 
-                    Dispatcher.BeginInvoke((Action)(() => listBox1.Items.Add("Testing: " + fixture.Name + "." + test1.Name)));
+                    Dispatcher.BeginInvoke(() => label1.Content = string.Format("Testing: {0}.{1}", fixture.Name, test1.Name));
 
-                    string message = " - fail: ";
+                    string testName = fixture.Name + "." + test1.Name;
                     try
                     {
                         DateTime past = DateTime.Now;
                         test.Invoke(theTestFixture, null);
-                        message = " - pass: " + (DateTime.Now - past).TotalMilliseconds;
+
+                        var message = string.Format("{0} - pass: {1}", testName, (DateTime.Now - past).TotalMilliseconds);
+                        Dispatcher.BeginInvoke(() => listBox1.Items.Add(fixture.Name + "." + test1.Name + message));
                     }
                     catch (Exception ex)
                     {
-                        message += ex.InnerException.Message;
+                        var message = string.Format("{0} - fail: {1}", testName, ex.InnerException.Message);
+                        Dispatcher.BeginInvoke(() => listBox2.Items.Add(fixture.Name + "." + test1.Name + message));
                     }
-
-                    Dispatcher.BeginInvoke((Action)(() => listBox1.Items.Add(fixture.Name + "." + test1.Name + message)));
                 }
             }
+
+            Dispatcher.BeginInvoke(() => label1.Content = "Complete!");
         }
     }
 }

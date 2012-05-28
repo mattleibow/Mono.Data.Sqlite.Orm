@@ -398,7 +398,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             task.Wait();
 
             // check...
-            Assert.IsNull(task.Result);
+            Assert.Null(task.Result);
         }
 
         [Test]

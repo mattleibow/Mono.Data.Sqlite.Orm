@@ -65,12 +65,16 @@
     <Reference Include="NUnitLite">
       <HintPath>..\Libraries\NUnitLite.dll</HintPath>
     </Reference>
+    <Reference Include="System.Threading.Tasks.SL4">
+      <HintPath>..\packages\System.Threading.Tasks.3.0.1\lib\sl40\System.Threading.Tasks.SL4.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows" />
     <Reference Include="System.Core">
       <HintPath>$(TargetFrameworkDirectory)System.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Browser" />
     <Reference Include="System" />
+    <Reference Include="System.Windows.Controls.Data.Input, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -92,16 +96,17 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Properties\AppManifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mono.Data.Sqlite.Orm.Tests.WindowsPhone\Mono.Data.Sqlite.Orm.Tests.WindowsPhone.csproj">
-      <Project>{29AC8AC4-C8B9-4DE7-8AB6-197957CE9135}</Project>
-      <Name>Mono.Data.Sqlite.Orm.Tests.WindowsPhone</Name>
+    <ProjectReference Include="..\Mono.Data.Sqlite.Orm.Silverlight\Mono.Data.Sqlite.Orm.Silverlight.csproj">
+      <Project>{BDE6E6EB-EB99-434B-84DB-ED243EC2BDC8}</Project>
+      <Name>Mono.Data.Sqlite.Orm.Silverlight</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Mono.Data.Sqlite.Orm.WindowsPhone\Mono.Data.Sqlite.Orm.WindowsPhone.csproj">
-      <Project>{0170CF92-AE0D-4B27-A25D-9320E10067A2}</Project>
-      <Name>Mono.Data.Sqlite.Orm.WindowsPhone</Name>
+    <ProjectReference Include="..\Mono.Data.Sqlite.Orm.Tests.Silverlight\Mono.Data.Sqlite.Orm.Tests.Silverlight.csproj">
+      <Project>{2299C615-7547-4AEC-B713-104E7458B04E}</Project>
+      <Name>Mono.Data.Sqlite.Orm.Tests.Silverlight</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />

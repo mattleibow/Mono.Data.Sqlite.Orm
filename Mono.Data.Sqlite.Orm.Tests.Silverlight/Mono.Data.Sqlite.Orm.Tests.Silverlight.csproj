@@ -3,28 +3,33 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.20506</ProductVersion>
+    <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{29AC8AC4-C8B9-4DE7-8AB6-197957CE9135}</ProjectGuid>
-    <ProjectTypeGuids>{C089C8C0-30E0-4E22-80C0-CE093F111A43};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <ProjectGuid>{2299C615-7547-4AEC-B713-104E7458B04E}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Mono.Data.Sqlite.Orm.Tests.WindowsPhone</RootNamespace>
-    <AssemblyName>Mono.Data.Sqlite.Orm.Tests.WindowsPhone</AssemblyName>
+    <RootNamespace>Mono.Data.Sqlite.Orm.Tests.Silverlight</RootNamespace>
+    <AssemblyName>Mono.Data.Sqlite.Orm.Tests.Silverlight</AssemblyName>
+    <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
-    <TargetFrameworkProfile>WindowsPhone71</TargetFrameworkProfile>
-    <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
     <SilverlightApplication>false</SilverlightApplication>
     <ValidateXaml>true</ValidateXaml>
     <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+  </PropertyGroup>
+  <!-- This property group is only here to support building this project using the 
+       MSBuild 3.5 toolset. In order to work correctly with this older toolset, it needs 
+       to set the TargetFrameworkVersion to v3.5 -->
+  <PropertyGroup Condition="'$(MSBuildToolsVersion)' == '3.5'">
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
@@ -34,7 +39,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>Bin\Release</OutputPath>
-    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
@@ -47,18 +52,22 @@
     <Reference Include="Community.CsharpSqlite.WinPhone">
       <HintPath>..\Libraries\Community.CsharpSqlite.WinPhone.dll</HintPath>
     </Reference>
+    <Reference Include="mscorlib" />
     <Reference Include="NUnitLite">
       <HintPath>..\Libraries\NUnitLite.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="System.Data.Ersatz.WinPhone">
       <HintPath>..\Libraries\System.Data.Ersatz.WinPhone.dll</HintPath>
     </Reference>
-    <Reference Include="System.Threading.Tasks.WP71">
-      <HintPath>..\packages\System.Threading.Tasks.3.0.1\lib\sl4-wp71\System.Threading.Tasks.WP71.dll</HintPath>
+    <Reference Include="System.Threading.Tasks.SL4">
+      <HintPath>..\packages\System.Threading.Tasks.3.0.1\lib\sl40\System.Threading.Tasks.SL4.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows" />
+    <Reference Include="system" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\AsyncTests.cs">
@@ -133,16 +142,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mono.Data.Sqlite.Orm.WindowsPhone\Mono.Data.Sqlite.Orm.WindowsPhone.csproj">
-      <Project>{0170CF92-AE0D-4B27-A25D-9320E10067A2}</Project>
-      <Name>Mono.Data.Sqlite.Orm.WindowsPhone</Name>
+    <ProjectReference Include="..\Mono.Data.Sqlite.Orm.Silverlight\Mono.Data.Sqlite.Orm.Silverlight.csproj">
+      <Project>{BDE6E6EB-EB99-434B-84DB-ED243EC2BDC8}</Project>
+      <Name>Mono.Data.Sqlite.Orm.Silverlight</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties ProjectLinkReference="6947a8f1-99be-4dd1-ad4d-d89425ce67a2" ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" />
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

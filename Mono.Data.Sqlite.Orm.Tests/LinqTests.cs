@@ -146,14 +146,21 @@ namespace Mono.Data.Sqlite.Orm.Tests
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void GetWithExpressionFailsTest()
         {
             OrmTestSession db = CreateDb();
 
             db.Insert(new Product {Name = "A", Price = 20});
+            try
+            {
+                var product = db.Get<Product>(x => x.Name == "B");
 
-            var product = db.Get<Product>(x => x.Name == "B");
+                Assert.Fail();
+            }
+            catch (InvalidOperationException)
+            {
+                
+            }
         }
 
         [Test]

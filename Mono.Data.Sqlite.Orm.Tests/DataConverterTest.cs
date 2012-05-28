@@ -1,14 +1,18 @@
 namespace Mono.Data.Sqlite.Orm.Tests
 {
     using System;
+#if SILVERLIGHT 
+    using System.Windows.Media;
+#else
     using System.Drawing;
+#endif
     using System.Linq;
 
     using ComponentModel;
     using DataConverter;
 
     using NUnit.Framework;
-    
+
     [TestFixture]
     public class DataConverterTest
     {
@@ -22,11 +26,11 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
                 if (value is Color)
                 {
-                    color = (Color) value;
+                    color = (Color)value;
                 }
                 else
                 {
-                    color = Color.Transparent;
+                    color = Color.FromArgb(0, 0, 0, 0);
                 }
 
                 return string.Join("/", color.A, color.R, color.G, color.B);
@@ -39,14 +43,14 @@ namespace Mono.Data.Sqlite.Orm.Tests
                 try
                 {
                     var parts = value.ToString().Split('/');
-                    return Color.FromArgb(int.Parse(parts[0]),
-                                          int.Parse(parts[1]),
-                                          int.Parse(parts[2]),
-                                          int.Parse(parts[3]));
+                    return Color.FromArgb(byte.Parse(parts[0]),
+                                          byte.Parse(parts[1]),
+                                          byte.Parse(parts[2]),
+                                          byte.Parse(parts[3]));
                 }
                 catch
                 {
-                    return Color.Transparent;
+                    return Color.FromArgb(0, 0, 0, 0);
                 }
             }
         }
@@ -91,7 +95,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var db = new OrmTestSession();
             db.CreateTable<TestConverter>();
 
-            db.Insert(new TestConverter {Color = Color.Red});
+            db.Insert(new TestConverter { Color = Color.FromArgb(255, 255, 0, 0) });
 
             var plain = db.Get<TestPlain>(1);
 
@@ -104,7 +108,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var db = new OrmTestSession();
             db.CreateTable<TestConverter>();
 
-            db.Insert(new TestPlain {Color = "255/0/255/0"});
+            db.Insert(new TestPlain { Color = "255/0/255/0" });
 
             var withC = db.Get<TestConverter>(1);
 
