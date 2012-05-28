@@ -123,6 +123,9 @@
     <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\ConflictResolution.cs">
       <Link>ComponentModel\ConflictResolution.cs</Link>
     </Compile>
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\DataConverterAttribute.cs">
+      <Link>ComponentModel\DataConverterAttribute.cs</Link>
+    </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\DefaultAttribute.cs">
       <Link>ComponentModel\DefaultAttribute.cs</Link>
     </Compile>
@@ -171,6 +174,9 @@
     <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\UniqueAttribute.cs">
       <Link>ComponentModel\UniqueAttribute.cs</Link>
     </Compile>
+    <Compile Include="..\mono.data.sqlite.orm\dataconverter\IDataConverter.cs">
+      <Link>DataConverter\IDataConverter.cs</Link>
+    </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\Extensions.cs">
       <Link>Extensions.cs</Link>
     </Compile>
@@ -183,11 +189,20 @@
     <Compile Include="..\Mono.Data.Sqlite.Orm\OrmHelper.cs">
       <Link>OrmHelper.cs</Link>
     </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteConnectionPool.cs">
+      <Link>SqliteConnectionPool.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteSession.Async.cs">
+      <Link>SqliteSession.Async.cs</Link>
+    </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteSession.cs">
       <Link>SqliteSession.cs</Link>
     </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\TableMapping.cs">
       <Link>TableMapping.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm\TableQuery.Async.cs">
+      <Link>TableQuery.Async.cs</Link>
     </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\TableQuery.cs">
       <Link>TableQuery.cs</Link>

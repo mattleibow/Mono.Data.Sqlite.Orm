@@ -105,6 +105,9 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\AsyncTests.cs">
+      <Link>AsyncTests.cs</Link>
+    </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\BooleanTest.cs">
       <Link>BooleanTest.cs</Link>
     </Compile>
@@ -125,6 +128,9 @@
     </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\CreateTableTest.cs">
       <Link>CreateTableTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\DataConverterTest.cs">
+      <Link>DataConverterTest.cs</Link>
     </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\DropTableTest.cs">
       <Link>DropTableTest.cs</Link>
@@ -152,6 +158,9 @@
     </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\NullableTest.cs">
       <Link>NullableTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\OrmAsyncTestSession.cs">
+      <Link>OrmAsyncTestSession.cs</Link>
     </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\OrmTestSession.cs">
       <Link>OrmTestSession.cs</Link>

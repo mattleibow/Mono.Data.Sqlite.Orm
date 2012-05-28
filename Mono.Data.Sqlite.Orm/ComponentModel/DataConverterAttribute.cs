@@ -21,12 +21,12 @@ namespace Mono.Data.Sqlite.Orm.ComponentModel
                 throw new ArgumentNullException("storageType", "A storage type must be specified.");
             }
 
-            if (!dataConverter.GetInterfaces().Contains(typeof(IDataConverter)))
+            if (!dataConverter.GetImplementedInterfaces().Contains(typeof(IDataConverter)))
             {
                 throw new ArgumentException("The converter must inherit from IDataConverter.", "dataConverter");
             }
 
-            var constructors = dataConverter.GetConstructors();
+            var constructors = dataConverter.GetDeclaredConstructors();
             if (constructors.All(x => !x.IsPublic || x.GetParameters().Length != 0))
             {
                 throw new ArgumentException("The converter must have a public parameterless constructor.",

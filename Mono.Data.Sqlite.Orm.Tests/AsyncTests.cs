@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 using Mono.Data.Sqlite.Orm.ComponentModel;
 using NUnit.Framework;
 
+#if NETFX_CORE
+using Windows.System.Threading;
+#endif
+
 namespace Mono.Data.Sqlite.Orm.Tests
 {
     // @mbrit - 2012-05-14 - NOTE - the lack of async use in this class is because the VS11 test runner falsely
@@ -56,7 +60,11 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var errors = new List<string>();
             for (int i = 0; i < n; i++)
             {
+#if NETFX_CORE
+                ThreadPool.RunAsync(
+#else
                 ThreadPool.QueueUserWorkItem(
+#endif
                     delegate
                         {
                             try

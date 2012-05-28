@@ -189,14 +189,10 @@ namespace Mono.Data.Sqlite.Orm.Tests
             db.Insert(new CoolTable { Name = "A", Price = 20 });
             db.Insert(new CoolTable { Name = "A", Price = 20 });
 
-            Console.WriteLine("Normal items");
             Assert.AreEqual(3, db.Table<CoolTable>().ToArray().Length);
-            Console.WriteLine("Distinct items");
             Assert.AreEqual(1, db.Table<CoolTable>().Distinct().ToArray().Length);
 
-            Console.WriteLine("Normal count");
             Assert.AreEqual(3, db.Table<CoolTable>().Count());
-            Console.WriteLine("Distinct count");
             Assert.AreEqual(1, db.Table<CoolTable>().Distinct().Count());
         }
 

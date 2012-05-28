@@ -3,6 +3,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
     using System;
 #if SILVERLIGHT 
     using System.Windows.Media;
+#elif NETFX_CORE
+    using Windows.UI;
 #else
     using System.Drawing;
 #endif

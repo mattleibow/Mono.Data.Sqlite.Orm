@@ -2,6 +2,10 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
+#if NETFX_CORE
+using Windows.Storage;
+#endif
+
 namespace Mono.Data.Sqlite.Orm.Tests
 {
     public static class OrmAsyncTestSession

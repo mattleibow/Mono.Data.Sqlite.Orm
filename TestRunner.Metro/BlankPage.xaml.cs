@@ -85,6 +85,13 @@ namespace TestRunner.Metro
                     }
                 }
             }
+
+            Dispatcher.InvokeAsync(CoreDispatcherPriority.Normal,
+                delegate
+                    {
+                        lblCurrentTest.Text = "Complete!";
+                    }, this, null);
+
         }
 
         private void btnRunTests_Click(object sender, RoutedEventArgs e)
