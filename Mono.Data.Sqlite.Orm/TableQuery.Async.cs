@@ -1,8 +1,10 @@
 ﻿namespace Mono.Data.Sqlite.Orm
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using System.Linq.Expressions;
 
     public partial class TableQuery<T>
     {
@@ -54,6 +56,18 @@
                     });
         }
 
+        public Task<T> FirstAsync(Expression<Func<T, bool>> predicate)
+        {
+            return Task<T>.Factory.StartNew(
+                () =>
+                    {
+                        using (this.Session.Lock())
+                        {
+                            return this.First(predicate);
+                        }
+                    });
+        }
+
         public Task<T> FirstOrDefaultAsync()
         {
             return Task<T>.Factory.StartNew(
@@ -62,6 +76,18 @@
                         using (this.Session.Lock())
                         {
                             return this.FirstOrDefault();
+                        }
+                    });
+        }
+
+        public Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
+        {
+            return Task<T>.Factory.StartNew(
+                () =>
+                    {
+                        using (this.Session.Lock())
+                        {
+                            return this.FirstOrDefault(predicate);
                         }
                     });
         }
