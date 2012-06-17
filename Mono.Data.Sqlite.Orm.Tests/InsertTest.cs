@@ -294,5 +294,59 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual("Default Text", inObjs.Text);
             Assert.AreEqual(33, inObjs.Number);
         }
+
+        [Test]
+        public void NestedTransactionsTest()
+        {
+            int oneTrans;
+            int nestedTrans;
+
+            // one transaction
+            using (var db = new OrmTestSession())
+            {
+                SqliteSession.Trace = false;
+                db.CreateTable<TestObj>();
+
+                var start = Environment.TickCount;
+
+                const int n = 500*500;
+                IEnumerable<TestObj> q = Enumerable.Range(1, n).Select(x => new TestObj {Text = "I am"});
+                TestObj[] objs = q.ToArray();
+                int numIn = db.InsertAll(objs);
+
+                oneTrans = Environment.TickCount - start;
+            }
+
+            // nested transactions
+            using (var db = new OrmTestSession())
+            {
+                SqliteSession.Trace = false;
+                db.CreateTable<TestObj>();
+
+                var start = Environment.TickCount;
+
+                using (var trans = db.BeginTransaction())
+                {
+                    for (var i = 0; i < 500; ++i)
+                    {
+                        const int n = 500;
+                        IEnumerable<TestObj> q = Enumerable.Range(1, n).Select(x => new TestObj {Text = "I am"});
+                        TestObj[] objs = q.ToArray();
+                        int numIn = db.InsertAll(objs);
+                    }
+
+                    trans.Commit();
+                }
+
+                nestedTrans = Environment.TickCount - start;
+            }
+
+            Console.WriteLine("Single tranasction: " + oneTrans);
+            Console.WriteLine("Nested tranasction: " + nestedTrans);
+            Console.WriteLine("Difference: " + Math.Abs(nestedTrans - oneTrans));
+
+            // this is a really dodgy test to use the execution time...
+            Assert.True(Math.Abs(oneTrans - nestedTrans) <= 100);
+        }
     }
 }

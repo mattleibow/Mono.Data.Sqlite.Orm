@@ -550,14 +550,16 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             // run...
             var customer = this.CreateCustomer();
-            conn.RunInTransactionAsync(() =>
-                                           {
-                                               // insert...
-                                               conn.InsertAsync(customer).Wait();
+            using (var trans = conn.BeginTransaction())
+            {
+                // insert...
+                conn.InsertAsync(customer).Wait();
 
-                                               // delete it again...
-                                               conn.ExecuteAsync("delete from customer where id=?", customer.Id).Wait();
-                                           }).Wait();
+                // delete it again...
+                conn.ExecuteAsync("delete from customer where id=?", customer.Id).Wait();
+
+                trans.Commit();
+            }
 
             // check...
             using (var check = OrmAsyncTestSession.GetConnection(conn.ConnectionString))

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -191,19 +190,6 @@ namespace Mono.Data.Sqlite.Orm
                         using (conn.Lock())
                         {
                             return conn.Query<T>(sql, args);
-                        }
-                    });
-        }
-
-        public Task RunInTransactionAsync(Action action)
-        {
-            return Task.Factory.StartNew(
-                () =>
-                    {
-                        SqliteSession conn = this.GetAsyncConnection();
-                        using (conn.Lock())
-                        {
-                            conn.RunInTransaction(action);
                         }
                     });
         }

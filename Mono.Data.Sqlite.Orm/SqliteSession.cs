@@ -69,14 +69,9 @@ namespace Mono.Data.Sqlite.Orm
         public static bool Trace { get; set; }
 
         /// <summary>
-        /// Gets the current transaction. Null if no curent transaction.
-        /// </summary>
-        public DbTransaction Transaction { get; private set; }
-
-        /// <summary>
         /// Gets the current connection to the database.
         /// </summary>
-        public DbConnection Connection { get; private set; }
+        public SqliteConnection Connection { get; private set; }
 
         /// <summary>
         /// Gets the database connction string for this connection.
@@ -85,10 +80,6 @@ namespace Mono.Data.Sqlite.Orm
 
         #region IDisposable Members
 
-        /// <summary>
-        ///   Whether <see cref = "BeginTransaction" /> has been called and the database is waiting for a <see cref = "Commit" />.
-        /// </summary>
-        //public bool IsInTransaction { get; private set; }
         public void Dispose()
         {
             Close();
@@ -269,7 +260,12 @@ namespace Mono.Data.Sqlite.Orm
         {
             // todo - allow index clearing/re-creating
 
-           return RunInTransaction(() => CreateTable(GetMapping<T>()));
+            using (var trans = this.Connection.BeginTransaction())
+            {
+                var result = CreateTable(GetMapping<T>());
+                trans.Commit();
+                return result;
+            }
         }
 
         /// <summary>
@@ -284,7 +280,12 @@ namespace Mono.Data.Sqlite.Orm
         /// </returns>
         public int CreateTable(Type type)
         {
-            return RunInTransaction(() => CreateTable(GetMapping(type)));
+            using (var trans = this.Connection.BeginTransaction())
+            {
+                var result = CreateTable(GetMapping(type));
+                trans.Commit();
+                return result;
+            }
         }
 
         private int MigrateTable(TableMapping map)
@@ -640,107 +641,12 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        ///   Begins a new transaction. Call <see cref = "Commit" /> to end the transaction.
+        ///   Begins a new transaction. Call <see cref = "SqliteTransaction.Commit" /> or 
+        ///   <see cref = "SqliteTransaction.Rollback" /> to end the transaction.
         /// </summary>
-        public void BeginTransaction()
+        public SqliteTransaction BeginTransaction()
         {
-            if (Transaction == null)
-            {
-                if (Trace)
-                {
-                    Debug.WriteLine("BEGIN TRANSACTION");
-                }
-
-                Transaction = Connection.BeginTransaction();
-            }
-        }
-
-        /// <summary>
-        ///   Rolls back the transaction that was begun by <see cref = "BeginTransaction" />.
-        /// </summary>
-        public void Rollback()
-        {
-            if (Transaction != null)
-            {
-                if (Trace)
-                {
-                    Debug.WriteLine("ROLLBACK TRANSACTION");
-                }
-
-                Transaction.Rollback();
-                Transaction = null;
-            }
-        }
-
-        /// <summary>
-        ///   Commits the transaction that was begun by <see cref = "BeginTransaction" />.
-        /// </summary>
-        public void Commit()
-        {
-            if (Transaction != null)
-            {
-                if (Trace)
-                {
-                    Debug.WriteLine("COMMIT TRANSACTION");
-                }
-
-                Transaction.Commit();
-                Transaction = null;
-            }
-        }
-
-        /// <summary>
-        ///   Executes <paramref name = "action" /> within a transaction and automatically rollsback the transaction       
-        ///   if an exception occurs. The exception is rethrown.
-        /// </summary>
-        /// <param name = "action">
-        ///   The <see cref = "Action" /> to perform within a transaction. <paramref name = "action" /> can contain 
-        ///   any number of operations on the connection but should never call <see cref = "BeginTransaction" />,
-        ///   <see cref = "Rollback" />, or <see cref = "Commit" />.
-        /// </param>
-        public void RunInTransaction(Action action)
-        {
-            try
-            {
-                BeginTransaction();
-                action();
-                Commit();
-            }
-            catch (Exception)
-            {
-                Rollback();
-                throw;
-            }
-        }
-
-        /// <summary>
-        ///   Executes <paramref name = "function" /> within a transaction and automatically rollsback the transaction       
-        ///   if an exception occurs. The exception is rethrown.
-        /// </summary>
-        /// <param name = "function">
-        ///   The <see cref = "Action" /> to perform within a transaction. <paramref name = "function" /> can contain 
-        ///   any number of operations on the connection but should never call <see cref = "BeginTransaction" />,
-        ///   <see cref = "Rollback" />, or <see cref = "Commit" />.
-        /// </param>
-        /// <returns>
-        ///   The value <paramref name="function"/> returns.
-        /// </returns>
-        public T RunInTransaction<T>(Func<T> function)
-        {
-            T result;
-            try
-            {
-                BeginTransaction();
-                result = function();
-                Commit();
-            }
-            catch (Exception)
-            {
-                Rollback();
-                throw;
-            }
-
-            return result;
+            return Connection.BeginTransaction();
         }
 
         /// <summary>
@@ -754,8 +660,12 @@ namespace Mono.Data.Sqlite.Orm
         /// </returns>
         public int InsertAll<T>(IEnumerable<T> objects)
         {
-            int result = RunInTransaction(() => objects.Sum(r => Insert(r)));
-            return result;
+            using (var trans = this.Connection.BeginTransaction())
+            {
+                var result = objects.Sum(r => Insert(r));
+                trans.Commit();
+                return result;
+            }
         }
 
         /// <summary>
