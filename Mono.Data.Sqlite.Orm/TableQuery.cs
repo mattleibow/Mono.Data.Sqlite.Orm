@@ -338,6 +338,13 @@ namespace Mono.Data.Sqlite.Orm
                 var u = (UnaryExpression) expr;
                 Type ty = u.Type;
                 CompileResult valr = CompileExpr(u.Operand, queryArgs);
+
+                var underlyingType = Nullable.GetUnderlyingType(ty);
+                if (underlyingType != null)
+                {
+                    ty = underlyingType;
+                }
+
                 return new CompileResult
                            {
                                CommandText = valr.CommandText,
