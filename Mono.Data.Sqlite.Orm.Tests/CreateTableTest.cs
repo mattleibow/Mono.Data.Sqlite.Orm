@@ -198,6 +198,49 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.IsFalse(mapping.Columns.Any(c => c.Name == "IgnoredColumn"));
         }
 
+        public class Category
+        {
+            [PrimaryKey]
+            [AutoIncrement]
+            [Column("CatId")]
+            public int Id { get; set; }
+
+            public string Name { get; set; }
+        }
+
+        public class Book
+        {
+            [PrimaryKey]
+            [AutoIncrement]
+            public int Id { get; set; }
+
+            public string Title { get; set; }
+
+            [ForeignKey(typeof(Category), "DoesNotExist", Name = "FK_Book_Category")]
+            public int CategoryId { get; set; }
+        }
+
+        [Test]
+        public void CreateTableWithForeignKeyColumnThatDoesNotExist()
+        {
+            var db = new OrmTestSession();
+            db.CreateTable<Category>();
+            try
+            {
+                db.CreateTable<Book>();
+
+                Assert.Fail();
+            }
+            catch (SqliteException)
+            {
+                
+            }
+            catch
+            {
+                Assert.Fail();
+            }
+        }
+
         public class ReferencingTable
         {
             [ForeignKey(typeof(ReferencedTable), "Id", Name = "FK_Foreign_Key")]

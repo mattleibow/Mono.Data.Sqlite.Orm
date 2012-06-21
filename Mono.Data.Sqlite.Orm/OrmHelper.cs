@@ -176,12 +176,13 @@ namespace Mono.Data.Sqlite.Orm
             foreach (var att in attributes)
             {
                 TableMapping.ForeignKey key = foreignKeys.FirstOrDefault(fk => fk.Name == att.Attribute.Name);
+                var childTable = att.Attribute.ChildTable;
                 if (key == null)
                 {
                     key = new TableMapping.ForeignKey
                               {
                                   Name = att.Attribute.Name,
-                                  ChildTable = GetTableName(att.Attribute.ChildTable),
+                                  ChildTable = GetTableName(childTable),
                                   OnDelete = att.Attribute.OnDeleteAction,
                                   OnUpdate = att.Attribute.OnUpdateAction,
                                   NullMatch = att.Attribute.NullMatch,
@@ -190,7 +191,17 @@ namespace Mono.Data.Sqlite.Orm
                     foreignKeys.Add(key);
                 }
 
-                key.Keys.Add(GetColumnName(att.Property), att.Attribute.ChildKey);
+                var childProps = childTable.GetTypeInfo().GetMappableProperties();
+                var childProp = childProps.SingleOrDefault(x => x.Name == att.Attribute.ChildKey);
+
+                if (childProp == null)
+                {
+                    throw new SqliteException(
+                        string.Format("Property {0} does not exist in type {1}.",
+                                      att.Attribute.ChildKey, childTable.FullName));
+                }
+
+                key.Keys.Add(GetColumnName(att.Property), GetColumnName(childProp));
             }
 
             return foreignKeys;
