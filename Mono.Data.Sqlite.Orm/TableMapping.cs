@@ -26,7 +26,7 @@ namespace Mono.Data.Sqlite.Orm
         private ConflictResolution _updateExtra;
         private string _updateSql;
 
-        internal TableMapping(Type type)
+        public TableMapping(Type type)
         {
             MappedType = type;
 
@@ -258,6 +258,12 @@ namespace Mono.Data.Sqlite.Orm
         public class Column
         {
             private readonly PropertyInfo _prop;
+
+            public PropertyInfo Property
+            {
+                get { return this._prop; }
+            }
+
             private IDataConverter _dataConverter;
 
             internal Column(PropertyInfo prop)
