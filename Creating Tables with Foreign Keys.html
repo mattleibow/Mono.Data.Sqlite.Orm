@@ -1,0 +1,120 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+
+    <h1>
+        Creating tables with foreign keys</h1>
+    <p>
+        Mono.Data.Sqlite.Orm can create any type of foreign keys: from the very simple 
+        to almost any type that can be create with a SQL command, but all without 
+        writing a single line of T-SQL.</p>
+    <p>
+        In these examples, You will see just how easy it can be.</p>
+    <h2>
+        A single reference:</h2>
+    <p>
+        Suppose we have a tiny program that we use to keeporganize our personal book 
+        collection:</p>
+    <p>
+        This application will allow us to create both books and categories:</p>
+    <ul>
+        <li>A book can only go under one category.</li>
+        <li>A category may have many books.</li>
+    </ul>
+    <p>
+        We also want a very simple model that only records the necessary data:</p>
+    <ul>
+        <li>A book has an Id (unique to our collection), a Title and a Category.</li>
+        <li>A category has an Id (for reference by a book) and a Name</li>
+    </ul>
+    <p>
+        We would like the database to keep track of our Ids so that we don&#39;t have to 
+        write any code to make sure that the Ids are unique.
+    </p>
+    <p>
+        How do we do all of this? We can create a class with members that are decorated 
+        by Attributes.</p>
+    <pre>
+ // Defines the structure of the Category table
+public class Category
+{
+    [PrimaryKey]
+    [AutoIncrement]
+    public int Id { get; set; }
+
+    public string Name { get; set; }
+}</pre>
+    <pre>
+// Defines the structure of the Book table
+public class Book 
+{
+    [PrimaryKey]
+    [AutoIncrement] 
+    public int Id { get; set; }
+
+    public string Title { get; set; } 
+
+    [ForeignKey(typeof(Category), &quot;Id&quot;, Name = &quot;FK_Book_Category&quot;)] 
+    public int CategoryId { get; set; }
+}</pre>
+    <p>Now we can create the tables in the database:</p>
+    <pre>
+public void CreateDatabase()
+{
+    using (var db = new SqliteSession(connectionString))
+    {
+        db.CreateTable&lt;Category&gt;();
+        db.CreateTable&lt;Book&gt;();
+    }
+}</pre>
+    <p>
+        This creates and executes the following SQL on the database:</p>
+    <pre>
+-- Create the catecories table
+CREATE TABLE [Category] (
+    [Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+    [Name] text 
+);</pre>
+    <pre>
+-- Create the books table with the foreign key
+CREATE TABLE [Book] (
+    [Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+    [Title] text,
+    [CategoryId] integer NOT NULL, 
+
+    CONSTRAINT FK_Book_Category  -- FK name
+        FOREIGN KEY (CategoryId) -- column in this table 
+        REFERENCES Category (Id) -- column in the other table 
+);</pre>
+    <p>
+        The foreign key attribute has several properties that we can set to determine 
+        how the foreign key will be created:</p>
+    <ul>
+        
+        <li><strong>Name</strong> - this allows you to provide a custom name for this 
+            constraint. If none is specified, SQLite will create a random name.</li>
+        <li><strong>ChildTable</strong> - this is the other table that is referenced in the 
+            foreign key. It is required.</li>
+        <li><strong>ChildKey</strong> - this is the column that is referenced in the other 
+            table. It is required.</li>
+        <li><strong>Order</strong> - this allows you to specify the position in which 
+            to place the column reference if you have a multi-column foreign key.</li>
+        <li><strong>OnDeleteAction</strong> - this allows you to specify the action to 
+            take when the referenced record is deleted.</li>
+        <li><strong>OnUpdateAction</strong> - this allows you to specify the action to take 
+            when the referenced record is updated.</li>
+        <li><strong>NullMatch</strong> - this allows you to specify the null matching.</li>
+        <li><strong>Deferred</strong> - this allows you to specify the deffered value.</li>
+    </ul>
+    <p>
+        Only two properties are required to they provide the information to create the 
+        foreign key: ChildTable and ChildKey. These values are provided in the 
+        constructor.</p>
+
+</body>
+</html>
