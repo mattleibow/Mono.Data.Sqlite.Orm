@@ -18,7 +18,7 @@
     <h2>
         A single reference:</h2>
     <p>
-        Suppose we have a tiny program that we use to keeporganize our personal book 
+        Suppose we have a tiny program that we use to organize our personal book 
         collection:</p>
     <p>
         This application will allow us to create both books and categories:</p>
@@ -115,6 +115,92 @@ CREATE TABLE [Book] (
         Only two properties are required to they provide the information to create the 
         foreign key: ChildTable and ChildKey. These values are provided in the 
         constructor.</p>
+    <h2>A composite foreign keys</h2>
+    <p>
+        Suppose for a moment that we are some great developers for a international bank. 
+        This bank has &quot;Bank Accounts&quot; that they provide for clients to use to hold the 
+        client&#39;s money. This bank provides different types of accounts: Smart accounts, 
+        Savings accounts and Cheque accounts. Internally, they are exactly the same, but 
+        they need to flood the client with &quot;types&quot; to make it look like the client is 
+        benefiting. Accounts have transaction history which is a record of client 
+        deposits, bank fees and, if the client is luck and rich, withdrawals. We are 
+        going to be designing such a system.</p>
+    <p>
+        There are 3 entities here:</p>
+    <ol>
+        <li>Bank Accounts</li>
+        <li>Account Types</li>
+        <li>Account Transactions</li>
+    </ol>
+
+    <p>
+        Account Types is a very simple entity: it only has a unique id, a name. 
+        Now in our first prototype (because we are very poor architects) we use an enum.</p>
+    <pre>public enum AccountType 
+{
+    Smart,
+    Savings,
+    Cheque
+}</pre>
+    <p>
+        Now we need to make the bank account. This has a composite primary key: the 
+        AccountId and the AccountType. We need to do this as there are going to be so 
+        many accounts that we need to allow for more accounts than can be represented by 
+        a single number. So we use a second number as well. Here is what we do:</p>
+    <pre>public class BankAccount 
+{
+    [PrimaryKey] 
+    public long AccountId { get; set; } 
+
+    [PrimaryKey] 
+    public AccountType AccountType { get; set; } 
+        
+    public string ClientId { get; set; } 
+        
+    public decimal Balance { get; set; } 
+}</pre>
+        <p>
+            This will generate 
+            some cool SQL, and as you can see, we have a composite primary key as well:</p>
+    <pre>
+CREATE TABLE [BankAccount] (
+    [AccountId] bigint NOT NULL, 
+    [AccountType] integer NOT NULL, 
+    [ClientId] text, 
+    [Balance] float NOT NULL, 
+
+    PRIMARY KEY (AccountId, AccountType)
+);</pre>
+    <p>
+        Now for the exciting stuff, the foreign keys and the transactions. This bank 
+        doesn&#39;t care where the money comes in from or where the money goes out to. All 
+        they need is which account and what amount:</p>
+    <pre>public class AccountTransaction 
+{
+    [ForeignKey(typeof(BankAccount), &quot;AccountId&quot;, Name = &quot;FK_AccountTransaction&quot;)] 
+    public long AccountId { get; set; } 
+        
+    [ForeignKey(typeof(BankAccount), &quot;AccountType&quot;, Name = &quot;FK_AccountTransaction&quot;)] 
+    public AccountType AccountType { get; set; } 
+
+    public decimal Amount { get; set; } 
+}</pre>
+
+    <p>
+        In the above example, we specify a foreign key name so that the ORM knows that 
+        we are referring to the same foreign key, and thus makes it a composite key. 
+        This will generate some more SQL:</p>
+    <pre>CREATE TABLE [AccountTransaction] (
+    [AccountId] bigint NOT NULL, 
+    [AccountType] integer NOT NULL,
+    [Amount] float NOT NULL, 
+
+    CONSTRAINT FK_AccountTransaction 
+        FOREIGN KEY (AccountId, AccountType) 
+        REFERENCES BankAccount (AccountId, AccountType) 
+);</pre>
+    <p>
+        And as you can see, our database is ready to go.</p>
 
 </body>
 </html>
