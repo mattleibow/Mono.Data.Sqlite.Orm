@@ -28,7 +28,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var mapping = db.GetMapping<Derived>();
 
             Assert.AreEqual(3, mapping.Columns.Count);
-            Assert.AreEqual("Id", mapping.PrimaryKeys.First().Name);
+            Assert.AreEqual("Id", mapping.PrimaryKey.Columns.First().Name);
         }
     }
 }

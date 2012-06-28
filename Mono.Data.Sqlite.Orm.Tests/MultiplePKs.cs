@@ -32,6 +32,21 @@ namespace Mono.Data.Sqlite.Orm.Tests
             public int SubId { get; set; }
         }
 
+        public class NamedCompositePrimaryKeyTable
+        {
+            [PrimaryKey(Name = "PK_Alfred")]
+            public int FirstId { get; set; }
+            [PrimaryKey(Name = "PK_Alfred")]
+            public int SecondId { get; set; }
+        }
+
+        [Test]
+        public void NamedCompositePrimaryKeyTableTest()
+        {
+            var db = new OrmTestSession();
+            db.CreateTable<NamedCompositePrimaryKeyTable>();
+        }
+
         [Test]
         public void MultiplePkOperations()
 		{

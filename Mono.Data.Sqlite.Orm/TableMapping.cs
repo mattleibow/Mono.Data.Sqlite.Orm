@@ -55,20 +55,29 @@ namespace Mono.Data.Sqlite.Orm
             {
                 _columns = value;
 
-                PrimaryKeys = Columns.Where(c => c.PrimaryKey != null).OrderBy(c => c.PrimaryKey.Order).ToArray();
-                Column[] autoInc = PrimaryKeys.Where(c => c.IsAutoIncrement).ToArray();
-                if (autoInc.Count() > 1)
+                var pkCols = Columns.Where(c => c.PrimaryKey != null).OrderBy(c => c.PrimaryKey.Order).ToArray();
+                if (pkCols.Any())
                 {
-                    throw new SqliteException((int)SQLiteErrorCode.Error, "Only one property can be an auto incrementing primary key");
+                    var pkNameCol = pkCols.FirstOrDefault(c => !string.IsNullOrWhiteSpace(c.PrimaryKey.Name));
+                    PrimaryKey = new PrimaryKeyDefinition
+                        {
+                            Columns = pkCols,
+                            Name = pkNameCol == null ? null : pkNameCol.PrimaryKey.Name
+                        };
+                    Column[] autoInc = PrimaryKey.Columns.Where(c => c.IsAutoIncrement).ToArray();
+                    if (autoInc.Count() > 1)
+                    {
+                        throw new SqliteException((int) SQLiteErrorCode.Error,
+                                                  "Only one property can be an auto incrementing primary key");
+                    }
+                    AutoIncrementColumn = autoInc.FirstOrDefault();
                 }
-                AutoIncrementColumn = autoInc.FirstOrDefault();
-
                 EditableColumns = Columns.Where(c => c != AutoIncrementColumn).ToList();
             }
         }
 
         public IList<Column> EditableColumns { get; private set; }
-        public IList<Column> PrimaryKeys { get; private set; }
+        public PrimaryKeyDefinition PrimaryKey { get; private set; }
         public Column AutoIncrementColumn { get; private set; }
         public IList<string> Checks { get; private set; }
         public IList<ForeignKey> ForeignKeys { get; private set; }
@@ -145,7 +154,7 @@ namespace Mono.Data.Sqlite.Orm
 
         internal string GetUpdateSql<T>(T obj, ConflictResolution extra, List<object> args)
         {
-            if (!PrimaryKeys.Any())
+            if (PrimaryKey == null)
             {
                 throw new NotSupportedException("Cannot update " + TableName + ": it has no primary keys");
             }
@@ -160,7 +169,7 @@ namespace Mono.Data.Sqlite.Orm
                 _updateExtra = extra;
 
                 string col = string.Join(", ", EditableColumns.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}] = ?", c.Name)).ToArray());
-                string pks = string.Join(" AND ", PrimaryKeys.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}] = ?", c.Name)).ToArray());
+                string pks = string.Join(" AND ", PrimaryKey.Columns.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}] = ?", c.Name)).ToArray());
                 _updateSql = string.Format(CultureInfo.InvariantCulture, "UPDATE {3} [{0}] SET {1} WHERE {2}",
                                            TableName,
                                            col,
@@ -173,7 +182,7 @@ namespace Mono.Data.Sqlite.Orm
             if (args != null)
             {
                 args.AddRange(EditableColumns.Select(c => c.GetValue(obj)));
-                args.AddRange(PrimaryKeys.Select(c => c.GetValue(obj)));
+                args.AddRange(PrimaryKey.Columns.Select(c => c.GetValue(obj)));
             }
 
             return _updateSql;
@@ -181,20 +190,20 @@ namespace Mono.Data.Sqlite.Orm
 
         internal string GetDeleteSql<T>(T obj, List<object> args)
         {
-            if (!PrimaryKeys.Any())
+            if (PrimaryKey == null)
             {
                 throw new NotSupportedException("Cannot delete from " + TableName + ": it has no primary keys");
             }
 
             if (string.IsNullOrEmpty(_deleteSql))
             {
-                string pks = string.Join(" AND ", PrimaryKeys.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}] = ?", c.Name)).ToArray());
+                string pks = string.Join(" AND ", PrimaryKey.Columns.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}] = ?", c.Name)).ToArray());
                 _deleteSql = string.Format(CultureInfo.InvariantCulture, "DELETE FROM [{0}] WHERE {1}", TableName, pks);
             }
 
             if (args != null)
             {
-                args.AddRange(PrimaryKeys.Select(c => c.GetValue(obj)));
+                args.AddRange(PrimaryKey.Columns.Select(c => c.GetValue(obj)));
             }
 
             return _deleteSql;
@@ -204,14 +213,14 @@ namespace Mono.Data.Sqlite.Orm
                                      List<object> args,
                                      object pk, params object[] pks)
         {
-            if (!PrimaryKeys.Any())
+            if (PrimaryKey == null)
             {
                 throw new NotSupportedException("Cannot update " + TableName + ": it has no primary keys");
             }
 
             args.AddRange(new[] {propertyValue, pk}.Concat(pks));
 
-            string whereClause = string.Join(" AND ", PrimaryKeys.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}] = ?", c.Name)).ToArray());
+            string whereClause = string.Join(" AND ", PrimaryKey.Columns.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}] = ?", c.Name)).ToArray());
             return string.Format(CultureInfo.InvariantCulture, "UPDATE [{0}] SET [{1}] = ? WHERE {2}", TableName, propertyName, whereClause);
         }
 
@@ -232,13 +241,9 @@ namespace Mono.Data.Sqlite.Orm
                                   {
                                       string.Join(",\n", Columns.Select(c => c.GetCreateSql(this)).ToArray())
                                   };
-            if (PrimaryKeys.Count() > 1)
+            if (PrimaryKey != null && PrimaryKey.Columns.Length > 1)
             {
-                constraints.Add(string.Format(CultureInfo.InvariantCulture, "PRIMARY KEY ({0}) {1}",
-                                              string.Join(", ", PrimaryKeys.Select(pk => pk.Name).ToArray()),
-                                              OnPrimaryKeyConflict == ConflictResolution.Default
-                                                  ? string.Empty
-                                                  : string.Format(CultureInfo.InvariantCulture, "ON CONFLICT {0}", OnPrimaryKeyConflict)));
+                constraints.Add(PrimaryKey.GetCreateSql());
             }
             if (Checks.Any())
             {
@@ -386,17 +391,16 @@ namespace Mono.Data.Sqlite.Orm
             {
                 var constraints = new List<string>();
 
-                if (table.AutoIncrementColumn == this)
+                if (PrimaryKey != null && table.PrimaryKey.Columns.Length <= 1)
                 {
-                    constraints.Add("PRIMARY KEY AUTOINCREMENT");
-                }
-                else if (PrimaryKey != null && table.PrimaryKeys.Count <= 1)
-                {
-                    constraints.Add(string.Format(CultureInfo.InvariantCulture, "{0} PRIMARY KEY {1}",
+                    constraints.Add(string.Format(CultureInfo.InvariantCulture, "{0} PRIMARY KEY {1} {2}",
                                                   string.IsNullOrEmpty(PrimaryKey.Name)
                                                       ? string.Empty
                                                       : string.Format(CultureInfo.InvariantCulture, "CONSTRAINT {0}", PrimaryKey.Name),
-                                                  PrimaryKey.Direction));
+                                                  PrimaryKey.Direction,
+                                                  table.AutoIncrementColumn == this 
+                                                      ? "AUTOINCREMENT" 
+                                                      : string.Empty));
                 }
 
                 if (Unique != null)
@@ -424,6 +428,30 @@ namespace Mono.Data.Sqlite.Orm
                 }
 
                 return string.Format(CultureInfo.InvariantCulture, "[{0}] {1} {2}", Name, OrmHelper.SqlType(this), string.Join(" ", constraints.ToArray()));
+            }
+        }
+
+        #endregion
+
+        #region Nested type: PrimaryKeyDefinition
+
+        public class PrimaryKeyDefinition
+        {
+            internal PrimaryKeyDefinition()
+            {
+                Columns = new Column[0];
+            }
+
+            public string Name { get; internal set; }
+            public Column[] Columns { get; internal set; }
+
+            internal string GetCreateSql()
+            {
+                return string.Format(CultureInfo.InvariantCulture, "{0}PRIMARY KEY ({1})",
+                                     string.IsNullOrEmpty(Name)
+                                         ? string.Empty
+                                         : string.Format(CultureInfo.InvariantCulture, "CONSTRAINT {0} ", Name),
+                                     string.Join(", ", Columns.Select(c => c.Name)));
             }
         }
 

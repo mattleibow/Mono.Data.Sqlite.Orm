@@ -121,7 +121,6 @@ namespace Mono.Data.Sqlite.Orm.Tests
         [Table(OnPrimaryKeyConflict = ConflictResolution.Fail)]
         public class AdvancedTable
         {
-            [AutoIncrement]
             [PrimaryKey(Name = "PK_MyPrimaryKey", Direction = Direction.Desc)]
             public int Id { get; set; }
 
@@ -139,9 +138,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
             TableMapping mapping = db.GetMapping<AdvancedTable>();
             Assert.AreEqual(2, mapping.Columns.Count);
             Assert.IsNotNull(mapping.Columns[1].Unique);
-            Assert.AreEqual(true, mapping.Columns.First(c => c.Name == "Id").IsAutoIncrement);
             Assert.AreEqual(true, mapping.Columns.First(c => c.Name == "IsWorking").IsNullable);
-            Assert.AreEqual(1, mapping.PrimaryKeys.Count);
+            Assert.AreEqual(1, mapping.PrimaryKey.Columns.Length);
             Assert.AreEqual(ConflictResolution.Fail, mapping.OnPrimaryKeyConflict);
         }
 
@@ -178,9 +176,9 @@ namespace Mono.Data.Sqlite.Orm.Tests
             TableMapping mapping = db.GetMapping<VeryAdvancedTable>();
 
             Assert.AreEqual("Id <= 10", mapping.Checks.First());
-            Assert.AreEqual(2, mapping.PrimaryKeys.Count);
-            Assert.AreEqual("AnotherId", mapping.PrimaryKeys[0].Name);
-            Assert.AreEqual("Id", mapping.PrimaryKeys[1].Name);
+            Assert.AreEqual(2, mapping.PrimaryKey.Columns.Length);
+            Assert.AreEqual("AnotherId", mapping.PrimaryKey.Columns[0].Name);
+            Assert.AreEqual("Id", mapping.PrimaryKey.Columns[1].Name);
 
             TableMapping.Column idCol = mapping.Columns.First(c => c.Name == "Id");
             Assert.AreEqual("Id <= 25", idCol.Checks.First());

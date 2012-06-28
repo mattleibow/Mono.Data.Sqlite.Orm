@@ -592,7 +592,12 @@ namespace Mono.Data.Sqlite.Orm
         {
             TableMapping map = GetMapping<T>();
 
-            string[] columns = map.PrimaryKeys.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}] = ?", c.Name)).ToArray();
+            if (map.PrimaryKey == null)
+            {
+                throw new SqliteException("There are no primary keys");
+            }
+
+            string[] columns = map.PrimaryKey.Columns.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}] = ?", c.Name)).ToArray();
             string query = string.Format(CultureInfo.InvariantCulture, "SELECT * FROM [{0}] WHERE {1}", map.TableName, string.Join(" AND ", columns));
 
             return Query<T>(query, new[] {pk}.Concat(pks).ToArray());
