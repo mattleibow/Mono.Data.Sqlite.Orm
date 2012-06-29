@@ -157,6 +157,62 @@ namespace Mono.Data.Sqlite.Orm
             return indices;
         }
 
+        public static PropertyInfo[] GetProperties(Type mappedType)
+        {
+            return (from p in mappedType.GetMappableProperties()
+                    let ignore = p.GetAttributes<IgnoreAttribute>().Any()
+                    where p.CanWrite && !ignore
+                    select p).ToArray();
+        }
+
+        public static TableMapping.PrimaryKeyDefinition GetPrimaryKey(
+            IEnumerable<TableMapping.Column> columns, 
+            out TableMapping.Column autoIncCol)
+        {
+            TableMapping.PrimaryKeyDefinition primaryKey = null;
+            autoIncCol = null;
+
+            var pkCols = columns.Where(c => c.PrimaryKey != null).OrderBy(c => c.PrimaryKey.Order).ToArray();
+            if (pkCols.Any())
+            {
+                primaryKey = new TableMapping.PrimaryKeyDefinition
+                    {
+                        Columns = pkCols,
+                        Name = GetPrimaryKeyName(pkCols)
+                    };
+                var autoInc = primaryKey.Columns.Where(c => c.IsAutoIncrement).ToArray();
+                if (autoInc.Count() > 1)
+                {
+                    throw new SqliteException((int)SQLiteErrorCode.Error,
+                                              "Only one property can be an auto incrementing primary key");
+                }
+                autoIncCol = autoInc.FirstOrDefault();
+            }
+
+            return primaryKey;
+        }
+
+        private static string GetPrimaryKeyName(IEnumerable<TableMapping.Column> pkCols)
+        {
+            var pkNameCol = pkCols.FirstOrDefault(c => !string.IsNullOrWhiteSpace(c.PrimaryKey.Name));
+            string pkName = pkNameCol == null ? null : pkNameCol.PrimaryKey.Name;
+            return pkName;
+        }
+
+        public static bool GetIsColumnNullable(PropertyInfo prop)
+        {
+            Type propertyType = prop.PropertyType;
+            Type nullableType = Nullable.GetUnderlyingType(propertyType);
+
+            return (nullableType != null || !propertyType.GetTypeInfo().IsValueType) &&
+                   !prop.GetAttributes<NotNullAttribute>().Any();
+        }
+
+        public static List<string> GetChecks(Type mappedType)
+        {
+            return mappedType.GetTypeInfo().GetAttributes<CheckAttribute>().Select(x => x.Expression).ToList();
+        }
+
         public static IList<TableMapping.ForeignKey> GetForeignKeys(PropertyInfo[] properties)
         {
             var foreignKeys = new List<TableMapping.ForeignKey>();
@@ -205,6 +261,31 @@ namespace Mono.Data.Sqlite.Orm
             }
 
             return foreignKeys;
+        }
+
+        public static DataConverterAttribute GetDataConverter(PropertyInfo prop)
+        {
+            return prop.GetAttributes<DataConverterAttribute>().FirstOrDefault();
+        }
+
+        public static string[] GetChecks(PropertyInfo prop)
+        {
+            return prop.GetAttributes<CheckAttribute>().Select(x => x.Expression).ToArray();
+        }
+
+        public static UniqueAttribute GetUnique(PropertyInfo prop)
+        {
+            return prop.GetAttributes<UniqueAttribute>().FirstOrDefault();
+        }
+
+        public static bool GetIsAutoIncrement(PropertyInfo prop)
+        {
+            return prop.GetAttributes<AutoIncrementAttribute>().Any();
+        }
+
+        public static PrimaryKeyAttribute GetPrimaryKey(PropertyInfo prop)
+        {
+            return prop.GetAttributes<PrimaryKeyAttribute>().FirstOrDefault();
         }
 
         public static string GetDefaultValue(MemberInfo info)

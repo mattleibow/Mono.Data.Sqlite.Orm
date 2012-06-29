@@ -33,12 +33,9 @@ namespace Mono.Data.Sqlite.Orm
             TableName = OrmHelper.GetTableName(MappedType);
             OldTableName = OrmHelper.GetOldTableName(MappedType);
             OnPrimaryKeyConflict = OrmHelper.GetOnPrimaryKeyConflict(MappedType);
-            _properties = (from p in MappedType.GetMappableProperties()
-                           let ignore = p.GetAttributes<IgnoreAttribute>().Any()
-                           where p.CanWrite && !ignore
-                           select p).ToArray();
+            _properties = OrmHelper.GetProperties(this.MappedType);
             Columns = _properties.Select(x => new Column(x)).ToList();
-            Checks = MappedType.GetTypeInfo().GetAttributes<CheckAttribute>().Select(x => x.Expression).ToList();
+            Checks = OrmHelper.GetChecks(this.MappedType);
             ForeignKeys = OrmHelper.GetForeignKeys(_properties);
             Indexes = OrmHelper.GetIndexes(MappedType, _properties);
         }
@@ -55,23 +52,10 @@ namespace Mono.Data.Sqlite.Orm
             {
                 _columns = value;
 
-                var pkCols = Columns.Where(c => c.PrimaryKey != null).OrderBy(c => c.PrimaryKey.Order).ToArray();
-                if (pkCols.Any())
-                {
-                    var pkNameCol = pkCols.FirstOrDefault(c => !string.IsNullOrWhiteSpace(c.PrimaryKey.Name));
-                    PrimaryKey = new PrimaryKeyDefinition
-                        {
-                            Columns = pkCols,
-                            Name = pkNameCol == null ? null : pkNameCol.PrimaryKey.Name
-                        };
-                    Column[] autoInc = PrimaryKey.Columns.Where(c => c.IsAutoIncrement).ToArray();
-                    if (autoInc.Count() > 1)
-                    {
-                        throw new SqliteException((int) SQLiteErrorCode.Error,
-                                                  "Only one property can be an auto incrementing primary key");
-                    }
-                    AutoIncrementColumn = autoInc.FirstOrDefault();
-                }
+                Column autoIncCol;
+                this.PrimaryKey = OrmHelper.GetPrimaryKey(this.Columns, out autoIncCol);
+                this.AutoIncrementColumn = autoIncCol;
+
                 EditableColumns = Columns.Where(c => c != AutoIncrementColumn).ToList();
             }
         }
@@ -276,23 +260,19 @@ namespace Mono.Data.Sqlite.Orm
                 _prop = prop;
                 this._dataConverter = null;
 
-                Type nullableType = Nullable.GetUnderlyingType(prop.PropertyType);
-
                 Name = OrmHelper.GetColumnName(prop);
                 // If this type is Nullable<T> then Nullable.GetUnderlyingType returns the T,
                 // otherwise it returns null, so get the the actual type instead
                 ColumnType = OrmHelper.GetColumnType(prop);
                 Collation = OrmHelper.GetCollation(prop);
-                PrimaryKey = prop.GetAttributes<PrimaryKeyAttribute>().FirstOrDefault();
-                IsNullable = PrimaryKey == null &&
-                             (nullableType != null || !_prop.PropertyType.GetTypeInfo().IsValueType) &&
-                             !prop.GetAttributes<NotNullAttribute>().Any();
-                IsAutoIncrement = prop.GetAttributes<AutoIncrementAttribute>().Any();
-                Unique = prop.GetAttributes<UniqueAttribute>().FirstOrDefault();
+                PrimaryKey = OrmHelper.GetPrimaryKey(prop);
+                IsNullable = this.PrimaryKey == null && OrmHelper.GetIsColumnNullable(prop);
+                IsAutoIncrement = OrmHelper.GetIsAutoIncrement(prop);
+                Unique = OrmHelper.GetUnique(prop);
                 MaxStringLength = OrmHelper.GetMaxStringLength(prop);
-                Checks = prop.GetAttributes<CheckAttribute>().Select(x => x.Expression).ToArray();
+                Checks = OrmHelper.GetChecks(prop);
                 DefaultValue = OrmHelper.GetDefaultValue(prop);
-                this.DataConverterAttribute = prop.GetAttributes<DataConverterAttribute>().FirstOrDefault();
+                this.DataConverterAttribute = OrmHelper.GetDataConverter(prop);
             }
 
             public string Name { get; private set; }
