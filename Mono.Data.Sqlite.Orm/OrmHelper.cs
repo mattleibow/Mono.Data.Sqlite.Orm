@@ -6,11 +6,11 @@ using Mono.Data.Sqlite.Orm.ComponentModel;
 
 namespace Mono.Data.Sqlite.Orm
 {
-    public static class OrmHelper
+    internal static class OrmHelper
     {
-        public const int DefaultMaxStringLength = -1;
+        internal const int DefaultMaxStringLength = -1;
 
-        public static string GetForeignKeyActionString(ForeignKeyAction action)
+        internal static string GetForeignKeyActionString(ForeignKeyAction action)
         {
             string result = string.Empty;
 
@@ -36,7 +36,7 @@ namespace Mono.Data.Sqlite.Orm
             return result;
         }
 
-        public static string SqlType(TableMapping.Column p)
+        internal static string SqlType(TableMapping.Column p)
         {
             Type clrType = p.ColumnType;
             int len = p.MaxStringLength;
@@ -89,7 +89,7 @@ namespace Mono.Data.Sqlite.Orm
             throw new NotSupportedException("Don't know about " + clrType);
         }
 
-        public static string GetTableName(Type info)
+        internal static string GetTableName(Type info)
         {
             string tableName = info.Name;
 
@@ -106,19 +106,19 @@ namespace Mono.Data.Sqlite.Orm
             return tableName;
         }
 
-        public static string GetOldTableName(Type info)
+        internal static string GetOldTableName(Type info)
         {
             RenameTableAttribute[] attrs = info.GetTypeInfo().GetAttributes<RenameTableAttribute>().ToArray();
             return attrs.Any() ? attrs.First().OldName : string.Empty;
         }
 
-        public static ConflictResolution GetOnPrimaryKeyConflict(Type info)
+        internal static ConflictResolution GetOnPrimaryKeyConflict(Type info)
         {
             TableAttribute[] attrs = info.GetTypeInfo().GetAttributes<TableAttribute>().ToArray();
             return attrs.Any() ? attrs.First().OnPrimaryKeyConflict : ConflictResolution.Default;
         }
 
-        public static IList<TableMapping.Index> GetIndexes(Type info, PropertyInfo[] properties)
+        internal static IList<TableMapping.Index> GetIndexes(Type info, PropertyInfo[] properties)
         {
             var indices = new List<TableMapping.Index>();
 
@@ -157,7 +157,7 @@ namespace Mono.Data.Sqlite.Orm
             return indices;
         }
 
-        public static PropertyInfo[] GetProperties(Type mappedType)
+        internal static PropertyInfo[] GetProperties(Type mappedType)
         {
             return (from p in mappedType.GetMappableProperties()
                     let ignore = p.GetAttributes<IgnoreAttribute>().Any()
@@ -165,7 +165,7 @@ namespace Mono.Data.Sqlite.Orm
                     select p).ToArray();
         }
 
-        public static TableMapping.PrimaryKeyDefinition GetPrimaryKey(
+        internal static TableMapping.PrimaryKeyDefinition GetPrimaryKey(
             IEnumerable<TableMapping.Column> columns, 
             out TableMapping.Column autoIncCol)
         {
@@ -199,7 +199,7 @@ namespace Mono.Data.Sqlite.Orm
             return pkName;
         }
 
-        public static bool GetIsColumnNullable(PropertyInfo prop)
+        internal static bool GetIsColumnNullable(PropertyInfo prop)
         {
             Type propertyType = prop.PropertyType;
             Type nullableType = Nullable.GetUnderlyingType(propertyType);
@@ -208,12 +208,12 @@ namespace Mono.Data.Sqlite.Orm
                    !prop.GetAttributes<NotNullAttribute>().Any();
         }
 
-        public static List<string> GetChecks(Type mappedType)
+        internal static List<string> GetChecks(Type mappedType)
         {
             return mappedType.GetTypeInfo().GetAttributes<CheckAttribute>().Select(x => x.Expression).ToList();
         }
 
-        public static IList<TableMapping.ForeignKey> GetForeignKeys(PropertyInfo[] properties)
+        internal static IList<TableMapping.ForeignKey> GetForeignKeys(PropertyInfo[] properties)
         {
             var foreignKeys = new List<TableMapping.ForeignKey>();
 
@@ -263,44 +263,44 @@ namespace Mono.Data.Sqlite.Orm
             return foreignKeys;
         }
 
-        public static DataConverterAttribute GetDataConverter(PropertyInfo prop)
+        internal static DataConverterAttribute GetDataConverter(PropertyInfo prop)
         {
             return prop.GetAttributes<DataConverterAttribute>().FirstOrDefault();
         }
 
-        public static string[] GetChecks(PropertyInfo prop)
+        internal static string[] GetChecks(PropertyInfo prop)
         {
             return prop.GetAttributes<CheckAttribute>().Select(x => x.Expression).ToArray();
         }
 
-        public static UniqueAttribute GetUnique(PropertyInfo prop)
+        internal static UniqueAttribute GetUnique(PropertyInfo prop)
         {
             return prop.GetAttributes<UniqueAttribute>().FirstOrDefault();
         }
 
-        public static bool GetIsAutoIncrement(PropertyInfo prop)
+        internal static bool GetIsAutoIncrement(PropertyInfo prop)
         {
             return prop.GetAttributes<AutoIncrementAttribute>().Any();
         }
 
-        public static PrimaryKeyAttribute GetPrimaryKey(PropertyInfo prop)
+        internal static PrimaryKeyAttribute GetPrimaryKey(PropertyInfo prop)
         {
             return prop.GetAttributes<PrimaryKeyAttribute>().FirstOrDefault();
         }
 
-        public static string GetDefaultValue(MemberInfo info)
+        internal static string GetDefaultValue(MemberInfo info)
         {
             DefaultAttribute[] attrs = info.GetAttributes<DefaultAttribute>().ToArray();
             return attrs.Any() ? attrs.First().Value : null;
         }
 
-        public static Collation GetCollation(MemberInfo info)
+        internal static Collation GetCollation(MemberInfo info)
         {
             CollationAttribute[] attrs = info.GetAttributes<CollationAttribute>().ToArray();
             return attrs.Any() ? attrs.First().Collation : Collation.Default;
         }
 
-        public static string GetColumnName(MemberInfo info)
+        internal static string GetColumnName(MemberInfo info)
         {
             string name = info.Name;
 
@@ -317,7 +317,7 @@ namespace Mono.Data.Sqlite.Orm
             return name;
         }
 
-        public static int GetMaxStringLength(MemberInfo info)
+        internal static int GetMaxStringLength(MemberInfo info)
         {
             MaxLengthAttribute[] attrs = info.GetAttributes<MaxLengthAttribute>().ToArray();
             int maxLength = attrs.Any()
@@ -326,7 +326,7 @@ namespace Mono.Data.Sqlite.Orm
             return maxLength;
         }
 
-        public static Type GetColumnType(PropertyInfo prop)
+        internal static Type GetColumnType(PropertyInfo prop)
         {
             Type nullableType = Nullable.GetUnderlyingType(prop.PropertyType);
             var type = nullableType ?? prop.PropertyType;
