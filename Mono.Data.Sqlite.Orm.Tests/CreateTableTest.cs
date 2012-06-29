@@ -46,8 +46,15 @@ namespace Mono.Data.Sqlite.Orm.Tests
             {
                 db.CreateTable<SimpleTable>();
 
-                TableMapping mapping = db.GetMapping<SimpleTable>();
-                Assert.AreEqual(4, mapping.Columns.Count);
+                var sql = new TableMapping(typeof(SimpleTable)).GetCreateSql();
+                var correct = 
+@"CREATE TABLE [SimpleTable] (
+[Id] integer NOT NULL,
+[Name] text ,
+[BigInt] bigint NOT NULL,
+[IsWorking] integer NOT NULL);";
+
+                Assert.AreEqual(correct, sql);
             }
         }
 
@@ -86,6 +93,16 @@ namespace Mono.Data.Sqlite.Orm.Tests
             using (var db = new OrmTestSession())
             {
                 db.CreateTable<EnumTable>();
+
+                var sql = new TableMapping(typeof(EnumTable)).GetCreateSql();
+                var correct =
+@"CREATE TABLE [EnumTable] (
+[Type] varchar(1) NOT NULL,
+[Age] integer NOT NULL,
+[Kind] text NOT NULL);";
+
+                Assert.AreEqual(correct, sql);
+
                 db.Insert(new EnumTable
                               {
                                   Type = EnumTable.PersonType.Child,
@@ -114,6 +131,16 @@ namespace Mono.Data.Sqlite.Orm.Tests
             db.CreateTable<CustomTable>();
 
             TableMapping mapping = db.GetMapping<CustomTable>();
+
+            var sql = mapping.GetCreateSql();
+            var correct =
+@"CREATE TABLE [DifferentName] (
+[Id] integer NOT NULL,
+[NewName] text ,
+[IsWorking] integer NOT NULL);";
+
+            Assert.AreEqual(correct, sql);
+
             Assert.AreEqual("DifferentName", mapping.TableName);
             Assert.AreEqual("NewName", mapping.Columns[1].Name);
         }
@@ -136,6 +163,15 @@ namespace Mono.Data.Sqlite.Orm.Tests
             db.CreateTable<AdvancedTable>();
 
             TableMapping mapping = db.GetMapping<AdvancedTable>();
+
+            var sql = mapping.GetCreateSql();
+            var correct =
+@"CREATE TABLE [AdvancedTable] (
+[Id] integer CONSTRAINT PK_MyPrimaryKey PRIMARY KEY Desc ON CONFLICT Fail NOT NULL,
+[IsWorking] integer UNIQUE ON CONFLICT Rollback);";
+
+            Assert.AreEqual(correct, sql);
+
             Assert.AreEqual(2, mapping.Columns.Count);
             Assert.IsNotNull(mapping.Columns[1].Unique);
             Assert.AreEqual(true, mapping.Columns.First(c => c.Name == "IsWorking").IsNullable);
@@ -174,6 +210,18 @@ namespace Mono.Data.Sqlite.Orm.Tests
             db.CreateTable<VeryAdvancedTable>();
 
             TableMapping mapping = db.GetMapping<VeryAdvancedTable>();
+
+            var sql = mapping.GetCreateSql();
+            var correct =
+@"CREATE TABLE [VeryAdvancedTable] (
+[Id] integer NOT NULL CHECK (Id <= 25),
+[DiffName] varchar(255) COLLATE RTrim,
+[IsWorking] integer NOT NULL DEFAULT(1),
+[AnotherId] integer NOT NULL,
+CONSTRAINT PK_MyPrimaryKey PRIMARY KEY (AnotherId, Id Desc),
+CHECK (Id <= 10));";
+
+            Assert.AreEqual(correct, sql);
 
             Assert.AreEqual("Id <= 10", mapping.Checks.First());
             Assert.AreEqual(2, mapping.PrimaryKey.Columns.Length);
@@ -265,6 +313,20 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             TableMapping refingMap = db.GetMapping<ReferencingTable>();
 
+            var sql = refingMap.GetCreateSql();
+            var correct =
+@"CREATE TABLE [ReferencingTable] (
+[RefId] integer NOT NULL,
+[RandomName] integer NOT NULL,
+CONSTRAINT FK_Foreign_Key FOREIGN KEY (RefId)
+REFERENCES ReferencedTable (Id)
+  FOREIGN KEY (RandomName)
+REFERENCES ReferencedTable (Id2)
+ON UPDATE CASCADE
+);";
+
+            Assert.AreEqual(correct, sql);
+
             Assert.AreEqual(2, refingMap.ForeignKeys.Count);
             Assert.AreEqual(1, refingMap.ForeignKeys.Count(f => f.Name == "FK_Foreign_Key"));
             TableMapping.ForeignKey[] fk = refingMap.ForeignKeys.Where(f => f.ChildTable == "ReferencedTable").ToArray();
@@ -298,6 +360,17 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             TableMapping refingMap = db.GetMapping<MultiReferencingTable>();
 
+            var sql = refingMap.GetCreateSql();
+            var correct =
+@"CREATE TABLE [MultiReferencingTable] (
+[RefId] integer NOT NULL,
+[Indexed] integer NOT NULL,
+CONSTRAINT FK_Foreign_Key FOREIGN KEY (Indexed, RefId)
+REFERENCES MultiReferencedTable (Id2, Id)
+);";
+
+            Assert.AreEqual(correct, sql);
+
             Assert.AreEqual(1, refingMap.ForeignKeys.Count);
             Assert.AreEqual("FK_Foreign_Key", refingMap.ForeignKeys.First().Name);
             TableMapping.ForeignKey[] fk = refingMap.ForeignKeys.Where(f => f.ChildTable == "MultiReferencedTable").ToArray();
@@ -323,7 +396,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             public int Indexed { get; set; }
         }
 
-        [Index("IX_MultiIndexedTable")]
+        [Index("IX_MultiIndexedTable", Unique = true)]
         public class MultiIndexedTable
         {
             [Indexed("IX_MultiIndexedTable", Collation = Collation.RTrim)]
@@ -342,6 +415,13 @@ namespace Mono.Data.Sqlite.Orm.Tests
             db.CreateTable<IndexedTable>();
             TableMapping tableMap = db.GetMapping<IndexedTable>();
 
+            var sql = tableMap.Indexes.Single().GetCreateSql("IndexedTable");
+            var correct =
+@"CREATE UNIQUE INDEX [IX_TabelIndex] on [IndexedTable] (
+[Indexed]  );";
+
+            Assert.AreEqual(correct, sql);
+
             var tblIdx = tableMap.Indexes.Where(i => i.IndexName == "IX_TabelIndex").ToArray();
             Assert.AreEqual(1, tblIdx.Count());
             Assert.AreEqual(true, tblIdx.First().Unique);
@@ -354,6 +434,13 @@ namespace Mono.Data.Sqlite.Orm.Tests
             db.CreateTable<IndexedColumnTable>();
             TableMapping columnMap = db.GetMapping<IndexedColumnTable>();
 
+            var sql = columnMap.Indexes.Single().GetCreateSql("IndexedColumnTable");
+            var correct =
+@"CREATE  INDEX [IX_SomeName] on [IndexedColumnTable] (
+[Indexed] COLLATE RTrim );";
+
+            Assert.AreEqual(correct, sql);
+
             var colIdx = columnMap.Indexes.Where(i => i.IndexName == "IX_SomeName").ToArray();
             Assert.AreEqual(1, colIdx.Count());
             Assert.AreEqual(Collation.RTrim, colIdx.First().Columns.First().Collation);
@@ -365,6 +452,14 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var db = new OrmTestSession();
             db.CreateTable<MultiIndexedTable>();
             TableMapping multiMap = db.GetMapping<MultiIndexedTable>();
+
+            var sql = multiMap.Indexes.Single().GetCreateSql("MultiIndexedTable");
+            var correct =
+@"CREATE UNIQUE INDEX [IX_MultiIndexedTable] on [MultiIndexedTable] (
+[Indexed] COLLATE RTrim ,
+[Second]  Desc);";
+
+            Assert.AreEqual(correct, sql);
 
             var multiIdx = multiMap.Indexes.Where(i => i.IndexName == "IX_MultiIndexedTable").ToArray();
             Assert.AreEqual(1, multiIdx.Count());

@@ -119,7 +119,7 @@ namespace Mono.Data.Sqlite.Orm
             return _insertCommand;
         }
 
-        private string GetInsertSql(ConflictResolution extra, bool withDefaults)
+        public string GetInsertSql(ConflictResolution extra, bool withDefaults)
         {
             var extraText = extra == ConflictResolution.Default
                                 ? string.Empty
@@ -147,12 +147,12 @@ namespace Mono.Data.Sqlite.Orm
             return commandText;
         }
 
-        internal string GetUpdateSql<T>(T obj, List<object> args)
+        public string GetUpdateSql<T>(T obj, List<object> args)
         {
             return GetUpdateSql(obj, ConflictResolution.Default, args);
         }
 
-        internal string GetUpdateSql<T>(T obj, ConflictResolution extra, List<object> args)
+        public string GetUpdateSql<T>(T obj, ConflictResolution extra, List<object> args)
         {
             if (PrimaryKey == null)
             {
@@ -188,7 +188,7 @@ namespace Mono.Data.Sqlite.Orm
             return _updateSql;
         }
 
-        internal string GetDeleteSql<T>(T obj, List<object> args)
+        public string GetDeleteSql<T>(T obj, List<object> args)
         {
             if (PrimaryKey == null)
             {
@@ -209,7 +209,7 @@ namespace Mono.Data.Sqlite.Orm
             return _deleteSql;
         }
 
-        internal string GetUpdateSql(string propertyName, object propertyValue,
+        public string GetUpdateSql(string propertyName, object propertyValue,
                                      List<object> args,
                                      object pk, params object[] pks)
         {
@@ -224,18 +224,18 @@ namespace Mono.Data.Sqlite.Orm
             return string.Format(CultureInfo.InvariantCulture, "UPDATE [{0}] SET [{1}] = ? WHERE {2}", TableName, propertyName, whereClause);
         }
 
-        internal string GetUpdateAllSql(string propertyName, object propertyValue, List<object> args)
+        public string GetUpdateAllSql(string propertyName, object propertyValue, List<object> args)
         {
             args.Add(propertyValue);
             return string.Format(CultureInfo.InvariantCulture, "UPDATE [{0}] SET [{1}] = ?", TableName, propertyName);
         }
 
-        internal string GetRenameSql()
+        public string GetRenameSql()
         {
             return string.Format(CultureInfo.InvariantCulture, "ALTER TABLE [{0}] RENAME TO [{1}]", OldTableName, TableName);
         }
 
-        internal string GetCreateSql()
+        public string GetCreateSql()
         {
             var constraints = new List<string>
                                   {
@@ -391,16 +391,21 @@ namespace Mono.Data.Sqlite.Orm
             {
                 var constraints = new List<string>();
 
-                if (PrimaryKey != null && table.PrimaryKey.Columns.Length <= 1)
+                if (PrimaryKey != null && table.PrimaryKey.Columns.Length == 1)
                 {
-                    constraints.Add(string.Format(CultureInfo.InvariantCulture, "{0} PRIMARY KEY {1} {2}",
+                    constraints.Add(string.Format(CultureInfo.InvariantCulture, "{0} PRIMARY KEY {1}",
                                                   string.IsNullOrEmpty(PrimaryKey.Name)
                                                       ? string.Empty
                                                       : string.Format(CultureInfo.InvariantCulture, "CONSTRAINT {0}", PrimaryKey.Name),
-                                                  PrimaryKey.Direction,
-                                                  table.AutoIncrementColumn == this 
-                                                      ? "AUTOINCREMENT" 
-                                                      : string.Empty));
+                                                  PrimaryKey.Direction));
+                    if (table.OnPrimaryKeyConflict != ConflictResolution.Default)
+                    {
+                        constraints.Add(string.Format(CultureInfo.InvariantCulture, "ON CONFLICT {0}", table.OnPrimaryKeyConflict));
+                    }
+                    if (table.AutoIncrementColumn == this)
+                    {
+                        constraints.Add("AUTOINCREMENT");
+                    }
                 }
 
                 if (Unique != null)
@@ -451,7 +456,9 @@ namespace Mono.Data.Sqlite.Orm
                                      string.IsNullOrEmpty(Name)
                                          ? string.Empty
                                          : string.Format(CultureInfo.InvariantCulture, "CONSTRAINT {0} ", Name),
-                                     string.Join(", ", Columns.Select(c => c.Name)));
+                                         string.Join(", ", Columns.Select(c => c.Name + (c.PrimaryKey.Direction != Direction.Default 
+                                                                                              ? " " + c.PrimaryKey.Direction
+                                                                                              : string.Empty))));
             }
         }
 
@@ -532,7 +539,7 @@ namespace Mono.Data.Sqlite.Orm
             public bool Unique { get; internal set; }
             public IList<IndexedColumn> Columns { get; private set; }
 
-            internal string GetCreateSql(string tableName)
+            public string GetCreateSql(string tableName)
             {
                 IEnumerable<string> cols = from c in Columns
                                            orderby c.Order
