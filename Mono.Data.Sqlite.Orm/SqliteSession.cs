@@ -679,10 +679,23 @@ namespace Mono.Data.Sqlite.Orm
         /// <returns>
         ///   The number of rows added to the table.
         /// </returns>
-        public int Insert<T>()
+        public int InsertDefaults<T>()
             where T : class
         {
-            return Insert<T>(null);
+            return this.InsertDefaults<T>(ConflictResolution.Default);
+        }
+
+        /// <summary>
+        ///   Inserts a record in the table with the specified defaults as the column values.
+        /// </summary>
+        /// <returns>
+        ///   The number of rows added to the table.
+        /// </returns>
+        public int InsertDefaults<T>(ConflictResolution extra)
+        {
+            DbCommand insertCmd = GetMapping<T>().GetInsertCommand(Connection, extra, true);
+            TraceCommand(insertCmd);
+            return insertCmd.ExecuteNonQuery();
         }
 
         /// <summary>
@@ -715,25 +728,25 @@ namespace Mono.Data.Sqlite.Orm
         /// </returns>
         public int Insert<T>(T obj, ConflictResolution extra)
         {
-            TableMapping map = GetMapping<T>();
-
             var instance = obj as object;
 
-            DbCommand insertCmd = map.GetInsertCommand(Connection, extra, instance == null);
-
-            if (instance != null)
+            if (instance == null)
             {
+                throw new ArgumentNullException("obj", "Cannot insert a null object.");
+            }
+
+            TableMapping map = GetMapping<T>();
+
+            DbCommand insertCmd = map.GetInsertCommand(Connection, extra, false);
+
                 var args = map.EditableColumns.Select(x => x.GetValue(obj));
                                                          
                 AddCommandParameters(insertCmd, args.ToArray());
-            }
 
             TraceCommand(insertCmd);
 
             int count = insertCmd.ExecuteNonQuery();
 
-            if (instance != null)
-            {
                 var tracked = obj as ITrackConnection;
                 if (tracked != null)
                 {
@@ -744,7 +757,6 @@ namespace Mono.Data.Sqlite.Orm
                 {
                     map.AutoIncrementColumn.SetValue(obj, GetLastInsertRowId());
                 }
-            }
 
             return count;
         }

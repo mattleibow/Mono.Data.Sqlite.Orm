@@ -167,7 +167,7 @@ namespace Mono.Data.Sqlite.Orm
                     });
         }
 
-        public Task<int> InsertAsync<T>()
+        public Task<int> InsertDefaultsAsync<T>()
             where T : class
         {
             return Task.Factory.StartNew(
@@ -176,7 +176,7 @@ namespace Mono.Data.Sqlite.Orm
                         SqliteSession conn = this.GetAsyncConnection();
                         using (conn.Lock())
                         {
-                            return conn.Insert<T>(null);
+                            return conn.InsertDefaults<T>();
                         }
                     });
         }

@@ -285,7 +285,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var db = new OrmTestSession();
             db.CreateTable<DefaultsObject>();
 
-            int numIn = db.Insert<DefaultsObject>();
+            int numIn = db.InsertDefaults<DefaultsObject>();
 
             Assert.AreEqual(numIn, 1, "Num inserted must = 1");
 
