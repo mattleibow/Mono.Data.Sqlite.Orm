@@ -51,7 +51,9 @@ namespace Mono.Data.Sqlite.Orm.Tests
 @"CREATE TABLE [NamedCompositePrimaryKeyTable] (
 [FirstId] integer NOT NULL,
 [SecondId] integer NOT NULL,
-CONSTRAINT PK_Alfred PRIMARY KEY (FirstId, SecondId));";
+CONSTRAINT PK_Alfred
+PRIMARY KEY ([FirstId], [SecondId])
+);";
 
             Assert.AreEqual(correct, sql);
 

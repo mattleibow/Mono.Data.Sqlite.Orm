@@ -219,29 +219,6 @@ namespace Mono.Data.Sqlite.Orm
             return string.Format(CultureInfo.InvariantCulture, "ALTER TABLE [{0}] RENAME TO [{1}]", OldTableName, TableName);
         }
 
-        public string GetCreateSql()
-        {
-            var constraints = new List<string>
-                                  {
-                                      string.Join(",\n", Columns.Select(c => c.GetCreateSql(this)).ToArray())
-                                  };
-            if (PrimaryKey != null && PrimaryKey.Columns.Length > 1)
-            {
-                constraints.Add(PrimaryKey.GetCreateSql());
-            }
-            if (Checks.Any())
-            {
-                constraints.Add(string.Join(" ", Checks.Select(c => string.Format(CultureInfo.InvariantCulture, "CHECK ({0})", c)).ToArray()));
-            }
-            if (ForeignKeys.Any())
-            {
-                constraints.Add(string.Join(" ", ForeignKeys.Select(fk => fk.GetCreateSql()).ToArray()));
-            }
-            string definition = string.Join(",\n", constraints.ToArray()); // cols, pk, fk, chk
-
-            return string.Format(CultureInfo.InvariantCulture, "CREATE TABLE [{0}] (\n{1});", TableName, definition);
-        }
-
         #region Nested type: Column
 
         public class Column
@@ -429,17 +406,6 @@ namespace Mono.Data.Sqlite.Orm
 
             public string Name { get; internal set; }
             public Column[] Columns { get; internal set; }
-
-            internal string GetCreateSql()
-            {
-                return string.Format(CultureInfo.InvariantCulture, "{0}PRIMARY KEY ({1})",
-                                     string.IsNullOrEmpty(Name)
-                                         ? string.Empty
-                                         : string.Format(CultureInfo.InvariantCulture, "CONSTRAINT {0} ", Name),
-                                         string.Join(", ", Columns.Select(c => c.Name + (c.PrimaryKey.Direction != Direction.Default 
-                                                                                              ? " " + c.PrimaryKey.Direction
-                                                                                              : string.Empty))));
-            }
         }
 
         #endregion
@@ -460,42 +426,6 @@ namespace Mono.Data.Sqlite.Orm
             public ForeignKeyAction OnUpdate { get; internal set; }
             public NullMatch NullMatch { get; internal set; }
             public Deferred Deferred { get; internal set; }
-
-            internal string GetCreateSql()
-            {
-                var sb = new StringBuilder();
-
-                sb.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0} FOREIGN KEY ({1})",
-                                            string.IsNullOrEmpty(Name)
-                                                ? string.Empty
-                                                : string.Format(CultureInfo.InvariantCulture, "CONSTRAINT {0}", Name),
-                                            string.Join(", ", Keys.Keys.ToArray())));
-                sb.AppendLine(string.Format(CultureInfo.InvariantCulture, "REFERENCES {0} ({1})",
-                                            ChildTable,
-                                            string.Join(", ", Keys.Values.ToArray())));
-                if (OnUpdate != ForeignKeyAction.Default)
-                {
-                    sb.Append("ON UPDATE ");
-                    sb.AppendLine(OrmHelper.GetForeignKeyActionString(OnUpdate));
-                }
-                if (OnDelete != ForeignKeyAction.Default)
-                {
-                    sb.Append("ON DELETE ");
-                    sb.AppendLine(OrmHelper.GetForeignKeyActionString(OnDelete));
-                }
-                if (NullMatch != NullMatch.Default)
-                {
-                    sb.Append("MATCH ");
-                    sb.AppendLine(NullMatch.ToString());
-                }
-                if (Deferred != Deferred.Default)
-                {
-                    sb.Append("DEFERRABLE INITIALLY ");
-                    sb.AppendLine(Deferred.ToString());
-                }
-
-                return sb.ToString();
-            }
         }
 
         #endregion
@@ -519,27 +449,6 @@ namespace Mono.Data.Sqlite.Orm
             public bool Unique { get; internal set; }
             public IList<IndexedColumn> Columns { get; private set; }
 
-            public string GetCreateSql(string tableName)
-            {
-                IEnumerable<string> cols = from c in Columns
-                                           orderby c.Order
-                                           select string.Format(CultureInfo.InvariantCulture, "[{0}] {1} {2}",
-                                                                c.ColumnName,
-                                                                c.Collation == Collation.Default
-                                                                    ? string.Empty
-                                                                    : string.Format(CultureInfo.InvariantCulture, "COLLATE {0}", c.Collation),
-                                                                c.Direction == Direction.Default
-                                                                    ? string.Empty
-                                                                    : c.Direction.ToString());
-                string columnDefs = string.Join(",\n", cols.ToArray());
-
-                return string.Format(CultureInfo.InvariantCulture, "CREATE {0} INDEX [{1}] on [{2}] (\n{3});",
-                                     Unique ? "UNIQUE" : string.Empty,
-                                     IndexName,
-                                     tableName,
-                                     columnDefs);
-            }
-
             #region Nested type: IndexedColumn
 
             public class IndexedColumn
@@ -559,5 +468,181 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         #endregion
+    }
+
+    public static class SqliteWriter
+    {
+        public static string GetCreateSql(this TableMapping.Index index, string tableName)
+        {
+            var sb = new StringBuilder();
+            sb.Append("CREATE ");
+            if (index.Unique)
+            {
+                sb.Append("UNIQUE ");
+            }
+            sb.Append("INDEX [");
+            sb.Append(index.IndexName);
+            sb.Append("] on [");
+            sb.Append(tableName);
+            sb.AppendLine("] (");
+            sb.Append("[");
+            bool first = true;
+            foreach (var column in index.Columns.OrderBy(c => c.Order))
+            {
+                if (!first)
+                {
+                    sb.AppendLine(",");
+                    sb.Append("[");
+                }
+                sb.Append(column.ColumnName);
+                sb.Append("]");
+                if (column.Collation != Collation.Default)
+                {
+                    sb.Append(" COLLATE ");
+                    sb.Append(column.Collation);
+                }
+                if (column.Direction != Direction.Default)
+                {
+                    sb.Append(" ");
+                    sb.Append(column.Direction);
+                }
+                first = false;
+            }
+            sb.AppendLine();
+            sb.Append(");");
+            return sb.ToString();
+        }
+
+        public static string GetCreateSql(this TableMapping table)
+        {
+            var sb = new StringBuilder();
+            sb.Append("CREATE TABLE [");
+            sb.Append(table.TableName);
+            sb.Append("] (");
+            sb.AppendLine();
+            bool first = true;
+            foreach (var column in table.Columns)
+            {
+                if (!first)
+                {
+                    sb.AppendLine(",");
+                }
+                sb.Append(column.GetCreateSql(table));
+                first = false;
+            }
+            if (table.PrimaryKey != null && table.PrimaryKey.Columns.Length > 1)
+            {
+                sb.AppendLine(",");
+                sb.Append(table.PrimaryKey.GetCreateSql());
+            }
+            if (table.ForeignKeys.Any())
+            {
+                sb.AppendLine(",");
+                first = true;
+                foreach (var key in table.ForeignKeys)
+                {
+                    if (!first)
+                    {
+                        sb.AppendLine(",");
+                    }
+                    sb.Append(key.GetCreateSql());
+                    first = false;
+                }
+            }
+            if (table.Checks.Any())
+            {
+                sb.AppendLine(",");
+                first = true;
+                foreach (var check in table.Checks)
+                {
+                    if (!first)
+                    {
+                        sb.AppendLine(",");
+                    }
+                    sb.Append("CHECK (");
+                    sb.Append(check);
+                    sb.Append(")");
+                    first = false;
+                }
+            }
+            sb.AppendLine();
+            sb.Append(");");
+            return sb.ToString();
+        }
+
+        public static string GetCreateSql(this TableMapping.PrimaryKeyDefinition primaryKey)
+        {
+            var sb = new StringBuilder();
+            if (!string.IsNullOrWhiteSpace(primaryKey.Name))
+            {
+                sb.Append("CONSTRAINT ");
+                sb.Append(primaryKey.Name);
+                sb.AppendLine();
+            }
+            sb.Append("PRIMARY KEY ([");
+            bool first = true;
+            foreach (var column in primaryKey.Columns)
+            {
+                if (!first)
+                {
+                    sb.Append(", [");
+                }
+                sb.Append(column.Name);
+                sb.Append("]");
+                if (column.PrimaryKey.Direction != Direction.Default)
+                {
+                    sb.Append(" ");
+                    sb.Append(column.PrimaryKey.Direction);
+                }
+                first = false;
+            }
+            sb.Append(")");
+            return sb.ToString();
+        }
+
+        public static string GetCreateSql(this TableMapping.ForeignKey foreignKey)
+        {
+            var sb = new StringBuilder();
+            if (!string.IsNullOrWhiteSpace(foreignKey.Name))
+            {
+                sb.Append("CONSTRAINT ");
+                sb.Append(foreignKey.Name);
+                sb.AppendLine();
+            }
+            sb.Append("FOREIGN KEY ([");
+            sb.Append(string.Join("], [", foreignKey.Keys.Keys));
+            sb.Append("])");
+            sb.AppendLine();
+            sb.Append("REFERENCES [");
+            sb.Append(foreignKey.ChildTable);
+            sb.Append("] ([");
+            sb.Append(string.Join("], [", foreignKey.Keys.Values));
+            sb.Append("])");
+            if (foreignKey.OnUpdate != ForeignKeyAction.Default)
+            {
+                sb.AppendLine();
+                sb.Append("ON UPDATE ");
+                sb.Append(OrmHelper.GetForeignKeyActionString(foreignKey.OnUpdate));
+            }
+            if (foreignKey.OnDelete != ForeignKeyAction.Default)
+            {
+                sb.AppendLine();
+                sb.Append("ON DELETE ");
+                sb.Append(OrmHelper.GetForeignKeyActionString(foreignKey.OnDelete));
+            }
+            if (foreignKey.NullMatch != NullMatch.Default)
+            {
+                sb.AppendLine();
+                sb.Append("MATCH ");
+                sb.Append(foreignKey.NullMatch.ToString());
+            }
+            if (foreignKey.Deferred != Deferred.Default)
+            {
+                sb.AppendLine();
+                sb.Append("DEFERRABLE INITIALLY ");
+                sb.Append(foreignKey.Deferred.ToString());
+            }
+            return sb.ToString();
+        }
     }
 }

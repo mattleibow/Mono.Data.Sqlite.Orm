@@ -52,7 +52,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
 [Id] integer NOT NULL,
 [Name] text ,
 [BigInt] bigint NOT NULL,
-[IsWorking] integer NOT NULL);";
+[IsWorking] integer NOT NULL
+);";
 
                 Assert.AreEqual(correct, sql);
             }
@@ -99,7 +100,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
 @"CREATE TABLE [EnumTable] (
 [Type] varchar(1) NOT NULL,
 [Age] integer NOT NULL,
-[Kind] text NOT NULL);";
+[Kind] text NOT NULL
+);";
 
                 Assert.AreEqual(correct, sql);
 
@@ -137,7 +139,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
 @"CREATE TABLE [DifferentName] (
 [Id] integer NOT NULL,
 [NewName] text ,
-[IsWorking] integer NOT NULL);";
+[IsWorking] integer NOT NULL
+);";
 
             Assert.AreEqual(correct, sql);
 
@@ -168,7 +171,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var correct =
 @"CREATE TABLE [AdvancedTable] (
 [Id] integer CONSTRAINT PK_MyPrimaryKey PRIMARY KEY Desc ON CONFLICT Fail NOT NULL,
-[IsWorking] integer UNIQUE ON CONFLICT Rollback);";
+[IsWorking] integer UNIQUE ON CONFLICT Rollback
+);";
 
             Assert.AreEqual(correct, sql);
 
@@ -218,8 +222,10 @@ namespace Mono.Data.Sqlite.Orm.Tests
 [DiffName] varchar(255) COLLATE RTrim,
 [IsWorking] integer NOT NULL DEFAULT(1),
 [AnotherId] integer NOT NULL,
-CONSTRAINT PK_MyPrimaryKey PRIMARY KEY (AnotherId, Id Desc),
-CHECK (Id <= 10));";
+CONSTRAINT PK_MyPrimaryKey
+PRIMARY KEY ([AnotherId], [Id] Desc),
+CHECK (Id <= 10)
+);";
 
             Assert.AreEqual(correct, sql);
 
@@ -318,10 +324,11 @@ CHECK (Id <= 10));";
 @"CREATE TABLE [ReferencingTable] (
 [RefId] integer NOT NULL,
 [RandomName] integer NOT NULL,
-CONSTRAINT FK_Foreign_Key FOREIGN KEY (RefId)
-REFERENCES ReferencedTable (Id)
-  FOREIGN KEY (RandomName)
-REFERENCES ReferencedTable (Id2)
+CONSTRAINT FK_Foreign_Key
+FOREIGN KEY ([RefId])
+REFERENCES [ReferencedTable] ([Id]),
+FOREIGN KEY ([RandomName])
+REFERENCES [ReferencedTable] ([Id2])
 ON UPDATE CASCADE
 );";
 
@@ -365,8 +372,9 @@ ON UPDATE CASCADE
 @"CREATE TABLE [MultiReferencingTable] (
 [RefId] integer NOT NULL,
 [Indexed] integer NOT NULL,
-CONSTRAINT FK_Foreign_Key FOREIGN KEY (Indexed, RefId)
-REFERENCES MultiReferencedTable (Id2, Id)
+CONSTRAINT FK_Foreign_Key
+FOREIGN KEY ([Indexed], [RefId])
+REFERENCES [MultiReferencedTable] ([Id2], [Id])
 );";
 
             Assert.AreEqual(correct, sql);
@@ -418,7 +426,8 @@ REFERENCES MultiReferencedTable (Id2, Id)
             var sql = tableMap.Indexes.Single().GetCreateSql("IndexedTable");
             var correct =
 @"CREATE UNIQUE INDEX [IX_TabelIndex] on [IndexedTable] (
-[Indexed]  );";
+[Indexed]
+);";
 
             Assert.AreEqual(correct, sql);
 
@@ -436,8 +445,9 @@ REFERENCES MultiReferencedTable (Id2, Id)
 
             var sql = columnMap.Indexes.Single().GetCreateSql("IndexedColumnTable");
             var correct =
-@"CREATE  INDEX [IX_SomeName] on [IndexedColumnTable] (
-[Indexed] COLLATE RTrim );";
+@"CREATE INDEX [IX_SomeName] on [IndexedColumnTable] (
+[Indexed] COLLATE RTrim
+);";
 
             Assert.AreEqual(correct, sql);
 
@@ -456,8 +466,9 @@ REFERENCES MultiReferencedTable (Id2, Id)
             var sql = multiMap.Indexes.Single().GetCreateSql("MultiIndexedTable");
             var correct =
 @"CREATE UNIQUE INDEX [IX_MultiIndexedTable] on [MultiIndexedTable] (
-[Indexed] COLLATE RTrim ,
-[Second]  Desc);";
+[Indexed] COLLATE RTrim,
+[Second] Desc
+);";
 
             Assert.AreEqual(correct, sql);
 
