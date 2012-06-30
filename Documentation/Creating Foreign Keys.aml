@@ -1,0 +1,389 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="cddb6e1d-37fb-4671-964c-18befb7037da" revisionNumber="1">
+  <developerConceptualDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <!--
+    <summary>
+      <para>Optional summary abstract</para>
+    </summary>
+    -->
+
+    <introduction>
+      
+      <para>
+        Mono.Data.Sqlite.Orm can create any type of foreign keys: from the very simple
+        to almost any type that can be create with a SQL command, but all without
+        writing a single line of T-SQL.
+      </para>
+      
+      <autoOutline />
+
+    </introduction>
+
+    <section address="SimpleFK">
+      <title>A Single Reference</title>
+      <content>
+        <autoOutline />
+        <para>
+          Suppose we have a tiny program that we use to organize our personal book
+          collection:
+        </para>
+        <para>
+          This application will allow us to create both books and categories:
+        </para>
+        <list class="bullet">
+          <listItem>
+            <para>
+              A book can only go under one category.
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              A category may have many books.
+            </para>
+          </listItem>
+        </list>
+        <para>
+          We also want a very simple model that only records the necessary data:
+        </para>
+
+        <list class="bullet">
+          <listItem>
+            <para>A book has an Id (unique to our collection), a Title and a Category.</para>
+          </listItem>
+          <listItem>
+            <para>
+              A category has an Id (for reference by a book) and a Name
+            </para>
+          </listItem>
+        </list>
+        
+        <para>
+          We would like the database to keep track of our Ids so that we don&#39;t have to
+          write any code to make sure that the Ids are unique.
+        </para>
+        <para>
+          How do we do all of this? We can create a class with members that are decorated
+          by Attributes.
+        </para>
+
+        <code language="c#" title="The Categories Table">
+          <![CDATA[
+// Defines the structure of the Category table
+public class Category
+{
+    [PrimaryKey]
+    [AutoIncrement]
+    public int Id { get; set; }
+
+    public string Name { get; set; }
+}
+]]>
+        </code>
+
+        <code language="c#" title="The Books Table">
+          <![CDATA[
+// Defines the structure of the Book table
+public class Book 
+{
+    [PrimaryKey]
+    [AutoIncrement] 
+    public int Id { get; set; }
+
+    public string Title { get; set; } 
+
+    [ForeignKey(typeof(Category), "Id", Name = "FK_Book_Category")] 
+    public int CategoryId { get; set; }
+}
+]]>
+        </code>
+        
+        <para>Now we can create the tables in the database:</para>
+
+        <code language="c#" title="Create Database">
+          <![CDATA[
+public void CreateDatabase()
+{
+    using (var db = new SqliteSession(connectionString))
+    {
+        db.CreateTable<Category>();
+        db.CreateTable<Book>();
+    }
+}
+]]>
+        </code>
+        <para>This creates and executes the following SQL on the database:</para>
+
+        <code language="sql" title="The Categories Table">
+          <![CDATA[
+-- Create the categories table
+CREATE TABLE [Category] (
+    [Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+    [Name] text 
+);
+          ]]>
+        </code>
+       
+        <code language="sql" title="The Books Table">
+          <![CDATA[
+-- Create the books table with the foreign key
+CREATE TABLE [Book] (
+    [Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+    [Title] text,
+    [CategoryId] integer NOT NULL, 
+
+    CONSTRAINT FK_Book_Category  -- FK name
+        FOREIGN KEY (CategoryId) -- column in this table 
+        REFERENCES Category (Id) -- column in the other table 
+);
+          ]]>
+        </code>
+        <para>
+          The <codeEntityReference>T:Mono.Data.Sqlite.Orm.ComponentModel.ForeignKeyAttribute</codeEntityReference> 
+          has several properties that we can set to determine how the foreign key will be created:
+        </para>
+
+        <list class="bullet">
+          <listItem>
+            <para>
+              <codeEntityReference>P:Mono.Data.Sqlite.Orm.ComponentModel.ForeignKeyAttribute.Name</codeEntityReference> - this 
+              allows you to provide a custom name for this constraint. 
+              If none is specified, SQLite will create a random name.
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <codeEntityReference>P:Mono.Data.Sqlite.Orm.ComponentModel.ForeignKeyAttribute.ChildTable</codeEntityReference> - this
+              is the other table that is referenced in the foreign key. It is required.
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <codeEntityReference>P:Mono.Data.Sqlite.Orm.ComponentModel.ForeignKeyAttribute.ChildKey</codeEntityReference> - this
+              is the column that is referenced in the other table. It is required.
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <codeEntityReference>P:Mono.Data.Sqlite.Orm.ComponentModel.ForeignKeyAttribute.Order</codeEntityReference> - this
+              allows you to specify the position in which to place the column reference if you have a multi-column foreign key.
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <codeEntityReference>P:Mono.Data.Sqlite.Orm.ComponentModel.ForeignKeyAttribute.OnDeleteAction</codeEntityReference> - this
+              allows you to specify the action to take when the referenced record is deleted.
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <codeEntityReference>P:Mono.Data.Sqlite.Orm.ComponentModel.ForeignKeyAttribute.OnUpdateAction</codeEntityReference> - this
+              allows you to specify the action to take when the referenced record is updated.
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <codeEntityReference>P:Mono.Data.Sqlite.Orm.ComponentModel.ForeignKeyAttribute.NullMatch</codeEntityReference> - this
+              allows you to specify the null matching.
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <codeEntityReference>P:Mono.Data.Sqlite.Orm.ComponentModel.ForeignKeyAttribute.Deferred</codeEntityReference> - this
+              allows you to specify the deffered value.
+            </para>
+          </listItem>
+        </list>
+
+        <para>
+          Only two properties are required to they provide the information to create the
+          foreign key: <codeEntityReference>P:Mono.Data.Sqlite.Orm.ComponentModel.ForeignKeyAttribute.ChildTable</codeEntityReference> and <codeEntityReference>P:Mono.Data.Sqlite.Orm.ComponentModel.ForeignKeyAttribute.ChildKey</codeEntityReference>. These values are provided in the
+          <codeEntityReference>M:Mono.Data.Sqlite.Orm.ComponentModel.ForeignKeyAttribute.#ctor(System.Type,System.String)</codeEntityReference>.
+        </para>
+        
+      </content>
+      
+      <!-- If a section contains a sections element, its content creates
+           sub-sections.  These are not collapsible.
+      <sections>
+          <section address="SubSection1">
+              <title>Sub-section 1</title>
+              <content>
+                  <para>Sub-section content.</para>
+              </content>
+          </section>
+          <section address="SubSection2">
+              <title>Sub-section 2</title>
+              <content>
+                  <para>Sub-section content.</para>
+              </content>
+          </section>
+      </sections> -->
+      
+    </section>
+
+    <section address="CompositeFK">
+      <!--h2-->
+      <title>
+        Composite foreign keys
+      </title>
+      <content>
+        <para>
+          Suppose for a moment that we are some great developers for a international bank.
+          This bank has &quot;Bank Accounts&quot; that they provide for clients to use to hold the
+          client&#39;s money. This bank provides different types of accounts: Smart accounts,
+          Savings accounts and Cheque accounts. Internally, they are exactly the same, but
+          they need to flood the client with &quot;types&quot; to make it look like the client is
+          benefiting. Accounts have transaction history which is a record of client
+          deposits, bank fees and, if the client is luck and rich, withdrawals. We are
+          going to be designing such a system.
+        </para>
+        <para>
+          There are 3 entities here:
+        </para>
+        <list class="ordered">
+          <listItem>Bank Accounts</listItem>
+          <listItem>Account Types</listItem>
+          <listItem>Account Transactions</listItem>
+        </list>
+
+        <para>
+          Account Types is a very simple entity: it only has a unique id, a name.
+          Now in our first prototype (because we are very poor architects) we use an enum.
+        </para>
+        <code language="c#" title="The Account Type">
+         <![CDATA[
+public enum AccountType
+{
+    Smart,
+    Savings,
+    Cheque
+}         
+         ]]>
+        </code>
+        <para>
+          Now we need to make the bank account. This has a composite primary key: the
+          AccountId and the AccountType. We need to do this as there are going to be so
+          many accounts that we need to allow for more accounts than can be represented by
+          a single number. So we use a second number as well. Here is what we do:
+        </para>
+        <code language="c#" title="The Bank Account">
+            <![CDATA[
+public class BankAccount
+{
+    [PrimaryKey]
+    public long AccountId { get; set; }
+
+    [PrimaryKey]
+    public AccountType AccountType { get; set; }
+
+    public string ClientId { get; set; }
+
+    public decimal Balance { get; set; }
+}
+          ]]>
+        </code>
+        <para>
+          This will generate
+          some cool SQL, and as you can see, we have a composite primary key as well:
+        </para>
+        <code language="sql" title="The Bank Account Table">
+            <![CDATA[
+CREATE TABLE [BankAccount] (
+    [AccountId] bigint NOT NULL,
+    [AccountType] integer NOT NULL,
+    [ClientId] text,
+    [Balance] float NOT NULL,
+
+    PRIMARY KEY (AccountId, AccountType)
+);
+        ]]>
+        </code>
+        <para>
+          Now for the exciting stuff, the foreign keys and the transactions. This bank
+          doesn&#39;t care where the money comes in from or where the money goes out to. All
+          they need is which account and what amount:
+        </para>
+        <code language="c#" title="The Bank Account Transaction">
+      <![CDATA[
+public class AccountTransaction
+{
+    [ForeignKey(typeof(BankAccount), "AccountId", Name = "FK_AccountTransaction")]
+    public long AccountId { get; set; }
+
+    [ForeignKey(typeof(BankAccount), "AccountType", Name = "FK_AccountTransaction")]
+    public AccountType AccountType { get; set; }
+
+    public decimal Amount { get; set; }
+}
+]]>
+        </code>
+
+        <para>
+          In the above example, we specify a foreign key name so that the ORM knows that
+          we are referring to the same foreign key, and thus makes it a composite key.
+          This will generate some more SQL:
+        </para>
+        <code language="sql" title="Bank Account Transaction Table">
+          <![CDATA[
+CREATE TABLE [AccountTransaction] (
+    [AccountId] bigint NOT NULL,
+    [AccountType] integer NOT NULL,
+    [Amount] float NOT NULL,
+
+    -- Our cool foreign key
+    CONSTRAINT FK_AccountTransaction
+        FOREIGN KEY (AccountId, AccountType)
+        REFERENCES BankAccount (AccountId, AccountType)
+);
+]]>
+        </code>
+        <para>
+          And as you can see, our database is ready to go.
+        </para>
+
+
+      </content>
+    </section>
+
+    <relatedTopics>
+      <!-- One or more of the following:
+           - A local link
+           - An external link
+           - A code entity reference
+
+      <link xlink:href="Other Topic's ID"/>
+      <link xlink:href="Other Topic's ID">Link inner text</link>
+
+      <externalLink>
+          <linkText>Link text</linkText>
+          <linkAlternateText>Optional alternate link text</linkAlternateText>
+          <linkUri>URI</linkUri>
+      </externalLink>
+
+      <codeEntityReference>API member ID</codeEntityReference>
+
+      Examples:
+
+      <link xlink:href="00e97994-e9e6-46e0-b420-5be86b2f8270" />
+      <link xlink:href="00e97994-e9e6-46e0-b420-5be86b2f8278">Some other topic</link>
+
+      <externalLink>
+          <linkText>SHFB on CodePlex</linkText>
+          <linkAlternateText>Go to CodePlex</linkAlternateText>
+          <linkUri>http://shfb.codeplex.com</linkUri>
+      </externalLink>
+
+      <codeEntityReference>T:TestDoc.TestClass</codeEntityReference>
+      <codeEntityReference>P:TestDoc.TestClass.SomeProperty</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.#ctor</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.#ctor(System.String,System.Int32)</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.ToString</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.FirstMethod</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.SecondMethod(System.Int32,System.String)</codeEntityReference>
+      -->
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>

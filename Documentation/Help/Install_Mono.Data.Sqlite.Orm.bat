@@ -12,12 +12,12 @@ REM full path is required on the executable and the HelpContentSetup.msha file.
 
 REM Uninstall first in case it is already there.  If not, it won't install
 REM below.  We'll ignore any error output by redirecting it to NUL.
-HelpLibraryManagerLauncher.exe /product "VS" /version "100" /locale en-us /uninstall /silent /vendor "Vendor Name" /mediaBookList "A Sandcastle Documented Class Library" /productName "A Sandcastle Documented Class Library" > NUL
+HelpLibraryManagerLauncher.exe /product "VS" /version "100" /locale en-us /uninstall /silent /vendor "Vendor Name" /mediaBookList "Mono.Data.Sqlite.Orm" /productName "Mono.Data.Sqlite.Orm" > NUL
 
 REM The setup name must be HelpContentSetup.msha so make sure we copy the
 REM setup file to that name.  SHFB names it after the help file so that
 REM multiple files can be deployed to the same output older at build time.
-IF EXIST "Documentation.msha" COPY /Y "Documentation.msha" HelpContentSetup.msha
+IF EXIST "Mono.Data.Sqlite.Orm.msha" COPY /Y "Mono.Data.Sqlite.Orm.msha" HelpContentSetup.msha
 
 REM Install the new content.
 HelpLibraryManagerLauncher.exe /product "VS" /version "100" /locale en-us /brandingPackage Dev10.mshc /sourceMedia HelpContentSetup.msha
@@ -29,6 +29,6 @@ GOTO Exit
 REM The Help Library Manager Launcher tool does not support MS Help Viewer 2 yet so this calls the tool directly
 REM for temporary support.
 
-"%SYSTEMDRIVE%\Program Files\Microsoft Help Viewer\v2.0\HlpCtntMgr.exe" /operation install /catalogName VisualStudio11 /locale en-us /sourceUri "%CD%\Documentation.msha"
+"%SYSTEMDRIVE%\Program Files\Microsoft Help Viewer\v2.0\HlpCtntMgr.exe" /operation install /catalogName VisualStudio11 /locale en-us /sourceUri "%CD%\Mono.Data.Sqlite.Orm.msha"
 
 :Exit
