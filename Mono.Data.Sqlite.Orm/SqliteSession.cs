@@ -52,14 +52,21 @@ namespace Mono.Data.Sqlite.Orm
         /// <param name = "connectionString">
         ///   Specifies the path to the database file.
         /// </param>
-        public SqliteSession(string connectionString)
+        /// <param name="autoOpen">
+        ///   True if the connection must be opened now.
+        /// </param>
+        public SqliteSession(string connectionString, bool autoOpen = true)
         {
             SessionGuid = Guid.NewGuid();
 
             this.ConnectionString = connectionString;
 
             Connection = new SqliteConnection(this.ConnectionString);
-            Connection.Open();
+            
+            if (autoOpen)
+            {
+                Connection.Open();
+            }
         }
 
         /// <summary>
