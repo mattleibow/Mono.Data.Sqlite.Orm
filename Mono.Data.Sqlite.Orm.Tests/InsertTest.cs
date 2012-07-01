@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Transactions;
 using Mono.Data.Sqlite.Orm.ComponentModel;
 using NUnit.Framework;
 
@@ -68,6 +70,40 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             [Default("'Default Text'")]
             public string Text { get; set; }
+        }
+
+        [Test]
+        public void InsertUsingSystemTransactions()
+        {
+            var options = new TransactionOptions {IsolationLevel = IsolationLevel.ReadCommitted};
+            var tempFileName = Path.GetTempFileName();
+            SqliteSession.Trace = true;
+
+            using (var db = new SqliteSession("Data Source=" + tempFileName + ";DefaultTimeout=100", false))
+            {
+                db.Connection.Open();
+                db.CreateTable<TestObj>();
+                db.Connection.Close();
+
+                using (var trans = new TransactionScope(TransactionScopeOption.Required, options))
+                {
+                    db.Connection.Open();
+                    db.Insert(new TestObj { Text = "My Text" });
+                }
+            
+                Assert.AreEqual(0, db.Table<TestObj>().Count());
+
+                db.Connection.Close();
+
+                using (var trans = new TransactionScope(TransactionScopeOption.Required, options))
+                {
+                    db.Connection.Open();
+                    db.Insert(new TestObj { Text = "My Text" });
+                    trans.Complete();
+                }
+
+                Assert.AreEqual(1, db.Table<TestObj>().Count());
+            }
         }
 
         [Test]
