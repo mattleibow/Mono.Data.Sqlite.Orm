@@ -96,39 +96,11 @@ namespace Mono.Data.Sqlite.Orm
                 }
 
                 _insertCommand = connection.CreateCommand();
-                _insertCommand.CommandText = GetInsertSql(extra, withDefaults);
+                _insertCommand.CommandText = this.GetInsertSql(extra, withDefaults);
                 _insertCommand.Prepare();
             }
 
             return _insertCommand;
-        }
-
-        public string GetInsertSql(ConflictResolution extra, bool withDefaults)
-        {
-            var extraText = extra == ConflictResolution.Default
-                                ? string.Empty
-                                : string.Format(CultureInfo.InvariantCulture, "OR {0}", extra);
-
-            string commandText;
-
-            if (withDefaults)
-            {
-                commandText = string.Format(CultureInfo.InvariantCulture, "INSERT {1} INTO [{0}] DEFAULT VALUES",
-                                            TableName,
-                                            extraText);
-            }
-            else
-            {
-                var colNames = EditableColumns.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}]", c.Name));
-                string columns = string.Join(",", colNames.ToArray());
-                commandText = string.Format(CultureInfo.InvariantCulture, "INSERT {3} INTO [{0}] ({1}) VALUES ({2})",
-                                            TableName,
-                                            columns,
-                                            string.Join(",", EditableColumns.Select(c => "?").ToArray()),
-                                            extraText);
-            }
-
-            return commandText;
         }
 
         public string GetUpdateSql<T>(T obj, List<object> args)
@@ -212,11 +184,6 @@ namespace Mono.Data.Sqlite.Orm
         {
             args.Add(propertyValue);
             return string.Format(CultureInfo.InvariantCulture, "UPDATE [{0}] SET [{1}] = ?", TableName, propertyName);
-        }
-
-        public string GetRenameSql()
-        {
-            return string.Format(CultureInfo.InvariantCulture, "ALTER TABLE [{0}] RENAME TO [{1}]", OldTableName, TableName);
         }
 
         #region Nested type: Column
@@ -472,6 +439,45 @@ namespace Mono.Data.Sqlite.Orm
 
     public static class SqliteWriter
     {
+        public static string GetInsertSql(this TableMapping table, ConflictResolution extra, bool withDefaults)
+        {
+            var sb = new StringBuilder();
+
+            sb.Append("INSERT");
+            if (extra != ConflictResolution.Default)
+            {
+                sb.Append(" OR ");
+                sb.Append(extra);
+            }
+            sb.Append(" INTO ");
+            sb.Append(Quote(table.TableName));
+
+            if (withDefaults)
+            {
+                sb.Append(" DEFAULT VALUES");
+            }
+            else
+            {
+                sb.Append(" (");
+                sb.Append(string.Join(", ", table.EditableColumns.Select(c => Quote(c.Name))));
+                sb.Append(") VALUES (");
+                sb.Append(string.Join(", ", Enumerable.Repeat("?", table.EditableColumns.Count)));
+                sb.Append(")");
+            }
+
+            return sb.ToString();
+        }
+
+        public static string GetRenameSql(this TableMapping table)
+        {
+            var sb = new StringBuilder();
+            sb.Append("ALTER TABLE ");
+            sb.Append(Quote(table.OldTableName));
+            sb.Append(" RENAME TO ");
+            sb.Append(Quote(table.TableName));
+            return sb.ToString();
+        }
+
         public static string GetCreateSql(this TableMapping.Index index, string tableName)
         {
             var sb = new StringBuilder();
@@ -480,22 +486,19 @@ namespace Mono.Data.Sqlite.Orm
             {
                 sb.Append("UNIQUE ");
             }
-            sb.Append("INDEX [");
-            sb.Append(index.IndexName);
-            sb.Append("] on [");
-            sb.Append(tableName);
-            sb.AppendLine("] (");
-            sb.Append("[");
+            sb.Append("INDEX ");
+            sb.Append(Quote(index.IndexName));
+            sb.Append(" on ");
+            sb.Append(Quote(tableName));
+            sb.AppendLine(" (");
             bool first = true;
             foreach (var column in index.Columns.OrderBy(c => c.Order))
             {
                 if (!first)
                 {
                     sb.AppendLine(",");
-                    sb.Append("[");
                 }
-                sb.Append(column.ColumnName);
-                sb.Append("]");
+                sb.Append(Quote(column.ColumnName));
                 if (column.Collation != Collation.Default)
                 {
                     sb.Append(" COLLATE ");
@@ -516,9 +519,9 @@ namespace Mono.Data.Sqlite.Orm
         public static string GetCreateSql(this TableMapping table)
         {
             var sb = new StringBuilder();
-            sb.Append("CREATE TABLE [");
-            sb.Append(table.TableName);
-            sb.Append("] (");
+            sb.Append("CREATE TABLE ");
+            sb.Append(Quote(table.TableName));
+            sb.Append(" (");
             sb.AppendLine();
             bool first = true;
             foreach (var column in table.Columns)
@@ -579,16 +582,15 @@ namespace Mono.Data.Sqlite.Orm
                 sb.Append(primaryKey.Name);
                 sb.AppendLine();
             }
-            sb.Append("PRIMARY KEY ([");
+            sb.Append("PRIMARY KEY (");
             bool first = true;
             foreach (var column in primaryKey.Columns)
             {
                 if (!first)
                 {
-                    sb.Append(", [");
+                    sb.Append(", ");
                 }
-                sb.Append(column.Name);
-                sb.Append("]");
+                sb.Append(Quote(column.Name));
                 if (column.PrimaryKey.Direction != Direction.Default)
                 {
                     sb.Append(" ");
@@ -606,18 +608,18 @@ namespace Mono.Data.Sqlite.Orm
             if (!string.IsNullOrWhiteSpace(foreignKey.Name))
             {
                 sb.Append("CONSTRAINT ");
-                sb.Append(foreignKey.Name);
+                sb.Append(Quote(foreignKey.Name));
                 sb.AppendLine();
             }
-            sb.Append("FOREIGN KEY ([");
-            sb.Append(string.Join("], [", foreignKey.Keys.Keys));
-            sb.Append("])");
+            sb.Append("FOREIGN KEY (");
+            sb.Append(string.Join(", ", foreignKey.Keys.Keys.Select(Quote)));
+            sb.Append(")");
             sb.AppendLine();
-            sb.Append("REFERENCES [");
-            sb.Append(foreignKey.ChildTable);
-            sb.Append("] ([");
-            sb.Append(string.Join("], [", foreignKey.Keys.Values));
-            sb.Append("])");
+            sb.Append("REFERENCES ");
+            sb.Append(Quote(foreignKey.ChildTable));
+            sb.Append(" (");
+            sb.Append(string.Join(", ", foreignKey.Keys.Values.Select(Quote)));
+            sb.Append(")");
             if (foreignKey.OnUpdate != ForeignKeyAction.Default)
             {
                 sb.AppendLine();
@@ -634,15 +636,20 @@ namespace Mono.Data.Sqlite.Orm
             {
                 sb.AppendLine();
                 sb.Append("MATCH ");
-                sb.Append(foreignKey.NullMatch.ToString());
+                sb.Append(foreignKey.NullMatch);
             }
             if (foreignKey.Deferred != Deferred.Default)
             {
                 sb.AppendLine();
                 sb.Append("DEFERRABLE INITIALLY ");
-                sb.Append(foreignKey.Deferred.ToString());
+                sb.Append(foreignKey.Deferred);
             }
             return sb.ToString();
+        }
+
+        private static string Quote(string name)
+        {
+            return "[" + name + "]";
         }
     }
 }

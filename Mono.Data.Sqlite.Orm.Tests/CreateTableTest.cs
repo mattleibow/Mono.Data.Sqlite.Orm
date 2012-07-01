@@ -324,7 +324,7 @@ CHECK (Id <= 10)
 @"CREATE TABLE [ReferencingTable] (
 [RefId] integer NOT NULL,
 [RandomName] integer NOT NULL,
-CONSTRAINT FK_Foreign_Key
+CONSTRAINT [FK_Foreign_Key]
 FOREIGN KEY ([RefId])
 REFERENCES [ReferencedTable] ([Id]),
 FOREIGN KEY ([RandomName])
@@ -372,7 +372,7 @@ ON UPDATE CASCADE
 @"CREATE TABLE [MultiReferencingTable] (
 [RefId] integer NOT NULL,
 [Indexed] integer NOT NULL,
-CONSTRAINT FK_Foreign_Key
+CONSTRAINT [FK_Foreign_Key]
 FOREIGN KEY ([Indexed], [RefId])
 REFERENCES [MultiReferencedTable] ([Id2], [Id])
 );";
