@@ -38,6 +38,9 @@ namespace Mono.Data.Sqlite.Orm
             Checks = OrmHelper.GetChecks(this.MappedType);
             ForeignKeys = OrmHelper.GetForeignKeys(_properties);
             Indexes = OrmHelper.GetIndexes(MappedType, _properties);
+
+            Virtual = OrmHelper.GetVirtual(MappedType);
+            Tokenizer = OrmHelper.GetTokenizer(MappedType);
         }
 
         public Type MappedType { get; private set; }
@@ -66,6 +69,9 @@ namespace Mono.Data.Sqlite.Orm
         public IList<string> Checks { get; private set; }
         public IList<ForeignKey> ForeignKeys { get; private set; }
         public IList<Index> Indexes { get; private set; }
+
+        public VirtualAttribute Virtual { get; private set; }
+        public TokenizerAttribute Tokenizer { get; private set; }
 
         internal Column FindColumn(string name)
         {
@@ -519,8 +525,18 @@ namespace Mono.Data.Sqlite.Orm
         public static string GetCreateSql(this TableMapping table)
         {
             var sb = new StringBuilder();
-            sb.Append("CREATE TABLE ");
+            sb.Append("CREATE ");
+            if (table.Virtual != null)
+            {
+                sb.Append("VIRTUAL ");
+            }
+            sb.Append("TABLE ");
             sb.Append(Quote(table.TableName));
+            if (table.Virtual != null)
+            {
+                sb.Append(" USING ");
+                sb.Append(table.Virtual.ModuleName);
+            }
             sb.Append(" (");
             sb.AppendLine();
             bool first = true;
@@ -533,6 +549,14 @@ namespace Mono.Data.Sqlite.Orm
                 sb.Append(column.GetCreateSql(table));
                 first = false;
             }
+
+            if (table.Virtual != null && table.Tokenizer != null)
+            {
+                sb.AppendLine(",");
+                sb.Append("tokenize=");
+                sb.Append(table.Tokenizer.FullValue);
+            }
+
             if (table.PrimaryKey != null && table.PrimaryKey.Columns.Length > 1)
             {
                 sb.AppendLine(",");

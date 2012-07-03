@@ -344,5 +344,17 @@ namespace Mono.Data.Sqlite.Orm
 
             return type;
         }
+
+        public static VirtualAttribute GetVirtual(Type mappedType)
+        {
+            var attrs = mappedType.GetTypeInfo().GetAttributes<VirtualAttribute>();
+            return attrs.FirstOrDefault();
+        }
+
+        public static TokenizerAttribute GetTokenizer(Type mappedType)
+        {
+            var attrs = mappedType.GetTypeInfo().GetAttributes<TokenizerAttribute>();
+            return attrs.FirstOrDefault();
+        }
     }
 }

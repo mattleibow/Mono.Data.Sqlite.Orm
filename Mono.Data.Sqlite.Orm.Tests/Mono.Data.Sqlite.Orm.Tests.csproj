@@ -63,6 +63,7 @@
       <HintPath>..\Libraries\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Transactions" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -71,6 +72,7 @@
     <Compile Include="ByteArrayTest.cs" />
     <Compile Include="CollateTest.cs" />
     <Compile Include="ColumnTypesTest.cs" />
+    <Compile Include="CreateVirtualTableTest.cs" />
     <Compile Include="DataConverterTest.cs" />
     <Compile Include="DropTableTest.cs" />
     <Compile Include="HooksTest.cs" />
