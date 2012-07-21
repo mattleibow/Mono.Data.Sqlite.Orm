@@ -2,10 +2,6 @@ using System.Diagnostics;
 using System.IO;
 using System;
 
-#if NETFX_CORE
-using Windows.Storage;
-#endif
-
 namespace Mono.Data.Sqlite.Orm.Tests
 {
     public class OrmTestSession : SqliteSession
@@ -14,7 +10,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
 #if SILVERLIGHT || WINDOWS_PHONE
             : base("Data Source=Some" + DateTime.Now.Ticks + ".db,DefaultTimeout=100")
 #elif NETFX_CORE
-            : base("Data Source=file:" + ApplicationData.Current.TemporaryFolder.Path + "\\TestDatabase" + DateTime.Now.Ticks + ".db,DefaultTimeout=100")
+            : base("Data Source=" + Windows.Storage.ApplicationData.Current.TemporaryFolder.Path + "\\TestDatabase" + DateTime.Now.Ticks + ".db,DefaultTimeout=100;Pooling=true")
 #else
             : base("Data Source=" + Path.GetTempFileName() + ";DefaultTimeout=100")
 #endif

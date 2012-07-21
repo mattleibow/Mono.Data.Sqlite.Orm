@@ -1,7 +1,18 @@
 ﻿using System;
 using System.Linq;
 using Mono.Data.Sqlite.Orm.ComponentModel;
+
+#if SILVERLIGHT 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#elif NETFX_CORE
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
+using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#else
 using NUnit.Framework;
+#endif
 
 namespace Mono.Data.Sqlite.Orm.Tests
 {
@@ -26,7 +37,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
         // BUG: zero length arrays returned as null in Silverlight 
         //  - http://code.google.com/p/csharp-sqlite/issues/detail?id=149
         [Test]
-        [Description("Create objects with various byte arrays and check they can be stored and retrieved correctly")]
+        // [Description("Create objects with various byte arrays and check they can be stored and retrieved correctly")]
         public void ByteArrays()
         {
             //Byte Arrays for comparisson
@@ -66,7 +77,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
         }
 
         [Test]
-        [Description("Create A large byte array and check it can be stored and retrieved correctly")]
+        // [Description("Create A large byte array and check it can be stored and retrieved correctly")]
         public void LargeByteArray()
         {
             const int byteArraySize = 1024*1024;

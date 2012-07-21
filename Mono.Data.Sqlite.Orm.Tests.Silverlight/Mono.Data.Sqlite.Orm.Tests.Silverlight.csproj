@@ -46,21 +46,27 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Community.CsharpSqlite.SQLiteClient.WP">
-      <HintPath>..\Libraries\Community.CsharpSqlite.SQLiteClient.WP.dll</HintPath>
+    <Reference Include="Community.CsharpSqlite.Silverlight">
+      <HintPath>..\Libraries\Silverlight\Community.CsharpSqlite.Silverlight.dll</HintPath>
     </Reference>
-    <Reference Include="Community.CsharpSqlite.WinPhone">
-      <HintPath>..\Libraries\Community.CsharpSqlite.WinPhone.dll</HintPath>
+    <Reference Include="Microsoft.Silverlight.Testing">
+      <HintPath>..\Libraries\Silverlight\Microsoft.Silverlight.Testing.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight">
+      <HintPath>..\Libraries\Silverlight\Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Data.Sqlite">
+      <HintPath>..\Libraries\Silverlight\Mono.Data.Sqlite.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
-    <Reference Include="NUnitLite">
-      <HintPath>..\Libraries\NUnitLite.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Data.Ersatz.WinPhone">
-      <HintPath>..\Libraries\System.Data.Ersatz.WinPhone.dll</HintPath>
+    <Reference Include="System.Data">
+      <HintPath>..\Libraries\Silverlight\System.Data.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.SL4">
       <HintPath>..\packages\System.Threading.Tasks.3.0.1\lib\sl40\System.Threading.Tasks.SL4.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions">
+      <HintPath>..\Libraries\Silverlight\System.Transactions.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows" />
     <Reference Include="system" />
@@ -136,6 +142,7 @@
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\UnicodeTest.cs">
       <Link>UnicodeTest.cs</Link>
     </Compile>
+    <Compile Include="ExceptionAssert.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -143,7 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.Data.Sqlite.Orm.Silverlight\Mono.Data.Sqlite.Orm.Silverlight.csproj">
-      <Project>{BDE6E6EB-EB99-434B-84DB-ED243EC2BDC8}</Project>
+      <Project>{bde6e6eb-eb99-434b-84db-ed243ec2bdc8}</Project>
       <Name>Mono.Data.Sqlite.Orm.Silverlight</Name>
     </ProjectReference>
   </ItemGroup>

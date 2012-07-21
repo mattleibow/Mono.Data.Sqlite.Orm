@@ -174,21 +174,21 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Community.CsharpSqlite.SQLiteClient.WinRT, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Mono.Data.Sqlite, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\Community.CsharpSqlite.SQLiteClient.WinRT.dll</HintPath>
-    </Reference>
-    <Reference Include="Community.CsharpSqlite.WinRT, Version=3.7.7.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\Community.CsharpSqlite.WinRT.dll</HintPath>
+      <HintPath>..\Libraries\Metro\Mono.Data.Sqlite.dll</HintPath>
     </Reference>
     <Reference Include="NUnitLite.Metro, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\NUnitLite.Metro.dll</HintPath>
+      <HintPath>..\Libraries\Metro\NUnitLite.Metro.dll</HintPath>
     </Reference>
-    <Reference Include="System.Data.Ersatz.WinRT, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\System.Data.Ersatz.WinRT.dll</HintPath>
+      <HintPath>..\Libraries\Metro\System.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\Metro\System.Transactions.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

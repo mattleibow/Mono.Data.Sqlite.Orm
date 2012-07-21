@@ -2,7 +2,18 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Mono.Data.Sqlite.Orm.ComponentModel;
+
+#if SILVERLIGHT 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#elif NETFX_CORE
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
+using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#else
 using NUnit.Framework;
+#endif
 
 namespace Mono.Data.Sqlite.Orm.Tests
 {
@@ -75,7 +86,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(testObj.Id, stringContainsTest.Id);
             var finder = "name";
             stringContainsTest = (from n in db.Table<TestObj>() where n.Name.StartsWith(finder) select n).SingleOrDefault();
-            Assert.Null(stringContainsTest);
+            Assert.IsNull(stringContainsTest);
         }
 
         [Test]
@@ -91,7 +102,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(testObj.Id, stringContainsTest.Id);
             var finder = "is";
             stringContainsTest = (from n in db.Table<TestObj>() where n.Name.EndsWith(finder) select n).SingleOrDefault();
-            Assert.Null(stringContainsTest);
+            Assert.IsNull(stringContainsTest);
         }
     }
 }

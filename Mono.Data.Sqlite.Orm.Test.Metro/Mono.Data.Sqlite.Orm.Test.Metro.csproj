@@ -6,14 +6,15 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{B76E23CF-7FCB-4489-AE62-466F5E2D6579}</ProjectGuid>
+    <ProjectGuid>{65CB694A-1859-4ADE-B5B0-7F9062B67BED}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Mono.Data.Sqlite.Orm.Metro</RootNamespace>
-    <AssemblyName>Mono.Data.Sqlite.Orm.Metro</AssemblyName>
+    <RootNamespace>Mono.Data.Sqlite.Orm.Test.Metro</RootNamespace>
+    <AssemblyName>Mono.Data.Sqlite.Orm.Test.Metro</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PackageCertificateKeyFile>Mono.Data.Sqlite.Orm.Test.Metro_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,7 +42,6 @@
     <PlatformTarget>ARM</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>ExpressRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
@@ -53,7 +53,6 @@
     <PlatformTarget>ARM</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>ExpressRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
@@ -65,7 +64,6 @@
     <PlatformTarget>x64</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>ExpressRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
@@ -77,7 +75,6 @@
     <PlatformTarget>x64</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>ExpressRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
@@ -89,7 +86,6 @@
     <PlatformTarget>x86</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>ExpressRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
@@ -101,113 +97,112 @@
     <PlatformTarget>x86</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>ExpressRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <AppXPackage>True</AppXPackage>
+    <AppxPackageIncludePrivateSymbols>true</AppxPackageIncludePrivateSymbols>
+  </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\AutoIncrementAttribute.cs">
-      <Link>ComponentModel\AutoIncrementAttribute.cs</Link>
+    <!--A reference to the entire .Net Framework and Windows SDK are automatically included-->
+    <SDKReference Include="MSTestFramework, Version=11.0" />
+    <SDKReference Include="TestPlatform, Version=11.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\AsyncTests.cs">
+      <Link>AsyncTests.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\CheckAttribute.cs">
-      <Link>ComponentModel\CheckAttribute.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\BooleanTest.cs">
+      <Link>BooleanTest.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\Collation.cs">
-      <Link>ComponentModel\Collation.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\ByteArrayTest.cs">
+      <Link>ByteArrayTest.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\CollationAttribute.cs">
-      <Link>ComponentModel\CollationAttribute.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\CollateTest.cs">
+      <Link>CollateTest.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\ColumnAttribute.cs">
-      <Link>ComponentModel\ColumnAttribute.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\ColumnTypesTest.cs">
+      <Link>ColumnTypesTest.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\ConflictResolution.cs">
-      <Link>ComponentModel\ConflictResolution.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\ConnectionTrackingTest.cs">
+      <Link>ConnectionTrackingTest.cs</Link>
     </Compile>
-    <Compile Include="..\mono.data.sqlite.orm\componentmodel\DataConverterAttribute.cs">
-      <Link>ComponentModel\DataConverterAttribute.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\ContainsTest.cs">
+      <Link>ContainsTest.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\DefaultAttribute.cs">
-      <Link>ComponentModel\DefaultAttribute.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\CreateTableTest.cs">
+      <Link>CreateTableTest.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\Deferred.cs">
-      <Link>ComponentModel\Deferred.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\DataConverterTest.cs">
+      <Link>DataConverterTest.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\Direction.cs">
-      <Link>ComponentModel\Direction.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\DropTableTest.cs">
+      <Link>DropTableTest.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\EnumAffinityAttribute.cs">
-      <Link>ComponentModel\EnumAffinityAttribute.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\HooksTest.cs">
+      <Link>HooksTest.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\ForeignKeyAction.cs">
-      <Link>ComponentModel\ForeignKeyAction.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\InheritanceTest.cs">
+      <Link>InheritanceTest.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\ForeignKeyAttribute.cs">
-      <Link>ComponentModel\ForeignKeyAttribute.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\InsertTest.cs">
+      <Link>InsertTest.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\IgnoreAttribute.cs">
-      <Link>ComponentModel\IgnoreAttribute.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\InterfaceTests.cs">
+      <Link>InterfaceTests.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\IndexAttribute.cs">
-      <Link>ComponentModel\IndexAttribute.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\LinqTests.cs">
+      <Link>LinqTests.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\IndexedAttribute.cs">
-      <Link>ComponentModel\IndexedAttribute.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\MigrateTableTest.cs">
+      <Link>MigrateTableTest.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\MaxLengthAttribute.cs">
-      <Link>ComponentModel\MaxLengthAttribute.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\MultiplePKs.cs">
+      <Link>MultiplePKs.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\NotNullAttribute.cs">
-      <Link>ComponentModel\NotNullAttribute.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\NullableTest.cs">
+      <Link>NullableTest.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\NullMatch.cs">
-      <Link>ComponentModel\NullMatch.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\OrmAsyncTestSession.cs">
+      <Link>OrmAsyncTestSession.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\PrimaryKeyAttribute.cs">
-      <Link>ComponentModel\PrimaryKeyAttribute.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\OrmTestSession.cs">
+      <Link>OrmTestSession.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\RenameTableAttribute.cs">
-      <Link>ComponentModel\RenameTableAttribute.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\SkipTest.cs">
+      <Link>SkipTest.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\TableAttribute.cs">
-      <Link>ComponentModel\TableAttribute.cs</Link>
-    </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\UniqueAttribute.cs">
-      <Link>ComponentModel\UniqueAttribute.cs</Link>
-    </Compile>
-    <Compile Include="..\mono.data.sqlite.orm\dataconverter\IDataConverter.cs">
-      <Link>DataConverter\IDataConverter.cs</Link>
-    </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\Extensions.cs">
-      <Link>Extensions.cs</Link>
-    </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\InstanceCreatedEventArgs.cs">
-      <Link>InstanceCreatedEventArgs.cs</Link>
-    </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ITrackConnection.cs">
-      <Link>ITrackConnection.cs</Link>
-    </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\OrmHelper.cs">
-      <Link>OrmHelper.cs</Link>
-    </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteConnectionPool.cs">
-      <Link>SqliteConnectionPool.cs</Link>
-    </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteSession.Async.cs">
-      <Link>SqliteSession.Async.cs</Link>
-    </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteSession.cs">
-      <Link>SqliteSession.cs</Link>
-    </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\TableMapping.cs">
-      <Link>TableMapping.cs</Link>
-    </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\TableQuery.Async.cs">
-      <Link>TableQuery.Async.cs</Link>
-    </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\TableQuery.cs">
-      <Link>TableQuery.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\UnicodeTest.cs">
+      <Link>UnicodeTest.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+    <None Include="Mono.Data.Sqlite.Orm.Test.Metro_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Images\UnitTestLogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\UnitTestSmallLogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\UnitTestSplashScreen.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\UnitTestStoreLogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="sqlite3.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mono.Data.Sqlite.Orm.Metro\Mono.Data.Sqlite.Orm.Metro.csproj">
+      <Project>{b76e23cf-7fcb-4489-ae62-466f5e2d6579}</Project>
+      <Name>Mono.Data.Sqlite.Orm.Metro</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Mono.Data.Sqlite">
@@ -217,15 +212,19 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libraries\Metro\System.Data.dll</HintPath>
     </Reference>
+    <Reference Include="System.Transactions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\Metro\System.Transactions.dll</HintPath>
+    </Reference>
   </ItemGroup>
-  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' ">
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
-  </Target>
+  </Target>  
   <Target Name="AfterBuild">
   </Target>
   -->

@@ -1,7 +1,18 @@
 ﻿using Mono.Data.Sqlite.Orm.ComponentModel;
-using NUnit.Framework;
 
-#if SILVERLIGHT || WINDOWS_PHONE || NETFX_CORE
+#if SILVERLIGHT 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#elif NETFX_CORE
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
+using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#else
+using NUnit.Framework;
+#endif
+
+#if WINDOWS_PHONE
 using Community.CsharpSqlite.SQLiteClient;
 #endif
 

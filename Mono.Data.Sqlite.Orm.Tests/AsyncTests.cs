@@ -4,7 +4,18 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Mono.Data.Sqlite.Orm.ComponentModel;
+
+#if SILVERLIGHT 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#elif NETFX_CORE
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
+using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#else
 using NUnit.Framework;
+#endif
 
 #if NETFX_CORE
 using Windows.System.Threading;
@@ -353,7 +364,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             using (var check = OrmAsyncTestSession.GetConnection(conn.ConnectionString))
             {
                 // load it back and check - should be missing
-                Assert.False(check.TableExists<Customer>());
+                Assert.IsFalse(check.TableExists<Customer>());
             }
         }
 
@@ -406,7 +417,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             task.Wait();
 
             // check...
-            Assert.Null(task.Result);
+            Assert.IsNull(task.Result);
         }
 
         [Test]
@@ -678,7 +689,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             var task = db.Table<Customer>().FirstOrDefaultAsync();
             task.Wait();
-            Assert.Null(task.Result);
+            Assert.IsNull(task.Result);
         }
     }
 }

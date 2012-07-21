@@ -4,9 +4,20 @@ using System.IO;
 using System.Linq;
 using System.Transactions;
 using Mono.Data.Sqlite.Orm.ComponentModel;
-using NUnit.Framework;
 
-#if WINDOWS_PHONE || SILVERLIGHT || NETFX_CORE
+#if SILVERLIGHT 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#elif NETFX_CORE
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
+using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#else
+using NUnit.Framework;
+#endif
+
+#if WINDOWS_PHONE
 using Community.CsharpSqlite.SQLiteClient;
 #endif
 
@@ -76,7 +87,12 @@ namespace Mono.Data.Sqlite.Orm.Tests
         public void InsertUsingSystemTransactions()
         {
             var options = new TransactionOptions {IsolationLevel = IsolationLevel.ReadCommitted};
+#if NETFX_CORE
+            var tempFileName = Windows.Storage.ApplicationData.Current.TemporaryFolder.Path + "\\TempDb" + DateTime.Now.Ticks + ".db";
+#else            
             var tempFileName = Path.GetTempFileName();
+
+#endif
             SqliteSession.Trace = true;
 
             using (var db = new SqliteSession("Data Source=" + tempFileName + ";DefaultTimeout=100", false))
@@ -377,12 +393,12 @@ namespace Mono.Data.Sqlite.Orm.Tests
                 nestedTrans = Environment.TickCount - start;
             }
 
-            Console.WriteLine("Single tranasction: " + oneTrans);
-            Console.WriteLine("Nested tranasction: " + nestedTrans);
-            Console.WriteLine("Difference: " + Math.Abs(nestedTrans - oneTrans));
+            System.Diagnostics.Debug.WriteLine("Single tranasction: " + oneTrans);
+            System.Diagnostics.Debug.WriteLine("Nested tranasction: " + nestedTrans);
+            System.Diagnostics.Debug.WriteLine("Difference: " + Math.Abs(nestedTrans - oneTrans));
 
             // this is a really dodgy test to use the execution time...
-            Assert.True(Math.Abs(oneTrans - nestedTrans) <= 100);
+            Assert.IsTrue(Math.Abs(oneTrans - nestedTrans) <= 100);
         }
     }
 }
