@@ -76,6 +76,9 @@
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\ArrayAssert.cs">
+      <Link>ArrayAssert.cs</Link>
+    </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\AsyncTests.cs">
       <Link>AsyncTests.cs</Link>
     </Compile>

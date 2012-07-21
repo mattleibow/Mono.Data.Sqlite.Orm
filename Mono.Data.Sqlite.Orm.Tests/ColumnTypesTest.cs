@@ -97,7 +97,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(test.Enum1, res.Enum1);
             Assert.AreEqual(test.Enum2, res.Enum2);
             Assert.AreEqual(test.Timestamp, res.Timestamp);
-            Assert.AreEqual(test.Blob, res.Blob);
+            ArrayAssert.AreEqual(test.Blob, res.Blob);
             Assert.AreEqual(test.Guid, res.Guid);
         }
 
@@ -148,7 +148,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(test.Enum1, res.Enum1);
             Assert.AreEqual(test.Enum2, res.Enum2);
             Assert.AreEqual(test.Timestamp, res.Timestamp);
-            Assert.AreEqual(test.Blob, res.Blob);
+            ArrayAssert.AreEqual(test.Blob, res.Blob);
             Assert.AreEqual(test.Guid, res.Guid);
         }
 
@@ -199,7 +199,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(test.Enum1, res.Enum1);
             Assert.AreEqual(test.Enum2, res.Enum2);
             Assert.AreEqual(test.Timestamp, res.Timestamp);
-            Assert.AreEqual(test.Blob, res.Blob);
+            ArrayAssert.AreEqual(test.Blob, res.Blob);
             Assert.AreEqual(test.Guid, res.Guid);
         }
 
@@ -252,7 +252,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(test.Enum1, res.Enum1);
             Assert.AreEqual(test.Enum2, res.Enum2);
             Assert.AreEqual(test.Timestamp, res.Timestamp);
-            Assert.AreEqual(test.Blob, res.Blob);
+            ArrayAssert.AreEqual(test.Blob, res.Blob);
             Assert.AreEqual(test.Guid, res.Guid);
         }
     }
