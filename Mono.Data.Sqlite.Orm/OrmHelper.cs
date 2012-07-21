@@ -247,7 +247,7 @@ namespace Mono.Data.Sqlite.Orm
                     foreignKeys.Add(key);
                 }
 
-                var childProps = childTable.GetTypeInfo().GetMappableProperties();
+                var childProps = childTable.GetMappableProperties();
                 var childProp = childProps.SingleOrDefault(x => x.Name == att.Attribute.ChildKey);
 
                 if (childProp == null)

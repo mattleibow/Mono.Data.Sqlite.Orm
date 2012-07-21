@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-#if NETFX_CORE
-using System.Reflection.RuntimeExtensions;
-#endif
-
 namespace Mono.Data.Sqlite.Orm
 {
     public static class Extensions

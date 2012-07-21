@@ -10,13 +10,13 @@ using System.Text;
 using Mono.Data.Sqlite.Orm.ComponentModel;
 using Mono.Data.Sqlite.Orm.DataConverter;
 
-#if WINDOWS_PHONE || SILVERLIGHT || NETFX_CORE
+#if WINDOWS_PHONE
 using Community.CsharpSqlite.SQLiteClient;
 #endif
 
 namespace Mono.Data.Sqlite.Orm
 {
-    public class TableMapping
+    public class TableMapping : IDisposable
     {
         private readonly PropertyInfo[] _properties;
         private IList<Column> _columns;
@@ -435,6 +435,19 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            if (_insertCommand != null)
+            {
+                if (SqliteSession.Trace)
+                {
+                    Debug.WriteLine(string.Format("Destroying Insert command for {0} ({1})", TableName, MappedType));
+                }
+
+                _insertCommand.Dispose();
+            }
+        }
     }
 
     public static class SqliteWriter

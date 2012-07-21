@@ -39,11 +39,12 @@ namespace Mono.Data.Sqlite.Orm
 
         public IEnumerator<T> GetEnumerator()
         {
-            DbCommand command = this.GetSelectCommand();
-
-            return _deferred
-                       ? Session.ExecuteDeferredQuery<T>(Table, command).GetEnumerator()
-                       : Session.ExecuteQuery<T>(Table, command).GetEnumerator();
+            using (var command = this.GetSelectCommand())
+            {
+                return _deferred
+                           ? Session.ExecuteDeferredQuery<T>(Table, command).GetEnumerator()
+                           : Session.ExecuteQuery<T>(Table, command).GetEnumerator();
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()

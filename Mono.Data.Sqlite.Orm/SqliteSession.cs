@@ -10,7 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Mono.Data.Sqlite.Orm.ComponentModel;
 
-#if WINDOWS_PHONE || SILVERLIGHT || NETFX_CORE
+#if WINDOWS_PHONE
 using Community.CsharpSqlite.SQLiteClient;
 #endif
 
@@ -90,6 +90,19 @@ namespace Mono.Data.Sqlite.Orm
         public void Dispose()
         {
             Close();
+
+            if (_lastInsertRowIdCommand != null)
+            {
+                _lastInsertRowIdCommand.Dispose();
+            }
+
+            if (_tables != null)
+            {
+                foreach (var tbl in _tables)
+                {
+                    tbl.Value.Dispose();
+                }
+            }
         }
 
         #endregion
