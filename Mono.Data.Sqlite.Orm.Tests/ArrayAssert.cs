@@ -1,7 +1,9 @@
 #if SILVERLIGHT
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-#else
+#elif NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+#else
+using NUnit.Framework;
 #endif
 
 namespace System
