@@ -265,7 +265,7 @@ namespace Mono.Data.Sqlite.Orm
         {
             return this.Table<SqliteMasterTable>().Where(t => t.Name == tableName && t.Type == "table").Take(1).Any();
         }
-
+        
         /// <summary>
         ///   Executes a "create table if not exists" on the database. It also
         ///   creates any specified indexes on the columns of the table. It uses
@@ -492,6 +492,29 @@ namespace Mono.Data.Sqlite.Orm
         ///   It returns each row of the result using the mapping automatically generated for
         ///   the given type.
         /// </summary>
+        /// <param name="type">
+        ///   The type of object to return
+        /// </param>
+        /// <param name = "queryText">
+        ///   The fully escaped SQL.
+        /// </param>
+        /// <param name = "args">
+        ///   Arguments to substitute for the occurences of '?' in the query.
+        /// </param>
+        /// <returns>
+        ///   An enumerable with one result for each row returned by the query.
+        /// </returns>
+        public IList Query(Type type, string queryText, params object[] args)
+        {
+            return DeferredQuery(type, queryText, args).Cast<object>().ToList();
+        }
+
+        /// <summary>
+        ///   Creates a SQLiteCommand given the command text (SQL) with arguments. Place a '?'
+        ///   in the command text for each of the arguments and then executes that command.
+        ///   It returns each row of the result using the mapping automatically generated for
+        ///   the given type.
+        /// </summary>
         /// <param name = "query">
         ///   The fully escaped SQL.
         /// </param>
@@ -509,12 +532,44 @@ namespace Mono.Data.Sqlite.Orm
             return ExecuteDeferredQuery<T>(GetMapping<T>(), cmd);
         }
 
+        /// <summary>
+        ///   Creates a SQLiteCommand given the command text (SQL) with arguments. Place a '?'
+        ///   in the command text for each of the arguments and then executes that command.
+        ///   It returns each row of the result using the mapping automatically generated for
+        ///   the given type.
+        /// </summary>
+        /// <param name="type">
+        ///   The type of object to return
+        /// </param>
+        /// <param name = "query">
+        ///   The fully escaped SQL.
+        /// </param>
+        /// <param name = "args">
+        ///   Arguments to substitute for the occurences of '?' in the query.
+        /// </param>
+        /// <returns>
+        ///   An enumerable with one result for each row returned by the query.
+        ///   The enumerator will call sqlite3_step on each call to MoveNext, so the database
+        ///   connection must remain open for the lifetime of the enumerator.
+        /// </returns>
+        public IEnumerable DeferredQuery(Type type, string query, params object[] args)
+        {
+            DbCommand cmd = CreateCommand(query, args);
+            return ExecuteDeferredQuery(GetMapping(type), cmd);
+        }
+
         internal List<T> ExecuteQuery<T>(TableMapping map, DbCommand cmd)
         {
             return ExecuteDeferredQuery<T>(map, cmd).ToList();
         }
 
         internal IEnumerable<T> ExecuteDeferredQuery<T>(TableMapping map, DbCommand cmd)
+        {
+            return from object result in this.ExecuteDeferredQuery(map, cmd) 
+                   select (T)result;
+        }
+
+        internal IEnumerable ExecuteDeferredQuery(TableMapping map, DbCommand cmd)
         {
             TraceCommand(cmd);
 
@@ -547,7 +602,7 @@ namespace Mono.Data.Sqlite.Orm
 
                     OnInstanceCreated(new InstanceCreatedEventArgs(obj));     
 
-                    yield return (T) obj;
+                    yield return obj;
                 }
             }
         }
@@ -581,10 +636,41 @@ namespace Mono.Data.Sqlite.Orm
         /// <returns>The value in the first column of the first row.</returns>
         public T ExecuteScalar<T>(DbCommand command)
         {
-            TraceCommand(command);
-
-            object scalar = command.ExecuteScalar();
+            object scalar = ExecuteScalar(command);
             return (T) Convert.ChangeType(scalar, typeof (T), CultureInfo.CurrentCulture);
+        }
+
+        /// <summary>
+        ///   Executes the query and returns the value in the first column of the first row.
+        ///   All other fields are ignored.
+        /// </summary>
+        /// <param name = "cmdText">
+        ///   The fully escaped SQL.
+        /// </param>
+        /// <param name = "args">
+        ///   Arguments to substitute for the occurences of '?' in the command text.
+        /// </param>
+        /// <returns>The value in the first column of the first row.</returns>
+        public object ExecuteScalar(string cmdText, params object[] args)
+        {
+            using (DbCommand cmd = CreateCommand(cmdText, args))
+            {
+                return ExecuteScalar(cmd);
+            }
+        }
+
+        /// <summary>
+        ///   Executes the command and returns the value in the first column of the first row.
+        ///   All other fields are ignored.
+        /// </summary>
+        /// <param name = "command">
+        ///   The database commnd that contains the sql and the arguments
+        /// </param>
+        /// <returns>The value in the first column of the first row.</returns>
+        public object ExecuteScalar(DbCommand command)
+        {
+            TraceCommand(command);
+            return command.ExecuteScalar();
         }
 
         /// <summary>
@@ -610,7 +696,22 @@ namespace Mono.Data.Sqlite.Orm
         /// <returns>The list of objects with the given primary key(s).</returns>
         public IList<T> GetList<T>(object pk, params object[] pks) where T : new()
         {
-            TableMapping map = GetMapping<T>();
+            return GetList(typeof(T), pk, pks).Cast<T>().ToList();
+        }
+
+        /// <summary>
+        ///   Retrieves the objects matching the given primary key(s) from the table
+        ///   associated with the specified type. Use of this method requires that
+        ///   the given type has one or more designated PrimaryKey(s) (using the
+        ///   PrimaryKeyAttribute or PrimaryKeyNamesAttribute).
+        /// </summary>
+        /// <param name="type">The type of object to return.</param>
+        /// <param name = "pk">The primary key for 'type'.</param>
+        /// <param name = "pks">Any addition primary keys for multiple primaryKey tables</param>
+        /// <returns>The list of objects with the given primary key(s).</returns>
+        public IList GetList(Type type, object pk, params object[] pks)
+        {
+            TableMapping map = GetMapping(type);
 
             if (map.PrimaryKey == null)
             {
@@ -620,7 +721,7 @@ namespace Mono.Data.Sqlite.Orm
             string[] columns = map.PrimaryKey.Columns.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}] = ?", c.Name)).ToArray();
             string query = string.Format(CultureInfo.InvariantCulture, "SELECT * FROM [{0}] WHERE {1}", map.TableName, string.Join(" AND ", columns));
 
-            return Query<T>(query, new[] {pk}.Concat(pks).ToArray());
+            return Query(type, query, new[] {pk}.Concat(pks).ToArray());
         }
 
         /// <summary>
@@ -634,6 +735,20 @@ namespace Mono.Data.Sqlite.Orm
         public T Get<T>(object primaryKey, params object[] primaryKeys) where T : new()
         {
             return GetList<T>(primaryKey, primaryKeys).First();
+        }
+
+        /// <summary>
+        ///   Attempts to retrieve an object with the given primary key from the table
+        ///   associated with the specified type. Use of this method requires that
+        ///   the given type have a designated PrimaryKey (using the PrimaryKeyAttribute).
+        /// </summary>
+        /// <param name="type">The type of object to return.</param>
+        /// <param name = "primaryKey">The primary key for 'type'.</param>
+        /// <param name = "primaryKeys">Any addition primary keys for multiple primaryKey tables</param>
+        /// <returns>The object with the given primary key. Throws a not found exception if the object is not found.</returns>
+        public object Get(Type type, object primaryKey, params object[] primaryKeys)
+        {
+            return GetList(type, primaryKey, primaryKeys)[0];
         }
 
         /// <summary>
@@ -663,6 +778,21 @@ namespace Mono.Data.Sqlite.Orm
         public T Find<T>(object primaryKey, params object[] primaryKeys) where T : new()
         {
             return GetList<T>(primaryKey, primaryKeys).FirstOrDefault();
+        }
+
+        /// <summary>
+        ///   Attempts to retrieve an object with the given primary key from the table
+        ///   associated with the specified type. Use of this method requires that
+        ///   the given type have a designated PrimaryKey (using the PrimaryKeyAttribute).
+        /// </summary>
+        /// <param name="type">The type of object to return.</param>
+        /// <param name = "primaryKey">The primary key for 'T'.</param>
+        /// <param name = "primaryKeys">Any addition primary keys for multiple primaryKey tables</param>
+        /// <returns>The object with the given primary key or null if the object is not found.</returns>
+        public object Find(Type type, object primaryKey, params object[] primaryKeys)
+        {
+            var list = GetList(type, primaryKey, primaryKeys);
+            return list.Count > 0 ? list[0] : null;
         }
 
         /// <summary>

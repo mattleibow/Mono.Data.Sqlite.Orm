@@ -38,6 +38,17 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(ReplacedText, got.Text);
         }
 
+        [Test]
+        public void CreateInstanceHookTestNonGeneric()
+        {
+            var db = new OrmTestSession();
+            db.InstanceCreated += InstanceCreated;
+            db.CreateTable<HookTestTable>();
+            db.Insert(new HookTestTable {Text = InsertedTest});
+            var got = db.Get(typeof(HookTestTable), 1);
+            Assert.AreEqual(ReplacedText, ((HookTestTable)got).Text);
+        }
+
         private void InstanceCreated(object sender, InstanceCreatedEventArgs e)
         {
             var created = (HookTestTable)e.Instance;
