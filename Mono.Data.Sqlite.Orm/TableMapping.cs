@@ -22,6 +22,7 @@ namespace Mono.Data.Sqlite.Orm
         private IList<Column> _columns;
         private string _deleteSql;
         private DbCommand _insertCommand;
+        private DbCommand _selectCommand;
         private ConflictResolution _insertExtra;
         private ConflictResolution _updateExtra;
         private string _updateSql;
@@ -101,6 +102,24 @@ namespace Mono.Data.Sqlite.Orm
             }
 
             return _insertCommand;
+        }
+
+        [SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities")]
+        internal DbCommand GetSelectCommand(DbConnection connection)
+        {
+            if (_selectCommand == null)
+            {
+                if (SqliteSession.Trace)
+                {
+                    Debug.WriteLine(string.Format("Creating Select command for {0} ({1})", TableName, MappedType));
+                }
+
+                _selectCommand = connection.CreateCommand();
+                _selectCommand.CommandText = this.GetSelectSql();
+                _selectCommand.Prepare();
+            }
+
+            return _selectCommand;
         }
 
         public string GetUpdateSql<T>(T obj, List<object> args)
@@ -447,6 +466,16 @@ namespace Mono.Data.Sqlite.Orm
 
                 _insertCommand.Dispose();
             }
+
+            if (_selectCommand != null)
+            {
+                if (SqliteSession.Trace)
+                {
+                    Debug.WriteLine(string.Format("Destroying Select command for {0} ({1})", TableName, MappedType));
+                }
+
+                _selectCommand.Dispose();
+            }
         }
     }
 
@@ -476,6 +505,29 @@ namespace Mono.Data.Sqlite.Orm
                 sb.Append(") VALUES (");
                 sb.Append(string.Join(", ", Enumerable.Repeat("?", table.EditableColumns.Count)));
                 sb.Append(")");
+            }
+
+            return sb.ToString();
+        }
+
+        public static string GetSelectSql(this TableMapping table)
+        {
+            var sb = new StringBuilder();
+
+            sb.Append("SELECT * FROM ");
+            sb.Append(Quote(table.TableName));
+            sb.Append(" WHERE ");
+
+            bool first = true;
+            foreach (var column in table.PrimaryKey.Columns)
+            {
+                if (!first)
+                {
+                    sb.AppendLine(" AND ");
+                }
+                sb.Append(Quote(column.Name));
+                sb.Append(" = ?");
+                first = false;
             }
 
             return sb.ToString();

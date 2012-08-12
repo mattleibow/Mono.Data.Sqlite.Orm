@@ -563,6 +563,11 @@ namespace Mono.Data.Sqlite.Orm
             return ExecuteDeferredQuery<T>(map, cmd).ToList();
         }
 
+        internal IList ExecuteQuery(TableMapping map, DbCommand cmd)
+        {
+            return ExecuteDeferredQuery(map, cmd).Cast<object>().ToList();
+        }
+
         internal IEnumerable<T> ExecuteDeferredQuery<T>(TableMapping map, DbCommand cmd)
         {
             return from object result in this.ExecuteDeferredQuery(map, cmd) 
@@ -718,10 +723,10 @@ namespace Mono.Data.Sqlite.Orm
                 throw new SqliteException("There are no primary keys");
             }
 
-            string[] columns = map.PrimaryKey.Columns.Select(c => string.Format(CultureInfo.InvariantCulture, "[{0}] = ?", c.Name)).ToArray();
-            string query = string.Format(CultureInfo.InvariantCulture, "SELECT * FROM [{0}] WHERE {1}", map.TableName, string.Join(" AND ", columns));
+            DbCommand selectCommand = map.GetSelectCommand(this.Connection);
+            AddCommandParameters(selectCommand, new[] { pk }.Concat(pks).ToArray());
 
-            return Query(type, query, new[] {pk}.Concat(pks).ToArray());
+            return this.ExecuteQuery(map, selectCommand);
         }
 
         /// <summary>
