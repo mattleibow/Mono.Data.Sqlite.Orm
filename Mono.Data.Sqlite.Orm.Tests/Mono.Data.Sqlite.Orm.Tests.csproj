@@ -73,6 +73,7 @@
     <Compile Include="AsyncTests.cs" />
     <Compile Include="BooleanTest.cs" />
     <Compile Include="ByteArrayTest.cs" />
+    <Compile Include="CreateVirtualTableTest.cs" />
     <Compile Include="CollateTest.cs" />
     <Compile Include="ColumnTypesTest.cs" />
     <Compile Include="DataConverterTest.cs" />

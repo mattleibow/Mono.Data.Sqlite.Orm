@@ -49,6 +49,7 @@
     <Compile Include="ComponentModel\CheckAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ComponentModel\TokenizerAttribute.cs" />
     <Compile Include="ComponentModel\Collation.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -110,6 +111,7 @@
     <Compile Include="ComponentModel\UniqueAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ComponentModel\VirtualAttribute.cs" />
     <Compile Include="DataConverter\IDataConverter.cs">
       <SubType>Code</SubType>
     </Compile>
