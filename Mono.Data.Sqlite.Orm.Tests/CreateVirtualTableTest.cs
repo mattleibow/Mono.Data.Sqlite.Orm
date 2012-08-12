@@ -65,5 +65,50 @@ tokenize=porter
                 Assert.AreEqual(correct, sql);
             }
         }
+
+        [Virtual]
+        [Tokenizer(CommonVirtualTableTokenizers.Porter)]
+        public class QueryableTable
+        {
+            public string Name { get; set; }
+        }
+
+        [Test]
+        public void StringQueryOnQueryableTable()
+        {
+            using (var db = new OrmTestSession())
+            {
+                db.CreateTable<QueryableTable>();
+                db.Insert(new QueryableTable { Name = "sqlite" });
+                db.Insert(new QueryableTable { Name = "sqlevy" });
+                db.Insert(new QueryableTable { Name = "cars" });
+                db.Insert(new QueryableTable { Name = "we know sqlite is cool" });
+                db.Insert(new QueryableTable { Name = "we think sqlites" });
+
+                var count = db.ExecuteScalar<int>(
+                    "SELECT COUNT(*) FROM [QueryableTable] WHERE [Name] MATCH ?", 
+                    "sqlite");
+
+                Assert.AreEqual(3, count);
+            }
+        }
+
+        [Test]
+        public void TableQueryOnQueryableTable()
+        {
+            using (var db = new OrmTestSession())
+            {
+                db.CreateTable<QueryableTable>();
+                db.Insert(new QueryableTable { Name = "sqlite" });
+                db.Insert(new QueryableTable { Name = "sqlevy" });
+                db.Insert(new QueryableTable { Name = "cars" });
+                db.Insert(new QueryableTable { Name = "we know sqlite is cool" });
+                db.Insert(new QueryableTable { Name = "we think sqlites" });
+
+                var count = db.Table<QueryableTable>().Where(x => x.Name.Matches("sqlite")).Count();
+
+                Assert.AreEqual(3, count);
+            }
+        }
     }
 }

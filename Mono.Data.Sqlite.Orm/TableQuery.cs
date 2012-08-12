@@ -316,6 +316,11 @@ namespace Mono.Data.Sqlite.Orm
                         sqlCall = string.Format(sqlCall, obj.CommandText, args[0].CommandText);
                     }
                 }
+                else if (methodName == "Matches" && args.Length == 2)
+                {
+                    sqlCall = "({0} match {1})";
+                    sqlCall = string.Format(sqlCall, args[0].CommandText, args[1].CommandText);
+                }
                 else
                 {
                     var arguments = string.Join(",", args.Select(a => a.CommandText).ToArray());
