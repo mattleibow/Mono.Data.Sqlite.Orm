@@ -142,6 +142,9 @@
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\DropTableTest.cs">
       <Link>DropTableTest.cs</Link>
     </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\FTSSpecialCommandsTest.cs">
+      <Link>FTSSpecialCommandsTest.cs</Link>
+    </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\HooksTest.cs">
       <Link>HooksTest.cs</Link>
     </Compile>
