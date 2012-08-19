@@ -570,11 +570,11 @@ namespace Mono.Data.Sqlite.Orm
             IEnumerable<string> columns;
             if (this._withColumns == null || this._withColumns.Count <= 0)
             {
-                columns = this.Table.Columns.Select(c => string.Format("[{0}]", c.Name));
+                columns = this.Table.Columns.Select(c => SqliteWriter.Quote(c.Name));
             }
             else
             {
-                columns = this._withColumns.Select(c => string.Format("[{0}]", c.ColumnName));
+                columns = this._withColumns.Select(c => SqliteWriter.Quote(c.ColumnName));
             }
             return this.GenerateCommand(string.Join(", ", columns));
         }

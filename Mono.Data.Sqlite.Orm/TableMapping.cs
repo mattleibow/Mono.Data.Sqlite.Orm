@@ -23,6 +23,7 @@ namespace Mono.Data.Sqlite.Orm
         private string _deleteSql;
         private DbCommand _insertCommand;
         private DbCommand _selectCommand;
+        private bool _insertDefaults;
         private ConflictResolution _insertExtra;
         private ConflictResolution _updateExtra;
         private string _updateSql;
@@ -82,7 +83,7 @@ namespace Mono.Data.Sqlite.Orm
         [SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities")]
         internal DbCommand GetInsertCommand(DbConnection connection, ConflictResolution extra, bool withDefaults)
         {
-            if (_insertCommand != null && _insertExtra != extra)
+            if (_insertCommand != null && (_insertExtra != extra || _insertDefaults != withDefaults))
             {
                 if (SqliteSession.Trace)
                 {
@@ -96,6 +97,7 @@ namespace Mono.Data.Sqlite.Orm
             if (_insertCommand == null)
             {
                 _insertExtra = extra;
+                _insertDefaults = withDefaults;
 
                 if (SqliteSession.Trace)
                 {
@@ -734,7 +736,7 @@ namespace Mono.Data.Sqlite.Orm
             return sb.ToString();
         }
 
-        private static string Quote(string name)
+        public static string Quote(string name)
         {
             return "[" + name + "]";
         }
