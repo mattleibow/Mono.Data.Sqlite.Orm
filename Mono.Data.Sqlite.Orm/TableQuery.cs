@@ -89,9 +89,9 @@ namespace Mono.Data.Sqlite.Orm
             throw new NotSupportedException("Must be a predicate");
         }
 
-        public TableQuery<T> With(Expression<Func<T, object>> expression)
+        public TableQuery<T> With(params Expression<Func<T, object>>[] expressions)
         {
-            return this.AddWith(expression);
+            return this.AddWith(expressions);
         }
 
         public TableQuery<T> Take(int n)
@@ -202,20 +202,18 @@ namespace Mono.Data.Sqlite.Orm
             return body.Member;
         }
 
-        private TableQuery<T> AddWith(Expression<Func<T, object>> expression)
+        private TableQuery<T> AddWith(params Expression<Func<T, object>>[] expressions)
         {
-            var member = GetMember(expression);
-
             TableQuery<T> q = Clone();
             if (q._withColumns == null)
             {
                 q._withColumns = new List<WithColumn>();
             }
-            q._withColumns.Add(new WithColumn
-                                {
-                                    ColumnName = OrmHelper.GetColumnName(member),
-                                    Member = member
-                                });
+            foreach (var expression in expressions)
+            {
+                var member = GetMember(expression);
+                q._withColumns.Add(new WithColumn { ColumnName = OrmHelper.GetColumnName(member), Member = member });
+            }
             return q;
         }
 
