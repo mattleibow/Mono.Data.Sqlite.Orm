@@ -269,5 +269,19 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             Assert.IsNull(db.Table<Product>().FirstOrDefault());
         }
+
+        [Test]
+        public void WithColumnTest()
+        {
+            OrmTestSession db = CreateDb();
+
+            db.Insert(new Product {Name = "A", Price = 20});
+
+            var product = db.Table<Product>().With(x => x.Id).With(x => x.Price).FirstOrDefault();
+
+            Assert.AreEqual(1, product.Id);
+            Assert.AreEqual(20, product.Price);
+            Assert.IsNull(product.Name);
+        }
     }
 }

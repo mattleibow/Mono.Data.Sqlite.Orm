@@ -17,6 +17,7 @@ namespace Mono.Data.Sqlite.Orm
         private int? _limit;
         private int? _offset;
         private List<Ordering> _orderBys;
+        private List<WithColumn> _withColumns;
         private Expression _where;
 
         private TableQuery(SqliteSession conn, TableMapping table)
@@ -67,6 +68,10 @@ namespace Mono.Data.Sqlite.Orm
             {
                 q._orderBys = new List<Ordering>(_orderBys);
             }
+            if (_withColumns != null)
+            {
+                q._withColumns = new List<WithColumn>(_withColumns);
+            }
             return q;
         }
 
@@ -82,6 +87,11 @@ namespace Mono.Data.Sqlite.Orm
             }
 
             throw new NotSupportedException("Must be a predicate");
+        }
+
+        public TableQuery<T> With(Expression<Func<T, object>> expression)
+        {
+            return this.AddWith(expression);
         }
 
         public TableQuery<T> Take(int n)
@@ -176,6 +186,35 @@ namespace Mono.Data.Sqlite.Orm
                                 {
                                     ColumnName = OrmHelper.GetColumnName(mem.Member),
                                     Ascending = asc
+                                });
+            return q;
+        }
+
+        public static MemberInfo GetMember(Expression<Func<T, object>> exp)
+        {
+            var body = exp.Body as MemberExpression;
+            if (body == null)
+            {
+                var ubody = (UnaryExpression)exp.Body;
+                body = ubody.Operand as MemberExpression;
+            }
+
+            return body.Member;
+        }
+
+        private TableQuery<T> AddWith(Expression<Func<T, object>> expression)
+        {
+            var member = GetMember(expression);
+
+            TableQuery<T> q = Clone();
+            if (q._withColumns == null)
+            {
+                q._withColumns = new List<WithColumn>();
+            }
+            q._withColumns.Add(new WithColumn
+                                {
+                                    ColumnName = OrmHelper.GetColumnName(member),
+                                    Member = member
                                 });
             return q;
         }
@@ -530,7 +569,15 @@ namespace Mono.Data.Sqlite.Orm
 
         private DbCommand GetSelectCommand()
         {
-            var columns = this.Table.Columns.Select(c => string.Format("[{0}]", c.Name));
+            IEnumerable<string> columns;
+            if (this._withColumns == null || this._withColumns.Count <= 0)
+            {
+                columns = this.Table.Columns.Select(c => string.Format("[{0}]", c.Name));
+            }
+            else
+            {
+                columns = this._withColumns.Select(c => string.Format("[{0}]", c.ColumnName));
+            }
             return this.GenerateCommand(string.Join(", ", columns));
         }
 
@@ -552,6 +599,17 @@ namespace Mono.Data.Sqlite.Orm
             public string ColumnName { get; set; }
 
             public bool Ascending { get; set; }
+        }
+
+        #endregion
+
+        #region Nested type: WithColumn
+
+        private class WithColumn
+        {
+            public string ColumnName { get; set; }
+
+            public MemberInfo Member { get; set; }
         }
 
         #endregion
