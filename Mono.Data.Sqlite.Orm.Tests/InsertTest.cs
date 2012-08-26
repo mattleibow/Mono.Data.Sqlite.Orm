@@ -332,6 +332,118 @@ namespace Mono.Data.Sqlite.Orm.Tests
         }
 
         [Test]
+        public void InsertUsingSavePoints()
+        {
+            var obj = new TestObj { Text = "Matthew" };
+
+            using (var db = new OrmTestSession())
+            {
+                db.CreateTable<TestObj>();
+
+                using (var trans = db.BeginTransaction())
+                {
+                    db.Insert(obj);
+                    Assert.AreEqual(db.Table<TestObj>().Count(), 1);
+
+                    trans.CreateSavepoint("First");
+                    db.Insert(obj);
+                    Assert.AreEqual(db.Table<TestObj>().Count(), 2);
+
+                    trans.RollbackSavepoint("First");
+                    
+                    trans.Commit();
+                }
+
+                Assert.AreEqual(db.Table<TestObj>().Count(), 1);
+            }
+        }
+
+        [Test]
+        public void InsertUsingMultipleSavePoints()
+        {
+            var obj = new TestObj { Text = "Matthew" };
+
+            using (var db = new OrmTestSession())
+            {
+                db.CreateTable<TestObj>();
+
+                using (var trans = db.BeginTransaction())
+                {
+                    db.Insert(obj);
+                    Assert.AreEqual(db.Table<TestObj>().Count(), 1);
+
+                    trans.CreateSavepoint("First");
+                    db.Insert(obj);
+                    Assert.AreEqual(db.Table<TestObj>().Count(), 2);
+
+                    trans.CreateSavepoint("Second");
+                    db.Insert(obj);
+                    Assert.AreEqual(db.Table<TestObj>().Count(), 3);
+
+                    trans.RollbackSavepoint("Second");
+
+                    trans.Commit();
+                }
+
+                Assert.AreEqual(db.Table<TestObj>().Count(), 2);
+            }
+        }
+
+        [Test]
+        public void InsertUsingInterweavingSavePoints()
+        {
+            var obj = new TestObj { Text = "Matthew" };
+
+            using (var db = new OrmTestSession())
+            {
+                db.CreateTable<TestObj>();
+
+                using (var trans = db.BeginTransaction())
+                {
+                    db.Insert(obj);
+                    Assert.AreEqual(db.Table<TestObj>().Count(), 1);
+
+                    trans.CreateSavepoint("First");
+                    db.Insert(obj);
+                    Assert.AreEqual(db.Table<TestObj>().Count(), 2);
+
+                    trans.CreateSavepoint("Second");
+                    db.Insert(obj);
+                    Assert.AreEqual(db.Table<TestObj>().Count(), 3);
+
+                    trans.RollbackSavepoint("First");
+
+                    trans.Commit();
+                }
+
+                Assert.AreEqual(db.Table<TestObj>().Count(), 1);
+            }
+        }
+
+        [Test]
+        public void InsertUsingSavePointsOnACommittedTransaction()
+        {
+            var obj = new TestObj { Text = "Matthew" };
+
+            using (var db = new OrmTestSession())
+            {
+                db.CreateTable<TestObj>();
+
+                var trans = db.BeginTransaction();
+                trans.CreateSavepoint("First");
+                trans.Commit();
+
+#if SILVERLIGHT
+                ExceptionAssert.Throws<SqliteException>(() => trans.RollbackSavepoint("First"));
+#elif NETFX_CORE
+                Assert.ThrowsException<SqliteException>(() => trans.RollbackSavepoint("First"));
+#else
+                Assert.Catch<SqliteException>(() => trans.RollbackSavepoint("First"));
+#endif
+            }
+        }
+
+        [Test]
         public void DefaultsTest()
         {
             var db = new OrmTestSession();
