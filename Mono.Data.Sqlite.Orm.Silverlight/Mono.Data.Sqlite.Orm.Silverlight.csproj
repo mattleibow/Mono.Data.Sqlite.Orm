@@ -130,8 +130,14 @@
     <Compile Include="..\mono.data.sqlite.orm\componentmodel\TableAttribute.cs">
       <Link>ComponentModel\TableAttribute.cs</Link>
     </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\TokenizerAttribute.cs">
+      <Link>ComponentModel\TokenizerAttribute.cs</Link>
+    </Compile>
     <Compile Include="..\mono.data.sqlite.orm\componentmodel\UniqueAttribute.cs">
       <Link>ComponentModel\UniqueAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\VirtualAttribute.cs">
+      <Link>ComponentModel\VirtualAttribute.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm\dataconverter\IDataConverter.cs">
       <Link>DataConverter\IDataConverter.cs</Link>
@@ -150,6 +156,9 @@
     </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteConnectionPool.cs">
       <Link>SqliteConnectionPool.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteExtensions.cs">
+      <Link>SqliteExtensions.cs</Link>
     </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteSession.Async.cs">
       <Link>SqliteSession.Async.cs</Link>

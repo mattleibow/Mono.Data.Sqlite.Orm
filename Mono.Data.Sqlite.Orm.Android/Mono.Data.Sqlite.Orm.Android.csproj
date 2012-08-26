@@ -109,8 +109,14 @@
     <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\TableAttribute.cs">
       <Link>ComponentModel\TableAttribute.cs</Link>
     </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\TokenizerAttribute.cs">
+      <Link>ComponentModel\TokenizerAttribute.cs</Link>
+    </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\UniqueAttribute.cs">
       <Link>ComponentModel\UniqueAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\VirtualAttribute.cs">
+      <Link>ComponentModel\VirtualAttribute.cs</Link>
     </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\DataConverter\IDataConverter.cs">
       <Link>DataConverter\IDataConverter.cs</Link>
@@ -133,6 +139,9 @@
     <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteErrorCode.cs">
       <Link>SqliteErrorCode.cs</Link>
     </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteExtensions.cs">
+      <Link>SqliteExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteSession.Async.cs">
       <Link>SqliteSession.Async.cs</Link>
     </Compile>
@@ -153,7 +162,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" ProjectLinkReference="e38c051e-889e-485b-b685-c692d2861e7b" />
+      <UserProperties ProjectLinkReference="e38c051e-889e-485b-b685-c692d2861e7b" ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
