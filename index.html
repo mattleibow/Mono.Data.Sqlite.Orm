@@ -62,7 +62,7 @@
 <li><p>It is a thin wrapper over SQLite and should be fast and efficient. (The library should not be the performance bottleneck of your queries.)</p></li>
 <li><p>It provides very simple methods for executing queries safely (using parameters) and for retrieving the results of those query in a strongly typed fashion.</p></li>
 <li><p>It works with your data model without forcing you to change your classes. (Contains a small reflection-driven ORM layer.)</p></li>
-<li><p>It dependends only on Mono.Data.Sqlite on all platforms except Windows Phone which also requires <a href="http://code.google.com/p/csharp-sqlite">C# SQLite</a></p></li>
+<li><p>It dependends only on Mono.Data.Sqlite on all platforms except Windows Phone 7 and Silverlight which also requires <a href="http://code.google.com/p/csharp-sqlite">C# SQLite</a></p></li>
 <li><p>Support for creating entire databases using only compact <code>Attributes</code></p></li>
 </ul><p>To do:</p>
 
@@ -72,64 +72,62 @@
 
 <p>The library contains simple attributes that you can use to control the construction of tables. In a simple stock program, you might use:</p>
 
-<pre><code>public class Stock
-{
-    [PrimaryKey, AutoIncrement]
-    public int Id { get; set; }
-    [MaxLength(8)]
-    public string Symbol { get; set; }
-}
+<div class="syntax"><pre><span class="k">public</span> <span class="k">class</span> <span class="nc">Stock</span>
+<span class="p">{</span>
+<span class="na">    [PrimaryKey, AutoIncrement]</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="na">    [MaxLength(8)]</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Symbol</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
 
-public class Valuation
-{
-    [PrimaryKey, AutoIncrement]
-    public int Id { get; set; }
-    [Indexed("IX_StockId")]
-    public int StockId { get; set; }
-    public DateTime Time { get; set; }
-    public decimal Price { get; set; }
-}
-</code></pre>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Valuation</span>
+<span class="p">{</span>
+<span class="na">    [PrimaryKey, AutoIncrement]</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="na">    [Indexed(&quot;IX_StockId&quot;)]</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">StockId</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="n">DateTime</span> <span class="n">Time</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">decimal</span> <span class="n">Price</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
 
 <p>With these, you can automatically generate tables (and update) in your database by calling <code>CreateTable</code>:</p>
 
-<pre><code>var db = new SqliteSession("database.sqlite");
-db.CreateTable&lt;Stock&gt;();
-db.CreateTable&lt;Valuation&gt;();
-</code></pre>
+<div class="syntax"><pre><span class="n">var</span> <span class="n">db</span> <span class="p">=</span> <span class="k">new</span> <span class="n">SqliteSession</span><span class="p">(</span><span class="s">&quot;database.sqlite&quot;</span><span class="p">);</span>
+<span class="n">db</span><span class="p">.</span><span class="n">CreateTable</span><span class="p">&lt;</span><span class="n">Stock</span><span class="p">&gt;();</span>
+<span class="n">db</span><span class="p">.</span><span class="n">CreateTable</span><span class="p">&lt;</span><span class="n">Valuation</span><span class="p">&gt;();</span></pre></div>
+
 
 <p>You can insert rows in the database using <code>Insert</code>. If the table contains an auto-incremented primary key, then the value for that key will be available to you after the insert:</p>
 
-<pre><code>public static void AddStock(SqliteSession db, string symbol) 
-{
-    var s = db.Insert(new Stock() 
-    {
-        Symbol = symbol
-    });
-    Console.WriteLine("{0} == {1}", s.Symbol, s.Id);
-}
-</code></pre>
+<div class="syntax"><pre><span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">AddStock</span><span class="p">(</span><span class="n">SqliteSession</span> <span class="n">db</span><span class="p">,</span> <span class="kt">string</span> <span class="n">symbol</span><span class="p">)</span> 
+<span class="p">{</span>
+    <span class="n">var</span> <span class="n">s</span> <span class="p">=</span> <span class="n">db</span><span class="p">.</span><span class="n">Insert</span><span class="p">(</span><span class="k">new</span> <span class="n">Stock</span><span class="p">()</span> 
+    <span class="p">{</span>
+        <span class="n">Symbol</span> <span class="p">=</span> <span class="n">symbol</span>
+    <span class="p">});</span>
+    <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;{0} == {1}&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">Symbol</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">Id</span><span class="p">);</span>
+<span class="p">}</span></pre></div>
 
 <p>You can query the database using the <code>Query</code> method of <code>SqliteSession</code>:</p>
 
-<pre><code>public static IEnumerable&lt;Valuation&gt; QueryValuations (SqliteSession db, Stock stock)
-{
-    return db.Query&lt;Valuation&gt; ("select * from Valuation where StockId = ?", stock.Id);
-}
-</code></pre>
+<div class="syntax"><pre><span class="k">public</span> <span class="k">static</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Valuation</span><span class="p">&gt;</span> <span class="n">QueryValuations</span> <span class="p">(</span><span class="n">SqliteSession</span> <span class="n">db</span><span class="p">,</span> <span class="n">Stock</span> <span class="n">stock</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">db</span><span class="p">.</span><span class="n">Query</span><span class="p">&lt;</span><span class="n">Valuation</span><span class="p">&gt;</span> <span class="p">(</span><span class="s">&quot;select * from Valuation where StockId = ?&quot;</span><span class="p">,</span> <span class="n">stock</span><span class="p">.</span><span class="n">Id</span><span class="p">);</span>
+<span class="p">}</span></pre></div>
 
 <p>The generic parameter to the <code>Query</code> method specifies the type of object to create for each row. It can be one of your table classes, or any other class whose public properties match the column returned by the query. For instance, we could rewrite the above query as:</p>
 
-<pre><code>public class Val 
-{
-    public decimal Money { get; set; }
-    public DateTime Date { get; set; }
-}
-public static IEnumerable&lt;Val&gt; QueryVals (SqliteSession db, Stock stock)
-{
-    return db.Query&lt;Val&gt; ("select 'Price' as 'Money', 'Time' as 'Date' from Valuation where StockId = ?", stock.Id);
-}
-</code></pre>
+<div class="syntax"><pre><span class="k">public</span> <span class="k">class</span> <span class="nc">Val</span> 
+<span class="p">{</span>
+    <span class="k">public</span> <span class="kt">decimal</span> <span class="n">Money</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="n">DateTime</span> <span class="n">Date</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+<span class="k">public</span> <span class="k">static</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Val</span><span class="p">&gt;</span> <span class="n">QueryVals</span> <span class="p">(</span><span class="n">SqliteSession</span> <span class="n">db</span><span class="p">,</span> <span class="n">Stock</span> <span class="n">stock</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">db</span><span class="p">.</span><span class="n">Query</span><span class="p">&lt;</span><span class="n">Val</span><span class="p">&gt; (</span><span class="s">&quot;select &#39;Price&#39; as &#39;Money&#39;, &#39;Time&#39; as &#39;Date&#39; from Valuation where StockId = ?&quot;</span><span class="p">,</span> <span class="n">stock</span><span class="p">.</span><span class="n">Id</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
 
 <p>Updates must be performed manually using the <code>Execute</code> method of <code>SqliteSession</code>.</p>
 
