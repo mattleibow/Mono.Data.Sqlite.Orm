@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Mono.Data.Sqlite.Orm.ComponentModel;
 
+using Mono.Data.Sqlite.Orm.ComponentModel;
 #if SILVERLIGHT 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
@@ -13,6 +13,7 @@ using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramewo
 using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Mono.Data.Sqlite.Orm.Tests
@@ -22,7 +23,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
     {
         public class TestObj
         {
-            [AutoIncrement, PrimaryKey]
+            [AutoIncrement]
+            [PrimaryKey]
             public int Id { get; set; }
 
             public string Name { get; set; }
@@ -35,27 +37,24 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
         [Test]
         public void Contains()
-		{
-			var db = new OrmTestSession();
-			db.CreateTable<TestObj>();
-			
-			const int n = 20;
-			IEnumerable<TestObj> cq = from i in Enumerable.Range(1, n)
-                                      select new TestObj
-                                                 {
-                                                     Name = i.ToString(CultureInfo.InvariantCulture)
-                                                 };
+        {
+            var db = new OrmTestSession();
+            db.CreateTable<TestObj>();
 
-			db.InsertAll(cq);
+            const int n = 20;
+            IEnumerable<TestObj> cq = from i in Enumerable.Range(1, n)
+                                      select new TestObj { Name = i.ToString(CultureInfo.InvariantCulture) };
 
-			var tensq = new[] {"0", "10", "20"};
-			List<TestObj> tens = (from o in db.Table<TestObj>() where tensq.Contains(o.Name) select o).ToList();
-			Assert.AreEqual(2, tens.Count);
+            db.InsertAll(cq);
 
-			var moreq = new[] {"0", "x", "99", "10", "20", "234324"};
-			List<TestObj> more = (from o in db.Table<TestObj>() where moreq.Contains(o.Name) select o).ToList();
-			Assert.AreEqual(2, more.Count);
-		}
+            var tensq = new[] { "0", "10", "20" };
+            List<TestObj> tens = (from o in db.Table<TestObj>() where tensq.Contains(o.Name) select o).ToList();
+            Assert.AreEqual(2, tens.Count);
+
+            var moreq = new[] { "0", "x", "99", "10", "20", "234324" };
+            List<TestObj> more = (from o in db.Table<TestObj>() where moreq.Contains(o.Name) select o).ToList();
+            Assert.AreEqual(2, more.Count);
+        }
 
         [Test]
         public void StringContains()
@@ -85,7 +84,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var stringContainsTest = (from n in db.Table<TestObj>() where n.Name.StartsWith("This") select n).Single();
             Assert.AreEqual(testObj.Id, stringContainsTest.Id);
             var finder = "name";
-            stringContainsTest = (from n in db.Table<TestObj>() where n.Name.StartsWith(finder) select n).SingleOrDefault();
+            stringContainsTest =
+                (from n in db.Table<TestObj>() where n.Name.StartsWith(finder) select n).SingleOrDefault();
             Assert.IsNull(stringContainsTest);
         }
 
@@ -101,7 +101,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var stringContainsTest = (from n in db.Table<TestObj>() where n.Name.EndsWith("NAME") select n).Single();
             Assert.AreEqual(testObj.Id, stringContainsTest.Id);
             var finder = "is";
-            stringContainsTest = (from n in db.Table<TestObj>() where n.Name.EndsWith(finder) select n).SingleOrDefault();
+            stringContainsTest =
+                (from n in db.Table<TestObj>() where n.Name.EndsWith(finder) select n).SingleOrDefault();
             Assert.IsNull(stringContainsTest);
         }
     }

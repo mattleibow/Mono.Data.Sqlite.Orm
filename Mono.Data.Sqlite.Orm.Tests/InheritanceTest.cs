@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using Mono.Data.Sqlite.Orm.ComponentModel;
 
+using Mono.Data.Sqlite.Orm.ComponentModel;
 #if SILVERLIGHT 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
@@ -11,6 +11,7 @@ using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramewo
 using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Mono.Data.Sqlite.Orm.Tests

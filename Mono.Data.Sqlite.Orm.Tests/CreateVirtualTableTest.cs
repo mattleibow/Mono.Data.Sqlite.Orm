@@ -1,6 +1,7 @@
 ﻿namespace Mono.Data.Sqlite.Orm.Tests
 {
     using Mono.Data.Sqlite.Orm.ComponentModel;
+
     using NUnit.Framework;
 
     [TestFixture]
@@ -10,8 +11,11 @@
         public class SimpleTable
         {
             public int Id { get; set; }
+
             public string Name { get; set; }
+
             public long BigInt { get; set; }
+
             public bool IsWorking { get; set; }
         }
 
@@ -23,8 +27,7 @@
                 db.CreateTable<SimpleTable>();
 
                 var sql = new TableMapping(typeof(SimpleTable)).GetCreateSql();
-                var correct =
-@"CREATE VIRTUAL TABLE [SimpleTable] USING FTS4 (
+                var correct = @"CREATE VIRTUAL TABLE [SimpleTable] USING FTS4 (
 [Id] integer NOT NULL,
 [Name] text ,
 [BigInt] bigint NOT NULL,
@@ -40,8 +43,11 @@
         public class TokenizedSimpleTable
         {
             public int Id { get; set; }
+
             public string Name { get; set; }
+
             public long BigInt { get; set; }
+
             public bool IsWorking { get; set; }
         }
 
@@ -53,8 +59,7 @@
                 db.CreateTable<TokenizedSimpleTable>();
 
                 var sql = new TableMapping(typeof(TokenizedSimpleTable)).GetCreateSql();
-                var correct =
-@"CREATE VIRTUAL TABLE [TokenizedSimpleTable] USING FTS4 (
+                var correct = @"CREATE VIRTUAL TABLE [TokenizedSimpleTable] USING FTS4 (
 [Id] integer NOT NULL,
 [Name] text ,
 [BigInt] bigint NOT NULL,
@@ -86,8 +91,7 @@ tokenize=porter
                 db.Insert(new QueryableTable { Name = "we think sqlites" });
 
                 var count = db.ExecuteScalar<int>(
-                    "SELECT COUNT(*) FROM [QueryableTable] WHERE [Name] MATCH ?", 
-                    "sqlite");
+                    "SELECT COUNT(*) FROM [QueryableTable] WHERE [Name] MATCH ?", "sqlite");
 
                 Assert.AreEqual(3, count);
             }

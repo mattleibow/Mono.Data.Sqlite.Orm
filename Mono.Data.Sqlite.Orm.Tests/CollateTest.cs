@@ -1,5 +1,4 @@
 using Mono.Data.Sqlite.Orm.ComponentModel;
-
 #if SILVERLIGHT 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
@@ -10,6 +9,7 @@ using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramewo
 using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Mono.Data.Sqlite.Orm.Tests
@@ -19,7 +19,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
     {
         public class TestObj
         {
-            [AutoIncrement, PrimaryKey]
+            [AutoIncrement]
+            [PrimaryKey]
             public int Id { get; set; }
 
             public string CollateDefault { get; set; }
@@ -38,7 +39,6 @@ namespace Mono.Data.Sqlite.Orm.Tests
                 return string.Format("[TestObj: Id={0}]", Id);
             }
         }
-
 
         [Test]
         public void Collate()

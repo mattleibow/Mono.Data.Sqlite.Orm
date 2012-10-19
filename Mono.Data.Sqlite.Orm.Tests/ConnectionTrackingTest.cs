@@ -1,6 +1,6 @@
 using System.Linq;
-using Mono.Data.Sqlite.Orm.ComponentModel;
 
+using Mono.Data.Sqlite.Orm.ComponentModel;
 #if SILVERLIGHT 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
@@ -11,6 +11,7 @@ using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramewo
 using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Mono.Data.Sqlite.Orm.Tests
@@ -22,15 +23,21 @@ namespace Mono.Data.Sqlite.Orm.Tests
         {
             private OrderLine[] _orderLines;
 
-            [AutoIncrement, PrimaryKey]
+            [AutoIncrement]
+            [PrimaryKey]
             public int Id { get; set; }
 
             public string Name { get; set; }
+
             public decimal Price { get; set; }
 
             public OrderLine[] OrderLines
             {
-                get { return _orderLines ?? (_orderLines = Connection.Table<OrderLine>().Where(o => o.ProductId == Id).ToArray()); }
+                get
+                {
+                    return _orderLines
+                           ?? (_orderLines = Connection.Table<OrderLine>().Where(o => o.ProductId == Id).ToArray());
+                }
             }
 
             #region ITrackConnection Members
@@ -43,11 +50,14 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
         public class OrderLine : ITrackConnection
         {
-            [AutoIncrement, PrimaryKey]
+            [AutoIncrement]
+            [PrimaryKey]
             public int Id { get; set; }
 
             public int ProductId { get; set; }
+
             public int Quantity { get; set; }
+
             public decimal UnitPrice { get; set; }
 
             #region ITrackConnection Members
@@ -65,13 +75,13 @@ namespace Mono.Data.Sqlite.Orm.Tests
             db.CreateTable<Product>();
             db.CreateTable<OrderLine>();
 
-            var foo = new Product {Name = "Foo", Price = 10.0m};
-            var bar = new Product {Name = "Bar", Price = 0.10m};
+            var foo = new Product { Name = "Foo", Price = 10.0m };
+            var bar = new Product { Name = "Bar", Price = 0.10m };
             db.Insert(foo);
             db.Insert(bar);
-            db.Insert(new OrderLine {ProductId = foo.Id, Quantity = 6, UnitPrice = 10.01m});
-            db.Insert(new OrderLine {ProductId = foo.Id, Quantity = 3, UnitPrice = 0.02m});
-            db.Insert(new OrderLine {ProductId = bar.Id, Quantity = 9, UnitPrice = 100.01m});
+            db.Insert(new OrderLine { ProductId = foo.Id, Quantity = 6, UnitPrice = 10.01m });
+            db.Insert(new OrderLine { ProductId = foo.Id, Quantity = 3, UnitPrice = 0.02m });
+            db.Insert(new OrderLine { ProductId = bar.Id, Quantity = 9, UnitPrice = 100.01m });
 
             OrderLine[] lines = foo.OrderLines;
 

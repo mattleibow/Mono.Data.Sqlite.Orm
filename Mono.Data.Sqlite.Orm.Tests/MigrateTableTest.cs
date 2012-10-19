@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
-using Mono.Data.Sqlite.Orm.ComponentModel;
 
+using Mono.Data.Sqlite.Orm.ComponentModel;
 #if SILVERLIGHT 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
@@ -12,6 +12,7 @@ using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramewo
 using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Mono.Data.Sqlite.Orm.Tests
@@ -28,7 +29,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
                 TableMapping orderLine = db.GetMapping<OrderLine>();
                 Assert.AreEqual(4, orderLine.Columns.Count, "OrderLine has 4 columns");
 
-                var l = new OrderLine {Status = OrderLineStatus.Shipped};
+                var l = new OrderLine { Status = OrderLineStatus.Shipped };
                 db.Insert(l);
 
                 OrderLine lo = db.Table<OrderLine>().First(x => x.Status == OrderLineStatus.Shipped);
@@ -43,11 +44,14 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             public class OrderLine
             {
-                [AutoIncrement, PrimaryKey]
+                [AutoIncrement]
+                [PrimaryKey]
                 public int Id { get; set; }
 
                 public int Quantity { get; set; }
+
                 public decimal UnitPrice { get; set; }
+
                 public OrderLineStatus Status { get; set; }
             }
 
@@ -80,16 +84,21 @@ namespace Mono.Data.Sqlite.Orm.Tests
             [Table("OrderLine")]
             public class OrderDetails
             {
-                [AutoIncrement, PrimaryKey]
+                [AutoIncrement]
+                [PrimaryKey]
                 public int Id { get; set; }
 
                 public int Quantity { get; set; }
+
                 public decimal UnitPrice { get; set; }
+
                 // a new column
                 public decimal? Tax { get; set; }
+
                 // a new column
                 [Default("10")]
                 public decimal DefaultValue { get; set; }
+
                 // a renamed column
                 [Column("Status")]
                 public OrderLineStatus ShippingStatus { get; set; }
@@ -122,16 +131,21 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             public class OrderLine
             {
-                [AutoIncrement, PrimaryKey]
+                [AutoIncrement]
+                [PrimaryKey]
                 public int Id { get; set; }
 
                 public int Quantity { get; set; }
+
                 public decimal UnitPrice { get; set; }
+
                 // a new column
                 public decimal? Tax { get; set; }
+
                 // a new column
                 [Default("10")]
                 public decimal DefaultValue { get; set; }
+
                 // a renamed column
                 [Column("Status")]
                 public OrderLineStatus ShippingStatus { get; set; }
@@ -156,16 +170,21 @@ namespace Mono.Data.Sqlite.Orm.Tests
             [RenameTable("OrderLine")]
             public class RenamedTable
             {
-                [AutoIncrement, PrimaryKey]
+                [AutoIncrement]
+                [PrimaryKey]
                 public int Id { get; set; }
 
                 public int Quantity { get; set; }
+
                 public decimal UnitPrice { get; set; }
+
                 // a new column
                 public decimal? Tax { get; set; }
+
                 // a new column
                 [Default("10")]
                 public decimal DefaultValue { get; set; }
+
                 // a renamed column
                 [Column("Status")]
                 public OrderLineStatus ShippingStatus { get; set; }
@@ -177,6 +196,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
         public enum OrderLineStatus
         {
             Placed = 1,
+
             Shipped = 100
         }
 

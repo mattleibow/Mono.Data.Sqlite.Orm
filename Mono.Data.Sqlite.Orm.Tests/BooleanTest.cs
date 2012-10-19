@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
-using Mono.Data.Sqlite.Orm.ComponentModel;
 
+using Mono.Data.Sqlite.Orm.ComponentModel;
 #if SILVERLIGHT 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
@@ -12,6 +12,7 @@ using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramewo
 using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Mono.Data.Sqlite.Orm.Tests
@@ -21,10 +22,12 @@ namespace Mono.Data.Sqlite.Orm.Tests
     {
         public class Vo
         {
-            [AutoIncrement, PrimaryKey]
+            [AutoIncrement]
+            [PrimaryKey]
             public int Id { get; set; }
 
             public bool Flag { get; set; }
+
             public string Text { get; set; }
 
             public override string ToString()
@@ -41,7 +44,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             for (int i = 0; i < 10; i++)
             {
-                db.Insert(new Vo {Flag = (i%3 == 0), Text = String.Format("VO{0}", i)});
+                db.Insert(new Vo { Flag = (i % 3 == 0), Text = String.Format("VO{0}", i) });
             }
 
             // count vo which flag is true            

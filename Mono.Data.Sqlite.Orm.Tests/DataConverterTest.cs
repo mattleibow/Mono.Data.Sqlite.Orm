@@ -11,8 +11,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
     using System.Linq;
 
     using ComponentModel;
-    using DataConverter;
 
+    using DataConverter;
 #if SILVERLIGHT 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
@@ -22,7 +22,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
     using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
     using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #else
-using NUnit.Framework;
+    using NUnit.Framework;
+
 #endif
 
     [TestFixture]
@@ -55,10 +56,8 @@ using NUnit.Framework;
                 try
                 {
                     var parts = value.ToString().Split('/');
-                    return Color.FromArgb(byte.Parse(parts[0]),
-                                          byte.Parse(parts[1]),
-                                          byte.Parse(parts[2]),
-                                          byte.Parse(parts[3]));
+                    return Color.FromArgb(
+                        byte.Parse(parts[0]), byte.Parse(parts[1]), byte.Parse(parts[2]), byte.Parse(parts[3]));
                 }
                 catch
                 {
@@ -70,7 +69,8 @@ using NUnit.Framework;
         [Table("TestTable")]
         public class TestConverter
         {
-            [AutoIncrement, PrimaryKey]
+            [AutoIncrement]
+            [PrimaryKey]
             public int Id { get; set; }
 
             [DataConverter(typeof(ColorConverter), typeof(string), Parameter = "SomeParameter")]
@@ -80,7 +80,8 @@ using NUnit.Framework;
         [Table("TestTable")]
         public class TestPlain
         {
-            [AutoIncrement, PrimaryKey]
+            [AutoIncrement]
+            [PrimaryKey]
             public int Id { get; set; }
 
             public string Color { get; set; }

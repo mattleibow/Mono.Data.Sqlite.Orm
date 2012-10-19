@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace System
@@ -12,8 +13,7 @@ namespace System
     {
         public static void AreEqual<T>(T[] expected, T[] actual)
         {
-            if ((expected == null && actual != null) ||
-                (expected != null && actual == null))
+            if ((expected == null && actual != null) || (expected != null && actual == null))
             {
                 Assert.Fail("expected {0}, but was {1}", expected, actual);
             }

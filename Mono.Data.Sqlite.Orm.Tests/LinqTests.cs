@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Mono.Data.Sqlite.Orm.ComponentModel;
 
+using Mono.Data.Sqlite.Orm.ComponentModel;
 #if SILVERLIGHT 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
@@ -13,6 +13,7 @@ using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramewo
 using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Mono.Data.Sqlite.Orm.Tests
@@ -22,23 +23,26 @@ namespace Mono.Data.Sqlite.Orm.Tests
     {
         public class Product
         {
-            [AutoIncrement, PrimaryKey]
+            [AutoIncrement]
+            [PrimaryKey]
             public int Id { get; set; }
 
             public string Name { get; set; }
+
             public decimal Price { get; set; }
         }
 
         public class CoolTable
         {
             public string Name { get; set; }
+
             public decimal Price { get; set; }
         }
 
-		public class BitwiseTable
-		{
-			public int Flags { get; set; }
-		}
+        public class BitwiseTable
+        {
+            public int Flags { get; set; }
+        }
 
         private OrmTestSession CreateDb()
         {
@@ -51,21 +55,17 @@ namespace Mono.Data.Sqlite.Orm.Tests
         public void ContainsConstantData()
         {
             int n = 20;
-            IEnumerable<Product> cq = from i in Enumerable.Range(1, n)
-                                      select new Product
-                                                 {
-                                                     Name = i.ToString()
-                                                 };
+            IEnumerable<Product> cq = from i in Enumerable.Range(1, n) select new Product { Name = i.ToString() };
 
             OrmTestSession db = CreateDb();
 
             db.InsertAll(cq);
 
-            var tensq = new[] {"0", "10", "20"};
+            var tensq = new[] { "0", "10", "20" };
             List<Product> tens = (from o in db.Table<Product>() where tensq.Contains(o.Name) select o).ToList();
             Assert.AreEqual(2, tens.Count);
 
-            var moreq = new[] {"0", "x", "99", "10", "20", "234324"};
+            var moreq = new[] { "0", "x", "99", "10", "20", "234324" };
             List<Product> more = (from o in db.Table<Product>() where moreq.Contains(o.Name) select o).ToList();
             Assert.AreEqual(2, more.Count);
         }
@@ -74,21 +74,17 @@ namespace Mono.Data.Sqlite.Orm.Tests
         public void ContainsQueriedData()
         {
             int n = 20;
-            IEnumerable<Product> cq = from i in Enumerable.Range(1, n)
-                                      select new Product
-                                                 {
-                                                     Name = i.ToString()
-                                                 };
+            IEnumerable<Product> cq = from i in Enumerable.Range(1, n) select new Product { Name = i.ToString() };
 
             OrmTestSession db = CreateDb();
 
             db.InsertAll(cq);
 
-            var tensq = new[] {"0", "10", "20"};
+            var tensq = new[] { "0", "10", "20" };
             List<Product> tens = (from o in db.Table<Product>() where tensq.Contains(o.Name) select o).ToList();
             Assert.AreEqual(2, tens.Count);
 
-            var moreq = new[] {"0", "x", "99", "10", "20", "234324"};
+            var moreq = new[] { "0", "x", "99", "10", "20", "234324" };
             List<Product> more = (from o in db.Table<Product>() where moreq.Contains(o.Name) select o).ToList();
             Assert.AreEqual(2, more.Count);
 
@@ -102,21 +98,12 @@ namespace Mono.Data.Sqlite.Orm.Tests
         {
             OrmTestSession db = CreateDb();
 
-            db.Insert(new Product
-                          {
-                              Name = "A",
-                              Price = 20,
-                          });
+            db.Insert(new Product { Name = "A", Price = 20, });
 
-            db.Insert(new Product
-                          {
-                              Name = "B",
-                              Price = 10,
-                          });
+            db.Insert(new Product { Name = "B", Price = 10, });
 
-            Func<decimal, List<Product>> getProductsWithPriceAtLeast = val => (from p in db.Table<Product>()
-                                                                               where p.Price > val
-                                                                               select p).ToList();
+            Func<decimal, List<Product>> getProductsWithPriceAtLeast =
+                val => (from p in db.Table<Product>() where p.Price > val select p).ToList();
 
             List<Product> r = getProductsWithPriceAtLeast(15);
             Assert.AreEqual(1, r.Count);
@@ -128,23 +115,13 @@ namespace Mono.Data.Sqlite.Orm.Tests
         {
             OrmTestSession db = CreateDb();
 
-            db.Insert(new Product
-                          {
-                              Name = "A",
-                              Price = 20,
-                          });
+            db.Insert(new Product { Name = "A", Price = 20, });
 
-            db.Insert(new Product
-                          {
-                              Name = "B",
-                              Price = 10,
-                          });
+            db.Insert(new Product { Name = "B", Price = 10, });
 
             Assert.AreEqual(2, db.Table<Product>().Count());
 
-            List<Product> r = (from p in db.Table<Product>()
-                               where p.Price > 15
-                               select p).ToList();
+            List<Product> r = (from p in db.Table<Product>() where p.Price > 15 select p).ToList();
             Assert.AreEqual(1, r.Count);
             Assert.AreEqual("A", r[0].Name);
         }
@@ -154,7 +131,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
         {
             OrmTestSession db = CreateDb();
 
-            db.Insert(new Product {Name = "A", Price = 20});
+            db.Insert(new Product { Name = "A", Price = 20 });
 
             var product = db.Get<Product>(x => x.Name == "A");
 
@@ -166,7 +143,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
         {
             OrmTestSession db = CreateDb();
 
-            db.Insert(new Product {Name = "A", Price = 20});
+            db.Insert(new Product { Name = "A", Price = 20 });
             try
             {
                 var product = db.Get<Product>(x => x.Name == "B");
@@ -175,7 +152,6 @@ namespace Mono.Data.Sqlite.Orm.Tests
             }
             catch (InvalidOperationException)
             {
-                
             }
         }
 
@@ -186,11 +162,11 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             db.CreateTableAsync<Product>().Wait();
 
-            db.InsertAsync(new Product {Name = "A", Price = 20}).Wait();
+            db.InsertAsync(new Product { Name = "A", Price = 20 }).Wait();
 
             var task = db.GetAsync<Product>(x => x.Name == "A");
             task.Wait();
-            
+
             Assert.AreEqual(20, task.Result.Price);
         }
 
@@ -217,17 +193,9 @@ namespace Mono.Data.Sqlite.Orm.Tests
         {
             OrmTestSession db = CreateDb();
 
-            db.Insert(new Product
-            {
-                Name = "A",
-                Price = 20,
-            });
+            db.Insert(new Product { Name = "A", Price = 20, });
 
-            db.Insert(new Product
-            {
-                Name = "B",
-                Price = 10,
-            });
+            db.Insert(new Product { Name = "B", Price = 10, });
 
             Assert.AreEqual(2, db.Table<Product>().Count());
 
@@ -243,7 +211,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
         {
             OrmTestSession db = CreateDb();
 
-            db.Insert(new Product {Name = "A", Price = 20});
+            db.Insert(new Product { Name = "A", Price = 20 });
 
             Assert.AreEqual("A", db.Table<Product>().First().Name);
 
@@ -257,7 +225,6 @@ namespace Mono.Data.Sqlite.Orm.Tests
             }
             catch (InvalidOperationException)
             {
-                
             }
         }
 
@@ -266,7 +233,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
         {
             OrmTestSession db = CreateDb();
 
-            db.Insert(new Product {Name = "A", Price = 20});
+            db.Insert(new Product { Name = "A", Price = 20 });
 
             Assert.AreEqual("A", db.Table<Product>().FirstOrDefault().Name);
 
@@ -280,7 +247,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
         {
             OrmTestSession db = CreateDb();
 
-            db.Insert(new Product {Name = "A", Price = 20});
+            db.Insert(new Product { Name = "A", Price = 20 });
 
             var product = db.Table<Product>().With(x => x.Id).With(x => x.Price).FirstOrDefault();
 
@@ -294,7 +261,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
         {
             OrmTestSession db = CreateDb();
 
-            db.Insert(new Product {Name = "A", Price = 20});
+            db.Insert(new Product { Name = "A", Price = 20 });
 
             var product = db.Table<Product>().With(x => x.Id, x => x.Price).FirstOrDefault();
 
@@ -303,44 +270,44 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.IsNull(product.Name);
         }
 
-		[Test]
-		public void BitwiseAndTest()
-		{
-			using (var db = new OrmTestSession())
-			{
-				db.CreateTable<BitwiseTable>();
+        [Test]
+        public void BitwiseAndTest()
+        {
+            using (var db = new OrmTestSession())
+            {
+                db.CreateTable<BitwiseTable>();
 
-				db.Insert(new BitwiseTable { Flags = 0 });
-				db.Insert(new BitwiseTable { Flags = 1 });
-				db.Insert(new BitwiseTable { Flags = 2 });
-				db.Insert(new BitwiseTable { Flags = 2 | 1 });
+                db.Insert(new BitwiseTable { Flags = 0 });
+                db.Insert(new BitwiseTable { Flags = 1 });
+                db.Insert(new BitwiseTable { Flags = 2 });
+                db.Insert(new BitwiseTable { Flags = 2 | 1 });
 
-				var bit = db.Table<BitwiseTable>().Where(x => (x.Flags & 2) != 0).Select(x => x.Flags).ToArray();
-				ArrayAssert.AreEqual(new[] { 2, 3 }, bit);
+                var bit = db.Table<BitwiseTable>().Where(x => (x.Flags & 2) != 0).Select(x => x.Flags).ToArray();
+                ArrayAssert.AreEqual(new[] { 2, 3 }, bit);
 
-				bit = db.Table<BitwiseTable>().Where(x => (x.Flags & 1) != 0).Select(x => x.Flags).ToArray();
-				ArrayAssert.AreEqual(new[] { 1, 3 }, bit);
+                bit = db.Table<BitwiseTable>().Where(x => (x.Flags & 1) != 0).Select(x => x.Flags).ToArray();
+                ArrayAssert.AreEqual(new[] { 1, 3 }, bit);
 
-				bit = db.Table<BitwiseTable>().Where(x => (x.Flags & 4) != 0).Select(x => x.Flags).ToArray();
-				ArrayAssert.AreEqual(new int[] { }, bit);
-			}
-		}
+                bit = db.Table<BitwiseTable>().Where(x => (x.Flags & 4) != 0).Select(x => x.Flags).ToArray();
+                ArrayAssert.AreEqual(new int[] { }, bit);
+            }
+        }
 
-		[Test]
-		public void BitwiseOrTest()
-		{
-			using (var db = new OrmTestSession())
-			{
-				db.CreateTable<BitwiseTable>();
+        [Test]
+        public void BitwiseOrTest()
+        {
+            using (var db = new OrmTestSession())
+            {
+                db.CreateTable<BitwiseTable>();
 
-				db.Insert(new BitwiseTable { Flags = 0 });
-				db.Insert(new BitwiseTable { Flags = 1 });
-				db.Insert(new BitwiseTable { Flags = 2 });
-				db.Insert(new BitwiseTable { Flags = 2 | 1 });
+                db.Insert(new BitwiseTable { Flags = 0 });
+                db.Insert(new BitwiseTable { Flags = 1 });
+                db.Insert(new BitwiseTable { Flags = 2 });
+                db.Insert(new BitwiseTable { Flags = 2 | 1 });
 
-				var bit = db.Table<BitwiseTable>().Where(x => (x.Flags | 1) == 3).Select(x => x.Flags).ToArray();
-				ArrayAssert.AreEqual(new[] { 2, 3 }, bit);
-			}
-		}
+                var bit = db.Table<BitwiseTable>().Where(x => (x.Flags | 1) == 3).Select(x => x.Flags).ToArray();
+                ArrayAssert.AreEqual(new[] { 2, 3 }, bit);
+            }
+        }
     }
 }

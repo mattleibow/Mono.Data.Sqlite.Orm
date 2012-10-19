@@ -1,5 +1,4 @@
 ﻿using Mono.Data.Sqlite.Orm.ComponentModel;
-
 #if SILVERLIGHT 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
@@ -10,6 +9,7 @@ using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramewo
 using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Mono.Data.Sqlite.Orm.Tests
@@ -18,12 +18,15 @@ namespace Mono.Data.Sqlite.Orm.Tests
     public class HooksTest
     {
         private const string InsertedTest = "Inserted Test";
+
         private const string ReplacedText = "Replaced Text";
 
         public class HookTestTable
         {
-            [AutoIncrement, PrimaryKey]
+            [AutoIncrement]
+            [PrimaryKey]
             public int Id { get; set; }
+
             public string Text { get; set; }
         }
 
@@ -33,7 +36,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var db = new OrmTestSession();
             db.InstanceCreated += InstanceCreated;
             db.CreateTable<HookTestTable>();
-            db.Insert(new HookTestTable {Text = InsertedTest});
+            db.Insert(new HookTestTable { Text = InsertedTest });
             var got = db.Get<HookTestTable>(1);
             Assert.AreEqual(ReplacedText, got.Text);
         }
@@ -44,7 +47,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var db = new OrmTestSession();
             db.InstanceCreated += InstanceCreated;
             db.CreateTable<HookTestTable>();
-            db.Insert(new HookTestTable {Text = InsertedTest});
+            db.Insert(new HookTestTable { Text = InsertedTest });
             var got = db.Get(typeof(HookTestTable), 1);
             Assert.AreEqual(ReplacedText, ((HookTestTable)got).Text);
         }
@@ -56,5 +59,4 @@ namespace Mono.Data.Sqlite.Orm.Tests
             created.Text = ReplacedText;
         }
     }
-}  
-
+}

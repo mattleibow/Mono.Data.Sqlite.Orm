@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using Mono.Data.Sqlite.Orm.ComponentModel;
 
+using Mono.Data.Sqlite.Orm.ComponentModel;
 #if SILVERLIGHT 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
@@ -11,6 +11,7 @@ using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramewo
 using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Mono.Data.Sqlite.Orm.Tests
@@ -20,14 +21,15 @@ namespace Mono.Data.Sqlite.Orm.Tests
     {
         public class NullableIntClass
         {
-            [PrimaryKey, AutoIncrement]
+            [PrimaryKey]
+            [AutoIncrement]
             public int Id { get; set; }
 
             public int? NullableInt { get; set; }
 
             public override bool Equals(object obj)
             {
-                var other = (NullableIntClass) obj;
+                var other = (NullableIntClass)obj;
                 return Id == other.Id && NullableInt == other.NullableInt;
             }
 
@@ -39,14 +41,15 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
         public class NullableFloatClass
         {
-            [PrimaryKey, AutoIncrement]
+            [PrimaryKey]
+            [AutoIncrement]
             public int Id { get; set; }
 
             public float? NullableFloat { get; set; }
 
             public override bool Equals(object obj)
             {
-                var other = (NullableFloatClass) obj;
+                var other = (NullableFloatClass)obj;
                 return Id == other.Id && NullableFloat == other.NullableFloat;
             }
 
@@ -58,13 +61,16 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
         public class StringClass
         {
-            [PrimaryKey, AutoIncrement]
+            [PrimaryKey]
+            [AutoIncrement]
             public int Id { get; set; }
 
-            public string StringData { get; set; } //Strings are allowed to be null by default
+            public string StringData { get; set; }
+
+            //Strings are allowed to be null by default
             public override bool Equals(object obj)
             {
-                var other = (StringClass) obj;
+                var other = (StringClass)obj;
                 return Id == other.Id && StringData == other.StringData;
             }
 
@@ -81,10 +87,10 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var db = new OrmTestSession();
             db.CreateTable<NullableFloatClass>();
 
-            var withNull = new NullableFloatClass {NullableFloat = null};
-            var with0 = new NullableFloatClass {NullableFloat = 0};
-            var with1 = new NullableFloatClass {NullableFloat = 1};
-            var withMinus1 = new NullableFloatClass {NullableFloat = -1};
+            var withNull = new NullableFloatClass { NullableFloat = null };
+            var with0 = new NullableFloatClass { NullableFloat = 0 };
+            var with1 = new NullableFloatClass { NullableFloat = 1 };
+            var withMinus1 = new NullableFloatClass { NullableFloat = -1 };
 
             db.Insert(withNull);
             db.Insert(with0);
@@ -108,10 +114,10 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var db = new OrmTestSession();
             db.CreateTable<NullableIntClass>();
 
-            var withNull = new NullableIntClass {NullableInt = null};
-            var with0 = new NullableIntClass {NullableInt = 0};
-            var with1 = new NullableIntClass {NullableInt = 1};
-            var withMinus1 = new NullableIntClass {NullableInt = -1};
+            var withNull = new NullableIntClass { NullableInt = null };
+            var with0 = new NullableIntClass { NullableInt = 0 };
+            var with1 = new NullableIntClass { NullableInt = 1 };
+            var withMinus1 = new NullableIntClass { NullableInt = -1 };
 
             db.Insert(withNull);
             db.Insert(with0);
@@ -134,9 +140,9 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var db = new OrmTestSession();
             db.CreateTable<StringClass>();
 
-            var withNull = new StringClass {StringData = null};
-            var withEmpty = new StringClass {StringData = ""};
-            var withData = new StringClass {StringData = "data"};
+            var withNull = new StringClass { StringData = null };
+            var withEmpty = new StringClass { StringData = "" };
+            var withData = new StringClass { StringData = "data" };
 
             db.Insert(withNull);
             db.Insert(withEmpty);
@@ -157,15 +163,16 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var db = new OrmTestSession();
             db.CreateTable<StringClass>();
 
-            var withNull = new StringClass {StringData = null};
-            var withEmpty = new StringClass {StringData = ""};
-            var withData = new StringClass {StringData = "data"};
+            var withNull = new StringClass { StringData = null };
+            var withEmpty = new StringClass { StringData = "" };
+            var withData = new StringClass { StringData = "data" };
 
             db.Insert(withNull);
             db.Insert(withEmpty);
             db.Insert(withData);
 
-            StringClass[] results = db.Table<StringClass>().Where(x => x.StringData != null).OrderBy(x => x.Id).ToArray();
+            StringClass[] results =
+                db.Table<StringClass>().Where(x => x.StringData != null).OrderBy(x => x.Id).ToArray();
             Assert.AreEqual(2, results.Length);
             Assert.AreEqual(withEmpty, results[0]);
             Assert.AreEqual(withData, results[1]);
@@ -177,15 +184,16 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var db = new OrmTestSession();
             db.CreateTable<StringClass>();
 
-            var withNull = new StringClass {StringData = null};
-            var withEmpty = new StringClass {StringData = ""};
-            var withData = new StringClass {StringData = "data"};
+            var withNull = new StringClass { StringData = null };
+            var withEmpty = new StringClass { StringData = "" };
+            var withData = new StringClass { StringData = "data" };
 
             db.Insert(withNull);
             db.Insert(withEmpty);
             db.Insert(withData);
 
-            StringClass[] results = db.Table<StringClass>().Where(x => x.StringData == null).OrderBy(x => x.Id).ToArray();
+            StringClass[] results =
+                db.Table<StringClass>().Where(x => x.StringData == null).OrderBy(x => x.Id).ToArray();
             Assert.AreEqual(1, results.Length);
             Assert.AreEqual(withNull, results[0]);
         }
@@ -196,17 +204,18 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var db = new OrmTestSession();
             db.CreateTable<NullableIntClass>();
 
-            var withNull = new NullableIntClass {NullableInt = null};
-            var with0 = new NullableIntClass {NullableInt = 0};
-            var with1 = new NullableIntClass {NullableInt = 1};
-            var withMinus1 = new NullableIntClass {NullableInt = -1};
+            var withNull = new NullableIntClass { NullableInt = null };
+            var with0 = new NullableIntClass { NullableInt = 0 };
+            var with1 = new NullableIntClass { NullableInt = 1 };
+            var withMinus1 = new NullableIntClass { NullableInt = -1 };
 
             db.Insert(withNull);
             db.Insert(with0);
             db.Insert(with1);
             db.Insert(withMinus1);
 
-            NullableIntClass[] results = db.Table<NullableIntClass>().Where(x => x.NullableInt != null).OrderBy(x => x.Id).ToArray();
+            NullableIntClass[] results =
+                db.Table<NullableIntClass>().Where(x => x.NullableInt != null).OrderBy(x => x.Id).ToArray();
 
             Assert.AreEqual(3, results.Length);
 
@@ -221,17 +230,18 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var db = new OrmTestSession();
             db.CreateTable<NullableIntClass>();
 
-            var withNull = new NullableIntClass {NullableInt = null};
-            var with0 = new NullableIntClass {NullableInt = 0};
-            var with1 = new NullableIntClass {NullableInt = 1};
-            var withMinus1 = new NullableIntClass {NullableInt = -1};
+            var withNull = new NullableIntClass { NullableInt = null };
+            var with0 = new NullableIntClass { NullableInt = 0 };
+            var with1 = new NullableIntClass { NullableInt = 1 };
+            var withMinus1 = new NullableIntClass { NullableInt = -1 };
 
             db.Insert(withNull);
             db.Insert(with0);
             db.Insert(with1);
             db.Insert(withMinus1);
 
-            NullableIntClass[] results = db.Table<NullableIntClass>().Where(x => x.NullableInt == null).OrderBy(x => x.Id).ToArray();
+            NullableIntClass[] results =
+                db.Table<NullableIntClass>().Where(x => x.NullableInt == null).OrderBy(x => x.Id).ToArray();
 
             Assert.AreEqual(1, results.Length);
             Assert.AreEqual(withNull, results[0]);

@@ -1,5 +1,4 @@
 ﻿using Mono.Data.Sqlite.Orm.ComponentModel;
-
 #if SILVERLIGHT 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
@@ -10,6 +9,7 @@ using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramewo
 using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #else
 using NUnit.Framework;
+
 #endif
 
 #if WINDOWS_PHONE
@@ -28,6 +28,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             public int Id { get; set; }
 
             public string Name { get; set; }
+
             public decimal Price { get; set; }
         }
 
@@ -38,11 +39,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             db.CreateTable<Product>();
 
-            db.Insert(new Product
-                          {
-                              Name = "Hello",
-                              Price = 16,
-                          });
+            db.Insert(new Product { Name = "Hello", Price = 16, });
 
             int n = db.Table<Product>().Count();
 
@@ -74,16 +71,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
             db.CreateTable<Product>();
 
             // insert
-            db.Insert(new Product
-            {
-                Name = "Hello",
-                Price = 16,
-            });
-            db.Insert(new Product
-            {
-                Name = "Hello",
-                Price = 16,
-            });
+            db.Insert(new Product { Name = "Hello", Price = 16, });
+            db.Insert(new Product { Name = "Hello", Price = 16, });
 
             // confirm
             Assert.AreEqual(2, db.Table<Product>().Count());
@@ -96,11 +85,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(0, db.Table<Product>().Count());
 
             // insert
-            db.Insert(new Product
-            {
-                Name = "Hello",
-                Price = 16,
-            });
+            db.Insert(new Product { Name = "Hello", Price = 16, });
 
             // confirm that the Ids have not reset
             Assert.AreEqual(1, db.Table<Product>().Count());

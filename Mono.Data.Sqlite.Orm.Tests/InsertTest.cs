@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Transactions;
-using Mono.Data.Sqlite.Orm.ComponentModel;
 
+using Mono.Data.Sqlite.Orm.ComponentModel;
 #if SILVERLIGHT 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
@@ -15,6 +15,7 @@ using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramewo
 using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #else
 using NUnit.Framework;
+
 #endif
 
 #if WINDOWS_PHONE
@@ -28,7 +29,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
     {
         public class TestObj
         {
-            [AutoIncrement, PrimaryKey]
+            [AutoIncrement]
+            [PrimaryKey]
             public int Id { get; set; }
 
             public String Text { get; set; }
@@ -59,10 +61,12 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
         public class TestObjDateTime
         {
-            [PrimaryKey, AutoIncrement]
+            [PrimaryKey]
+            [AutoIncrement]
             public int Id { get; set; }
 
             public Guid Guid { get; set; }
+
             public DateTime TheDate { get; set; }
 
             public override string ToString()
@@ -73,7 +77,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
         public class DefaultsObject
         {
-            [PrimaryKey, AutoIncrement]
+            [PrimaryKey]
+            [AutoIncrement]
             public int Id { get; set; }
 
             [Default("33")]
@@ -86,10 +91,10 @@ namespace Mono.Data.Sqlite.Orm.Tests
         [Test]
         public void InsertUsingSystemTransactions()
         {
-            var options = new TransactionOptions {IsolationLevel = IsolationLevel.ReadCommitted};
+            var options = new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted };
 #if NETFX_CORE
             var tempFileName = Windows.Storage.ApplicationData.Current.TemporaryFolder.Path + "\\TempDb" + DateTime.Now.Ticks + ".db";
-#else            
+#else
             var tempFileName = Path.GetTempFileName();
 
 #endif
@@ -106,7 +111,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
                     db.Connection.Open();
                     db.Insert(new TestObj { Text = "My Text" });
                 }
-            
+
                 Assert.AreEqual(0, db.Table<TestObj>().Count());
 
                 db.Connection.Close();
@@ -126,7 +131,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
         public void InsertALotPlain()
         {
             var db = new OrmTestSession();
-            
+
             SqliteSession.Trace = false;
 
             db.CreateTable<TestObjPlain>();
@@ -162,7 +167,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             db.CreateTable<TestObj>();
 
             const int n = 10000;
-            IEnumerable<TestObj> q = Enumerable.Range(1, n).Select(i => new TestObj {Text = "I am"});
+            IEnumerable<TestObj> q = Enumerable.Range(1, n).Select(i => new TestObj { Text = "I am" });
             TestObj[] objs = q.ToArray();
             int numIn = db.InsertAll(objs);
 
@@ -191,7 +196,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             db.CreateTable<TestObjDateTime>();
 
             DateTime date = DateTime.Now;
-            var obj1 = new TestObjDateTime {TheDate = date};
+            var obj1 = new TestObjDateTime { TheDate = date };
 
             int numIn1 = db.Insert(obj1);
             Assert.AreEqual(1, numIn1);
@@ -208,8 +213,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
         {
             var db = new OrmTestSession();
             db.CreateTable<TestObjDateTime>();
-            
-            var obj2 = new TestObjDateTime {Guid = Guid.NewGuid()};
+
+            var obj2 = new TestObjDateTime { Guid = Guid.NewGuid() };
 
             int numIn1 = db.Insert(obj2);
             Assert.AreEqual(1, numIn1);
@@ -227,8 +232,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
             db.CreateTable<TestObj>();
             db.CreateTable<TestObj2>();
 
-            var obj1 = new TestObj {Text = "GLaDOS loves testing!"};
-            var obj2 = new TestObj2 {Text = "Keep testing, just keep testing"};
+            var obj1 = new TestObj { Text = "GLaDOS loves testing!" };
+            var obj2 = new TestObj2 { Text = "Keep testing, just keep testing" };
 
             int numIn1 = db.Insert(obj1);
             Assert.AreEqual(1, numIn1);
@@ -251,8 +256,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var db = new OrmTestSession();
             db.CreateTable<TestObj>();
 
-            var obj1 = new TestObj {Text = "GLaDOS loves testing!"};
-            var obj2 = new TestObj {Text = "Keep testing, just keep testing"};
+            var obj1 = new TestObj { Text = "GLaDOS loves testing!" };
+            var obj2 = new TestObj { Text = "Keep testing, just keep testing" };
 
             int numIn1 = db.Insert(obj1);
             int numIn2 = db.Insert(obj2);
@@ -275,12 +280,11 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var db = new OrmTestSession();
             db.CreateTable<TestObj2>();
 
-            var obj1 = new TestObj2 {Id = 1, Text = "GLaDOS loves testing!"};
-            var obj2 = new TestObj2 {Id = 1, Text = "Keep testing, just keep testing"};
-            var obj3 = new TestObj2 {Id = 1, Text = "Done testing"};
+            var obj1 = new TestObj2 { Id = 1, Text = "GLaDOS loves testing!" };
+            var obj2 = new TestObj2 { Id = 1, Text = "Keep testing, just keep testing" };
+            var obj3 = new TestObj2 { Id = 1, Text = "Done testing" };
 
             db.Insert(obj1);
-
 
             try
             {
@@ -291,7 +295,6 @@ namespace Mono.Data.Sqlite.Orm.Tests
             {
             }
             db.Insert(obj2, ConflictResolution.Replace);
-
 
             try
             {
@@ -307,17 +310,13 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual(obj2.Text, result.First().Text);
 
-
             db.Close();
         }
 
         [Test]
         public void Unicode()
         {
-            var insertItem = new TestObj
-                                 {
-                                     Text = "Sinéad O'Connor"
-                                 };
+            var insertItem = new TestObj { Text = "Sinéad O'Connor" };
 
             var db = new OrmTestSession();
             db.CreateTable<TestObj>();
@@ -350,7 +349,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
                     Assert.AreEqual(db.Table<TestObj>().Count(), 2);
 
                     trans.RollbackSavepoint("First");
-                    
+
                     trans.Commit();
                 }
 
@@ -473,8 +472,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
                 var start = Environment.TickCount;
 
-                const int n = 500*500;
-                IEnumerable<TestObj> q = Enumerable.Range(1, n).Select(x => new TestObj {Text = "I am"});
+                const int n = 500 * 500;
+                IEnumerable<TestObj> q = Enumerable.Range(1, n).Select(x => new TestObj { Text = "I am" });
                 TestObj[] objs = q.ToArray();
                 int numIn = db.InsertAll(objs);
 
@@ -494,7 +493,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
                     for (var i = 0; i < 500; ++i)
                     {
                         const int n = 500;
-                        IEnumerable<TestObj> q = Enumerable.Range(1, n).Select(x => new TestObj {Text = "I am"});
+                        IEnumerable<TestObj> q = Enumerable.Range(1, n).Select(x => new TestObj { Text = "I am" });
                         TestObj[] objs = q.ToArray();
                         int numIn = db.InsertAll(objs);
                     }

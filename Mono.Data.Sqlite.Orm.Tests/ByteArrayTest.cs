@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Mono.Data.Sqlite.Orm.ComponentModel;
 
+using Mono.Data.Sqlite.Orm.ComponentModel;
 #if SILVERLIGHT 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
@@ -12,6 +12,7 @@ using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramewo
 using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Mono.Data.Sqlite.Orm.Tests
@@ -21,7 +22,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
     {
         public class ByteArrayClass
         {
-            [PrimaryKey, AutoIncrement]
+            [PrimaryKey]
+            [AutoIncrement]
             public int Id { get; set; }
 
             public byte[] Bytes { get; set; }
@@ -43,13 +45,16 @@ namespace Mono.Data.Sqlite.Orm.Tests
             //Byte Arrays for comparisson
             var byteArrays = new[]
                                  {
-                                     new ByteArrayClass {Bytes = new byte[] {1, 2, 3, 4, 250, 252, 253, 254, 255}}, //Range check
-                                     new ByteArrayClass {Bytes = new byte[] {0}}, //null bytes need to be handled correctly
-                                     new ByteArrayClass {Bytes = new byte[] {0, 0}},
-                                     new ByteArrayClass {Bytes = new byte[] {0, 1, 0}},
-                                     new ByteArrayClass {Bytes = new byte[] {1, 0, 1}},
-                                     new ByteArrayClass {Bytes = new byte[] {}}, //Empty byte array should stay empty (and not become null)
-                                     new ByteArrayClass {Bytes = null} //Null should be supported
+                                     new ByteArrayClass { Bytes = new byte[] { 1, 2, 3, 4, 250, 252, 253, 254, 255 } },
+                                     //Range check
+                                     new ByteArrayClass { Bytes = new byte[] { 0 } },
+                                     //null bytes need to be handled correctly
+                                     new ByteArrayClass { Bytes = new byte[] { 0, 0 } },
+                                     new ByteArrayClass { Bytes = new byte[] { 0, 1, 0 } },
+                                     new ByteArrayClass { Bytes = new byte[] { 1, 0, 1 } },
+                                     new ByteArrayClass { Bytes = new byte[] { } },
+                                     //Empty byte array should stay empty (and not become null)
+                                     new ByteArrayClass { Bytes = null } //Null should be supported
                                  };
 
             var database = new OrmTestSession();
@@ -57,7 +62,9 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             //Insert all of the ByteArrayClass
             foreach (ByteArrayClass b in byteArrays)
+            {
                 database.Insert(b);
+            }
 
             //Get them back out
             ByteArrayClass[] fetchedByteArrays = database.Table<ByteArrayClass>().OrderBy(x => x.Id).ToArray();
@@ -80,12 +87,14 @@ namespace Mono.Data.Sqlite.Orm.Tests
         // [Description("Create A large byte array and check it can be stored and retrieved correctly")]
         public void LargeByteArray()
         {
-            const int byteArraySize = 1024*1024;
+            const int byteArraySize = 1024 * 1024;
             var bytes = new byte[byteArraySize];
             for (int i = 0; i < byteArraySize; i++)
-                bytes[i] = (byte) (i%256);
+            {
+                bytes[i] = (byte)(i % 256);
+            }
 
-            var byteArray = new ByteArrayClass {Bytes = bytes};
+            var byteArray = new ByteArrayClass { Bytes = bytes };
 
             var database = new OrmTestSession();
             database.CreateTable<ByteArrayClass>();

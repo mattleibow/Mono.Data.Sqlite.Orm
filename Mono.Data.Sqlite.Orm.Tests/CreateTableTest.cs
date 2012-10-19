@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
-using Mono.Data.Sqlite.Orm.ComponentModel;
 
+using Mono.Data.Sqlite.Orm.ComponentModel;
 #if SILVERLIGHT 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
@@ -13,7 +13,6 @@ using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.Test
 #else
 using NUnit.Framework;
 #endif
-
 using IgnoreAttribute = Mono.Data.Sqlite.Orm.ComponentModel.IgnoreAttribute;
 
 namespace Mono.Data.Sqlite.Orm.Tests
@@ -24,8 +23,11 @@ namespace Mono.Data.Sqlite.Orm.Tests
         public class SimpleTable
         {
             public int Id { get; set; }
+
             public string Name { get; set; }
+
             public long BigInt { get; set; }
+
             public bool IsWorking { get; set; }
         }
 
@@ -59,8 +61,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
                 db.CreateTable<SimpleTable>();
 
                 var sql = new TableMapping(typeof(SimpleTable)).GetCreateSql();
-                var correct = 
-@"CREATE TABLE [SimpleTable] (
+                var correct = @"CREATE TABLE [SimpleTable] (
 [Id] integer NOT NULL,
 [Name] text ,
 [BigInt] bigint NOT NULL,
@@ -75,27 +76,34 @@ namespace Mono.Data.Sqlite.Orm.Tests
         {
             [EnumAffinity(typeof(char))]
             public PersonType Type { get; set; }
+
             public PersonAge Age { get; set; }
+
             [EnumAffinity(typeof(string))]
             public PersonKind Kind { get; set; }
 
             public enum PersonType
             {
                 Child = 'C',
+
                 Adult = 'A',
+
                 Senior = 'S'
             }
 
             public enum PersonAge
             {
                 ChildAge = 3,
+
                 AdultAge = 21,
+
                 SeniorAge = 40
             }
 
             public enum PersonKind
             {
                 Senior,
+
                 Junior
             }
         }
@@ -108,8 +116,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
                 db.CreateTable<EnumTable>();
 
                 var sql = new TableMapping(typeof(EnumTable)).GetCreateSql();
-                var correct =
-@"CREATE TABLE [EnumTable] (
+                var correct = @"CREATE TABLE [EnumTable] (
 [Type] varchar(1) NOT NULL,
 [Age] integer NOT NULL,
 [Kind] text NOT NULL
@@ -117,12 +124,13 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
                 Assert.AreEqual(correct, sql);
 
-                db.Insert(new EnumTable
-                              {
-                                  Type = EnumTable.PersonType.Child,
-                                  Age = EnumTable.PersonAge.ChildAge,
-                                  Kind = EnumTable.PersonKind.Junior
-                              });
+                db.Insert(
+                    new EnumTable
+                        {
+                            Type = EnumTable.PersonType.Child,
+                            Age = EnumTable.PersonAge.ChildAge,
+                            Kind = EnumTable.PersonKind.Junior
+                        });
             }
         }
 
@@ -147,8 +155,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             TableMapping mapping = db.GetMapping<CustomTable>();
 
             var sql = mapping.GetCreateSql();
-            var correct =
-@"CREATE TABLE [DifferentName] (
+            var correct = @"CREATE TABLE [DifferentName] (
 [Id] integer NOT NULL,
 [NewName] text ,
 [IsWorking] integer NOT NULL
@@ -180,8 +187,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             TableMapping mapping = db.GetMapping<AdvancedTable>();
 
             var sql = mapping.GetCreateSql();
-            var correct =
-@"CREATE TABLE [AdvancedTable] (
+            var correct = @"CREATE TABLE [AdvancedTable] (
 [Id] integer CONSTRAINT PK_MyPrimaryKey PRIMARY KEY Desc ON CONFLICT Fail NOT NULL,
 [IsWorking] integer UNIQUE ON CONFLICT Rollback
 );";
@@ -228,8 +234,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             TableMapping mapping = db.GetMapping<VeryAdvancedTable>();
 
             var sql = mapping.GetCreateSql();
-            var correct =
-@"CREATE TABLE [VeryAdvancedTable] (
+            var correct = @"CREATE TABLE [VeryAdvancedTable] (
 [Id] integer NOT NULL CHECK (Id <= 25),
 [DiffName] varchar(255) COLLATE RTrim,
 [IsWorking] integer NOT NULL DEFAULT(1),
@@ -297,7 +302,6 @@ CHECK (Id <= 10)
             }
             catch (SqliteException)
             {
-                
             }
             catch
             {
@@ -318,6 +322,7 @@ CHECK (Id <= 10)
         public class ReferencedTable
         {
             public int Id { get; set; }
+
             public int Id2 { get; set; }
         }
 
@@ -332,8 +337,7 @@ CHECK (Id <= 10)
             TableMapping refingMap = db.GetMapping<ReferencingTable>();
 
             var sql = refingMap.GetCreateSql();
-            var correct =
-@"CREATE TABLE [ReferencingTable] (
+            var correct = @"CREATE TABLE [ReferencingTable] (
 [RefId] integer NOT NULL,
 [RandomName] integer NOT NULL,
 CONSTRAINT [FK_Foreign_Key]
@@ -366,6 +370,7 @@ ON UPDATE CASCADE
         public class MultiReferencedTable
         {
             public int Id { get; set; }
+
             public int Id2 { get; set; }
         }
 
@@ -380,8 +385,7 @@ ON UPDATE CASCADE
             TableMapping refingMap = db.GetMapping<MultiReferencingTable>();
 
             var sql = refingMap.GetCreateSql();
-            var correct =
-@"CREATE TABLE [MultiReferencingTable] (
+            var correct = @"CREATE TABLE [MultiReferencingTable] (
 [RefId] integer NOT NULL,
 [Indexed] integer NOT NULL,
 CONSTRAINT [FK_Foreign_Key]
@@ -393,7 +397,8 @@ REFERENCES [MultiReferencedTable] ([Id2], [Id])
 
             Assert.AreEqual(1, refingMap.ForeignKeys.Count);
             Assert.AreEqual("FK_Foreign_Key", refingMap.ForeignKeys.First().Name);
-            TableMapping.ForeignKey[] fk = refingMap.ForeignKeys.Where(f => f.ChildTable == "MultiReferencedTable").ToArray();
+            TableMapping.ForeignKey[] fk =
+                refingMap.ForeignKeys.Where(f => f.ChildTable == "MultiReferencedTable").ToArray();
             Assert.AreEqual(1, fk.Count());
 
             Assert.AreEqual("RefId", fk[0].Keys.Skip(1).First().Key);
@@ -401,7 +406,6 @@ REFERENCES [MultiReferencedTable] ([Id2], [Id])
             Assert.AreEqual("Indexed", fk[0].Keys.First().Key);
             Assert.AreEqual("Id2", fk[0].Keys.First().Value);
         }
-
 
         [Index("IX_TabelIndex", Unique = true)]
         public class IndexedTable
@@ -436,8 +440,7 @@ REFERENCES [MultiReferencedTable] ([Id2], [Id])
             TableMapping tableMap = db.GetMapping<IndexedTable>();
 
             var sql = tableMap.Indexes.Single().GetCreateSql("IndexedTable");
-            var correct =
-@"CREATE UNIQUE INDEX [IX_TabelIndex] on [IndexedTable] (
+            var correct = @"CREATE UNIQUE INDEX [IX_TabelIndex] on [IndexedTable] (
 [Indexed]
 );";
 
@@ -456,8 +459,7 @@ REFERENCES [MultiReferencedTable] ([Id2], [Id])
             TableMapping columnMap = db.GetMapping<IndexedColumnTable>();
 
             var sql = columnMap.Indexes.Single().GetCreateSql("IndexedColumnTable");
-            var correct =
-@"CREATE INDEX [IX_SomeName] on [IndexedColumnTable] (
+            var correct = @"CREATE INDEX [IX_SomeName] on [IndexedColumnTable] (
 [Indexed] COLLATE RTrim
 );";
 
@@ -476,8 +478,7 @@ REFERENCES [MultiReferencedTable] ([Id2], [Id])
             TableMapping multiMap = db.GetMapping<MultiIndexedTable>();
 
             var sql = multiMap.Indexes.Single().GetCreateSql("MultiIndexedTable");
-            var correct =
-@"CREATE UNIQUE INDEX [IX_MultiIndexedTable] on [MultiIndexedTable] (
+            var correct = @"CREATE UNIQUE INDEX [IX_MultiIndexedTable] on [MultiIndexedTable] (
 [Indexed] COLLATE RTrim,
 [Second] Desc
 );";

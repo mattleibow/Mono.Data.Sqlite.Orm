@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Mono.Data.Sqlite.Orm.ComponentModel;
 
+using Mono.Data.Sqlite.Orm.ComponentModel;
 #if SILVERLIGHT 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
@@ -15,6 +15,7 @@ using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramewo
 using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #else
 using NUnit.Framework;
+
 #endif
 
 #if NETFX_CORE
@@ -28,7 +29,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
     public class Customer
     {
-        [AutoIncrement, PrimaryKey]
+        [AutoIncrement]
+        [PrimaryKey]
         public int Id { get; set; }
 
         [MaxLength(64)]
@@ -49,12 +51,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
     {
         private Customer CreateCustomer()
         {
-            var customer = new Customer
-                               {
-                                   FirstName = "foo",
-                                   LastName = "bar",
-                                   Email = Guid.NewGuid().ToString()
-                               };
+            var customer = new Customer { FirstName = "foo", LastName = "bar", Email = Guid.NewGuid().ToString() };
             return customer;
         }
 
@@ -62,7 +59,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
         public void StressAsync()
         {
             var globalConn = OrmAsyncTestSession.GetConnection();
-            
+
             globalConn.CreateTableAsync<Customer>().Wait();
 
             int threadCount = 0;
@@ -81,7 +78,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
                             try
                             {
                                 var conn = OrmAsyncTestSession.GetConnection(globalConn.ConnectionString);
-                                var obj = new Customer {FirstName = i.ToString()};
+                                var obj = new Customer { FirstName = i.ToString() };
 
                                 conn.InsertAsync(obj).Wait();
                                 if (obj.Id == 0)
@@ -92,9 +89,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
                                     }
                                 }
 
-                                var query = from c in conn.Table<Customer>()
-                                            where c.Id == obj.Id
-                                            select c;
+                                var query = from c in conn.Table<Customer>() where c.Id == obj.Id select c;
                                 if (query.ToListAsync().Result.FirstOrDefault() == null)
                                 {
                                     lock (errors)
@@ -160,7 +155,9 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             // create...
             for (int index = 0; index < 10; index++)
+            {
                 conn.InsertAsync(this.CreateCustomer()).Wait();
+            }
 
             // query...
             TableQuery<Customer> query = conn.Table<Customer>().OrderBy(v => v.Email);
@@ -181,7 +178,9 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             // create...
             for (int index = 0; index < 10; index++)
+            {
                 conn.InsertAsync(this.CreateCustomer()).Wait();
+            }
 
             // query...
             TableQuery<Customer> query = conn.Table<Customer>().OrderByDescending(v => v.Email);
@@ -202,7 +201,9 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             // create...
             for (int index = 0; index < 10; index++)
+            {
                 conn.InsertAsync(this.CreateCustomer()).Wait();
+            }
 
             // load...
             TableQuery<Customer> query = conn.Table<Customer>();
@@ -378,8 +379,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             // do a manual insert...
             string email = Guid.NewGuid().ToString();
-            conn.ExecuteAsync("insert into customer (firstname, lastname, email) values (?, ?, ?)",
-                              "foo", "bar", email).Wait();
+            conn.ExecuteAsync("insert into customer (firstname, lastname, email) values (?, ?, ?)", "foo", "bar", email)
+                .Wait();
 
             // check...
             using (var check = OrmAsyncTestSession.GetConnection(conn.ConnectionString))
@@ -397,7 +398,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var conn = OrmAsyncTestSession.GetConnection();
             conn.CreateTableAsync<Customer>().Wait();
 
-            conn.Insert(new Customer {FirstName = "Hello"});
+            conn.Insert(new Customer { FirstName = "Hello" });
 
             // check...
             var task = conn.ExecuteScalarAsync<int>("SELECT Id FROM Customer WHERE FirstName = ?", "Hello");
@@ -651,7 +652,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var db = OrmAsyncTestSession.GetConnection();
             db.CreateTableAsync<Customer>().Wait();
 
-            db.InsertAsync(new Customer {FirstName = "First"}).Wait();
+            db.InsertAsync(new Customer { FirstName = "First" }).Wait();
 
             var firstAsync = db.Table<Customer>().FirstAsync();
             firstAsync.Wait();
@@ -669,7 +670,9 @@ namespace Mono.Data.Sqlite.Orm.Tests
             catch (AggregateException ex)
             {
                 if (ex.InnerException as InvalidOperationException == null)
+                {
                     throw;
+                }
             }
         }
 
@@ -679,7 +682,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             var db = OrmAsyncTestSession.GetConnection();
             db.CreateTableAsync<Customer>().Wait();
 
-            db.InsertAsync(new Customer {FirstName = "First"}).Wait();
+            db.InsertAsync(new Customer { FirstName = "First" }).Wait();
 
             var firstAsync = db.Table<Customer>().FirstOrDefaultAsync();
             firstAsync.Wait();

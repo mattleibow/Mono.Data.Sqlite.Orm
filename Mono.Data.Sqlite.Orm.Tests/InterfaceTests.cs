@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Mono.Data.Sqlite.Orm.ComponentModel;
 
+using Mono.Data.Sqlite.Orm.ComponentModel;
 #if SILVERLIGHT 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
@@ -11,6 +11,7 @@ using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramewo
 using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Mono.Data.Sqlite.Orm.Tests
@@ -20,10 +21,12 @@ namespace Mono.Data.Sqlite.Orm.Tests
     {
         public interface IProductInterface
         {
-            [AutoIncrement, PrimaryKey]
+            [AutoIncrement]
+            [PrimaryKey]
             int Id { get; }
 
             string Name { get; }
+
             decimal? Price { get; }
 
             [ComponentModel.Ignore]
@@ -34,10 +37,12 @@ namespace Mono.Data.Sqlite.Orm.Tests
         {
             #region IProductInterface Members
 
-            [AutoIncrement, PrimaryKey]
+            [AutoIncrement]
+            [PrimaryKey]
             public int Id { get; set; }
 
             public string Name { get; set; }
+
             public decimal? Price { get; set; }
 
             [ComponentModel.Ignore]
@@ -53,7 +58,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             db.CreateTable<Product>();
 
-            var obj1 = new Product {Name = "Some Cool Name"};
+            var obj1 = new Product { Name = "Some Cool Name" };
 
             int numIn1 = db.Insert(obj1);
             Assert.AreEqual(1, numIn1);
