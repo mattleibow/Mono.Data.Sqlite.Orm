@@ -520,7 +520,7 @@ namespace Mono.Data.Sqlite.Orm
             }
             else if (n == ExpressionType.And)
             {
-                return "and";
+                return "&";
             }
             else if (n == ExpressionType.AndAlso)
             {
@@ -528,7 +528,7 @@ namespace Mono.Data.Sqlite.Orm
             }
             else if (n == ExpressionType.Or)
             {
-                return "or";
+                return "|";
             }
             else if (n == ExpressionType.OrElse)
             {

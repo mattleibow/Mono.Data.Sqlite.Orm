@@ -35,6 +35,11 @@ namespace Mono.Data.Sqlite.Orm.Tests
             public decimal Price { get; set; }
         }
 
+		public class BitwiseTable
+		{
+			public int Flags { get; set; }
+		}
+
         private OrmTestSession CreateDb()
         {
             var db = new OrmTestSession();
@@ -297,5 +302,45 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(20, product.Price);
             Assert.IsNull(product.Name);
         }
+
+		[Test]
+		public void BitwiseAndTest()
+		{
+			using (var db = new OrmTestSession())
+			{
+				db.CreateTable<BitwiseTable>();
+
+				db.Insert(new BitwiseTable { Flags = 0 });
+				db.Insert(new BitwiseTable { Flags = 1 });
+				db.Insert(new BitwiseTable { Flags = 2 });
+				db.Insert(new BitwiseTable { Flags = 2 | 1 });
+
+				var bit = db.Table<BitwiseTable>().Where(x => (x.Flags & 2) != 0).Select(x => x.Flags).ToArray();
+				ArrayAssert.AreEqual(new[] { 2, 3 }, bit);
+
+				bit = db.Table<BitwiseTable>().Where(x => (x.Flags & 1) != 0).Select(x => x.Flags).ToArray();
+				ArrayAssert.AreEqual(new[] { 1, 3 }, bit);
+
+				bit = db.Table<BitwiseTable>().Where(x => (x.Flags & 4) != 0).Select(x => x.Flags).ToArray();
+				ArrayAssert.AreEqual(new int[] { }, bit);
+			}
+		}
+
+		[Test]
+		public void BitwiseOrTest()
+		{
+			using (var db = new OrmTestSession())
+			{
+				db.CreateTable<BitwiseTable>();
+
+				db.Insert(new BitwiseTable { Flags = 0 });
+				db.Insert(new BitwiseTable { Flags = 1 });
+				db.Insert(new BitwiseTable { Flags = 2 });
+				db.Insert(new BitwiseTable { Flags = 2 | 1 });
+
+				var bit = db.Table<BitwiseTable>().Where(x => (x.Flags | 1) == 3).Select(x => x.Flags).ToArray();
+				ArrayAssert.AreEqual(new[] { 2, 3 }, bit);
+			}
+		}
     }
 }
