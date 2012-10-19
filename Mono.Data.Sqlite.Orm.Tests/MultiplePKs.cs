@@ -155,5 +155,54 @@ PRIMARY KEY ([FirstId], [SecondId])
 			foreach (TestObj o in (from o in db.Table<TestObj>() select o))
 				Assert.AreNotEqual(2, o.SubId);
 		}
+
+		public class StringKeyObject
+		{
+			[PrimaryKey]
+			public string Key { get; set; }
+
+			public string Value { get; set; }
+		}
+
+		[Test]
+		public void StringPrimaryKeys()
+		{
+			using (var db = new OrmTestSession())
+			{
+				db.CreateTable<StringKeyObject>();
+
+				// insert 2 items
+				db.Insert(new StringKeyObject { Key = "Name", Value = "Matthew" });
+				db.Insert(new StringKeyObject { Key = "Age", Value = "19" });
+
+				// see if they saved
+				Assert.AreEqual(2, db.Table<StringKeyObject>().Count());
+
+				// get the age
+				var fromDb = db.Table<StringKeyObject>().Where(x => x.Key == "Age").Single();
+
+				// make sure they are correct
+				Assert.AreEqual("Age", fromDb.Key);
+				Assert.AreEqual("19", fromDb.Value);
+
+				// try updating
+				db.Update(new StringKeyObject { Key = "Name", Value = "Matthew Leibowitz" });
+
+				// make sure it wasn't an add
+				Assert.AreEqual(2, db.Table<StringKeyObject>().Count());
+
+				// get the name
+				fromDb = db.Table<StringKeyObject>().Where(x => x.Key == "Name").Single();
+
+				// make sure the name has changed
+				Assert.AreEqual("Matthew Leibowitz", fromDb.Value);
+
+				// try a delete
+				db.Delete(new StringKeyObject { Key = "Age" });
+
+				// ensure it was really deleted
+				Assert.AreEqual(1, db.Table<StringKeyObject>().Count());
+			}
+		}
     }
 }
