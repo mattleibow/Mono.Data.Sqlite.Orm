@@ -69,35 +69,35 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="ArrayAssert.cs" />
+    <Compile Include="TestHelpers\ArrayAssert.cs" />
     <Compile Include="AsyncTests.cs" />
-    <Compile Include="BooleanTest.cs" />
-    <Compile Include="ByteArrayTest.cs" />
-    <Compile Include="FTSSpecialCommandsTest.cs" />
-    <Compile Include="CreateVirtualTableTest.cs" />
-    <Compile Include="CollateTest.cs" />
-    <Compile Include="ColumnTypesTest.cs" />
-    <Compile Include="DataConverterTest.cs" />
-    <Compile Include="DropTableTest.cs" />
-    <Compile Include="HooksTest.cs" />
-    <Compile Include="InheritanceTest.cs" />
-    <Compile Include="LinqTests.cs" />
-    <Compile Include="CreateTableTest.cs" />
-    <Compile Include="InsertTest.cs" />
-    <Compile Include="InterfaceTests.cs" />
-    <Compile Include="MigrateTableTest.cs">
+    <Compile Include="Columns\BooleanTest.cs" />
+    <Compile Include="Columns\ByteArrayTest.cs" />
+    <Compile Include="Tables\FTSSpecialCommandsTest.cs" />
+    <Compile Include="Tables\CreateVirtualTableTest.cs" />
+    <Compile Include="Columns\CollateTest.cs" />
+    <Compile Include="Columns\ColumnTypesTest.cs" />
+    <Compile Include="Querying\DataConverterTest.cs" />
+    <Compile Include="Tables\DropTableTest.cs" />
+    <Compile Include="Querying\HooksTest.cs" />
+    <Compile Include="Tables\InheritanceTest.cs" />
+    <Compile Include="Querying\LinqTests.cs" />
+    <Compile Include="Tables\CreateTableTest.cs" />
+    <Compile Include="Tables\InsertTest.cs" />
+    <Compile Include="Tables\InterfaceTests.cs" />
+    <Compile Include="Tables\MigrateTableTest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MultiplePKs.cs" />
-    <Compile Include="NullableTest.cs" />
-    <Compile Include="OrmAsyncTestSession.cs" />
-    <Compile Include="OrmTestSession.cs">
+    <Compile Include="Tables\MultiplePKs.cs" />
+    <Compile Include="Columns\NullableTest.cs" />
+    <Compile Include="TestHelpers\OrmAsyncTestSession.cs" />
+    <Compile Include="TestHelpers\OrmTestSession.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SkipTest.cs" />
-    <Compile Include="ConnectionTrackingTest.cs" />
-    <Compile Include="ContainsTest.cs" />
-    <Compile Include="UnicodeTest.cs" />
+    <Compile Include="Querying\SkipTest.cs" />
+    <Compile Include="Tables\ConnectionTrackingTest.cs" />
+    <Compile Include="Querying\ContainsTest.cs" />
+    <Compile Include="Columns\UnicodeTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
