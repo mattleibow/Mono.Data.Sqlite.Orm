@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Mono.Data.Sqlite.Orm.ComponentModel;
+
 #if SILVERLIGHT 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
@@ -13,7 +14,6 @@ using TestFixtureAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramewo
 using TestAttribute = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #else
 using NUnit.Framework;
-
 #endif
 
 namespace Mono.Data.Sqlite.Orm.Tests
@@ -44,24 +44,19 @@ namespace Mono.Data.Sqlite.Orm.Tests
             public int Flags { get; set; }
         }
 
-        private OrmTestSession CreateDb()
-        {
-            var db = new OrmTestSession();
-            db.CreateTable<Product>();
-            return db;
-        }
-
         [Test]
         public void FunctionParameter()
         {
-            OrmTestSession db = CreateDb();
+            var db = new OrmTestSession();
+            db.CreateTable<Product>();
 
             db.Insert(new Product { Name = "A", Price = 20, });
-
             db.Insert(new Product { Name = "B", Price = 10, });
 
             Func<decimal, List<Product>> getProductsWithPriceAtLeast =
-                val => (from p in db.Table<Product>() where p.Price > val select p).ToList();
+                val => (from p in db.Table<Product>()
+                        where p.Price > val 
+                        select p).ToList();
 
             List<Product> r = getProductsWithPriceAtLeast(15);
             Assert.AreEqual(1, r.Count);
@@ -71,15 +66,17 @@ namespace Mono.Data.Sqlite.Orm.Tests
         [Test]
         public void WhereGreaterThan()
         {
-            OrmTestSession db = CreateDb();
+            var db = new OrmTestSession();
+            db.CreateTable<Product>();
 
             db.Insert(new Product { Name = "A", Price = 20, });
-
             db.Insert(new Product { Name = "B", Price = 10, });
 
             Assert.AreEqual(2, db.Table<Product>().Count());
 
-            List<Product> r = (from p in db.Table<Product>() where p.Price > 15 select p).ToList();
+            List<Product> r = (from p in db.Table<Product>() 
+                               where p.Price > 15 
+                               select p).ToList();
             Assert.AreEqual(1, r.Count);
             Assert.AreEqual("A", r[0].Name);
         }
@@ -87,7 +84,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
         [Test]
         public void GetWithExpressionTest()
         {
-            OrmTestSession db = CreateDb();
+            var db = new OrmTestSession();
+            db.CreateTable<Product>();
 
             db.Insert(new Product { Name = "A", Price = 20 });
 
@@ -99,40 +97,18 @@ namespace Mono.Data.Sqlite.Orm.Tests
         [Test]
         public void GetWithExpressionFailsTest()
         {
-            OrmTestSession db = CreateDb();
+            var db = new OrmTestSession();
+            db.CreateTable<Product>();
 
             db.Insert(new Product { Name = "A", Price = 20 });
-            try
-            {
-                var product = db.Get<Product>(x => x.Name == "B");
 
-                Assert.Fail();
-            }
-            catch (InvalidOperationException)
-            {
-            }
-        }
-
-        [Test]
-        public void GetWithExpressionAsyncTest()
-        {
-            var db = OrmAsyncTestSession.GetConnection();
-
-            db.CreateTableAsync<Product>().Wait();
-
-            db.InsertAsync(new Product { Name = "A", Price = 20 }).Wait();
-
-            var task = db.GetAsync<Product>(x => x.Name == "A");
-            task.Wait();
-
-            Assert.AreEqual(20, task.Result.Price);
+            Assert.Throws<InvalidOperationException>(() => db.Get<Product>(x => x.Name == "B"));
         }
 
         [Test]
         public void DistinctTest()
         {
             var db = new OrmTestSession();
-
             db.CreateTable<CoolTable>();
 
             db.Insert(new CoolTable { Name = "A", Price = 20 });
@@ -149,10 +125,10 @@ namespace Mono.Data.Sqlite.Orm.Tests
         [Test]
         public void TestElementAtOrDefault()
         {
-            OrmTestSession db = CreateDb();
+            var db = new OrmTestSession();
+            db.CreateTable<Product>();
 
             db.Insert(new Product { Name = "A", Price = 20, });
-
             db.Insert(new Product { Name = "B", Price = 10, });
 
             Assert.AreEqual(2, db.Table<Product>().Count());
@@ -167,7 +143,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
         [Test]
         public void FirstTest()
         {
-            OrmTestSession db = CreateDb();
+            var db = new OrmTestSession();
+            db.CreateTable<Product>();
 
             db.Insert(new Product { Name = "A", Price = 20 });
 
@@ -175,21 +152,14 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             db.ClearTable<Product>();
 
-            try
-            {
-                db.Table<Product>().First();
-
-                Assert.Fail();
-            }
-            catch (InvalidOperationException)
-            {
-            }
+            Assert.Throws<InvalidOperationException>(() => db.Table<Product>().First());
         }
 
         [Test]
         public void FirstOrDefaultTest()
         {
-            OrmTestSession db = CreateDb();
+            var db = new OrmTestSession();
+            db.CreateTable<Product>();
 
             db.Insert(new Product { Name = "A", Price = 20 });
 
@@ -203,7 +173,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
         [Test]
         public void WithColumnTest()
         {
-            OrmTestSession db = CreateDb();
+            var db = new OrmTestSession();
+            db.CreateTable<Product>();
 
             db.Insert(new Product { Name = "A", Price = 20 });
 
@@ -217,7 +188,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
         [Test]
         public void WithMultipleColumnTest()
         {
-            OrmTestSession db = CreateDb();
+            var db = new OrmTestSession();
+            db.CreateTable<Product>();
 
             db.Insert(new Product { Name = "A", Price = 20 });
 
