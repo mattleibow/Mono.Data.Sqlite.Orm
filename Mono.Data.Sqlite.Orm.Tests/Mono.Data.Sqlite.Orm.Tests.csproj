@@ -69,6 +69,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="Tables\TransactionsTest.cs" />
     <Compile Include="TestHelpers\ArrayAssert.cs" />
     <Compile Include="AsyncTests.cs" />
     <Compile Include="Columns\BooleanTest.cs" />
