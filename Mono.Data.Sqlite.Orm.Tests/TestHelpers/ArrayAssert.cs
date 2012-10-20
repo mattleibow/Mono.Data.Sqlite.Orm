@@ -18,6 +18,8 @@ namespace System
                 Assert.Fail("expected {0}, but was {1}", expected, actual);
             }
 
+            if (expected == null) return;
+
             Assert.AreEqual(expected.Length, actual.Length);
 
             for (int i = 0; i < expected.Length; i++)

@@ -36,26 +36,18 @@ namespace Mono.Data.Sqlite.Orm.Tests
             }
         }
 
-        // BUG: zero length arrays returned as null in Silverlight 
-        //  - http://code.google.com/p/csharp-sqlite/issues/detail?id=149
         [Test]
         // [Description("Create objects with various byte arrays and check they can be stored and retrieved correctly")]
-        public void ByteArrays()
+        public void ByteArraysSavedCorrectlyTest()
         {
             //Byte Arrays for comparisson
             var byteArrays = new[]
-                                 {
-                                     new ByteArrayClass { Bytes = new byte[] { 1, 2, 3, 4, 250, 252, 253, 254, 255 } },
-                                     //Range check
-                                     new ByteArrayClass { Bytes = new byte[] { 0 } },
-                                     //null bytes need to be handled correctly
-                                     new ByteArrayClass { Bytes = new byte[] { 0, 0 } },
-                                     new ByteArrayClass { Bytes = new byte[] { 0, 1, 0 } },
-                                     new ByteArrayClass { Bytes = new byte[] { 1, 0, 1 } },
-                                     new ByteArrayClass { Bytes = new byte[] { } },
-                                     //Empty byte array should stay empty (and not become null)
-                                     new ByteArrayClass { Bytes = null } //Null should be supported
-                                 };
+                {
+                    new ByteArrayClass { Bytes = new byte[] { 1, 2, 3, 4, 250, 252, 253, 254, 255 } }, // Range check
+                    new ByteArrayClass { Bytes = new byte[] { 0, 0 } },
+                    new ByteArrayClass { Bytes = new byte[] { 0, 1, 0 } },
+                    new ByteArrayClass { Bytes = new byte[] { 1, 0, 1 } },
+                };
 
             var database = new OrmTestSession();
             database.CreateTable<ByteArrayClass>();
@@ -83,9 +75,63 @@ namespace Mono.Data.Sqlite.Orm.Tests
             }
         }
 
+        // BUG: zero length arrays returned as null in Silverlight 
+        //  - http://code.google.com/p/csharp-sqlite/issues/detail?id=149
+        [Test]
+        public void EmptyByteArraySavedAndRetrievedCorrectlyTest()
+        {
+            //Empty byte array should stay empty (and not become null)
+            var byteArray = new ByteArrayClass { Bytes = new byte[] { } };
+
+            var database = new OrmTestSession();
+            database.CreateTable<ByteArrayClass>();
+
+            database.Insert(byteArray);
+
+            //Get them back out
+            var fetchedByteArray = database.Table<ByteArrayClass>().Single();
+
+            //Check they are the same
+            ArrayAssert.AreEqual(byteArray.Bytes, fetchedByteArray.Bytes);
+        }
+
+        [Test]
+        public void ZeroByteArraySavedAndRetrievedCorrectlyTest()
+        {
+            var byteArray = new ByteArrayClass { Bytes = new byte[] { 0 } };
+
+            var database = new OrmTestSession();
+            database.CreateTable<ByteArrayClass>();
+
+            database.Insert(byteArray);
+
+            //Get them back out
+            var fetchedByteArray = database.Table<ByteArrayClass>().Single();
+
+            //Check they are the same
+            ArrayAssert.AreEqual(byteArray.Bytes, fetchedByteArray.Bytes);
+        }
+
+        [Test]
+        public void NullByteArraySavedAndRetrievedCorrectlyTest()
+        {
+            var byteArray = new ByteArrayClass { Bytes = null };
+
+            var database = new OrmTestSession();
+            database.CreateTable<ByteArrayClass>();
+
+            database.Insert(byteArray);
+
+            //Get them back out
+            var fetchedByteArray = database.Table<ByteArrayClass>().Single();
+
+            //Check they are the same
+            ArrayAssert.AreEqual(byteArray.Bytes, fetchedByteArray.Bytes);
+        }
+
         [Test]
         // [Description("Create A large byte array and check it can be stored and retrieved correctly")]
-        public void LargeByteArray()
+        public void LargeByteArrayTest()
         {
             const int byteArraySize = 1024 * 1024;
             var bytes = new byte[byteArraySize];
