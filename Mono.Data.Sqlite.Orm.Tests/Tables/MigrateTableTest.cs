@@ -111,18 +111,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
         {
             public MigrateFailTest(OrmTestSession db)
             {
-                try
-                {
-                    db.CreateTable<OrderLine>();
-                    Assert.Fail();
-                }
-                catch (InvalidOperationException)
-                {
-                }
-                catch (Exception ex)
-                {
-                    Assert.Fail(ex.Message);
-                }
+                ExceptionAssert.Throws<InvalidOperationException>(() => db.CreateTable<OrderLine>());
             }
 
             public int Id { get; set; }

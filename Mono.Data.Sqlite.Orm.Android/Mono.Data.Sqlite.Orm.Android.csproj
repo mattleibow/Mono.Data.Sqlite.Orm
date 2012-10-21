@@ -124,6 +124,9 @@
     <Compile Include="..\Mono.Data.Sqlite.Orm\Extensions.cs">
       <Link>Extensions.cs</Link>
     </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm\FullTextSearchSpecialCommands.cs">
+      <Link>FullTextSearchSpecialCommands.cs</Link>
+    </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\InstanceCreatedEventArgs.cs">
       <Link>InstanceCreatedEventArgs.cs</Link>
     </Compile>
@@ -162,7 +165,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties ProjectLinkReference="e38c051e-889e-485b-b685-c692d2861e7b" ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" />
+      <UserProperties ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" ProjectLinkReference="e38c051e-889e-485b-b685-c692d2861e7b" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -137,19 +137,7 @@ PRIMARY KEY ([FirstId], [SecondId])
             obj = db.Get<TestObj>(8, 2);
             db.Delete(obj);
 
-            try
-            {
-                var item = db.Get<TestObj>(8, 2);
-
-                Assert.Fail();
-            }
-            catch (InvalidOperationException)
-            {
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
+            ExceptionAssert.Throws<InvalidOperationException>(() => db.Get<TestObj>(8, 2));
 
             db.Execute("delete from TestObj where SubId=2");
             numCount = db.ExecuteScalar<int>("select count(*) from TestObj");

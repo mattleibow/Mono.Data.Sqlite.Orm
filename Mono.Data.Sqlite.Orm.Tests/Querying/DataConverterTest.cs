@@ -57,7 +57,10 @@ namespace Mono.Data.Sqlite.Orm.Tests
                 {
                     var parts = value.ToString().Split('/');
                     return Color.FromArgb(
-                        byte.Parse(parts[0]), byte.Parse(parts[1]), byte.Parse(parts[2]), byte.Parse(parts[3]));
+                        byte.Parse(parts[0]), 
+                        byte.Parse(parts[1]), 
+                        byte.Parse(parts[2]),
+                        byte.Parse(parts[3]));
                 }
                 catch
                 {

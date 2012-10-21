@@ -91,6 +91,7 @@
     </Compile>
     <Compile Include="Tables\MultiplePKs.cs" />
     <Compile Include="Columns\NullableTest.cs" />
+    <Compile Include="TestHelpers\ExceptionAssert.cs" />
     <Compile Include="TestHelpers\OrmAsyncTestSession.cs" />
     <Compile Include="TestHelpers\OrmTestSession.cs">
       <SubType>Code</SubType>

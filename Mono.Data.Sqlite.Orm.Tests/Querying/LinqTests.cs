@@ -102,7 +102,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             db.Insert(new Product { Name = "A", Price = 20 });
 
-            Assert.Throws<InvalidOperationException>(() => db.Get<Product>(x => x.Name == "B"));
+            ExceptionAssert.Throws<InvalidOperationException>(() => db.Get<Product>(x => x.Name == "B"));
         }
 
         [Test]
@@ -152,7 +152,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             db.ClearTable<Product>();
 
-            Assert.Throws<InvalidOperationException>(() => db.Table<Product>().First());
+            ExceptionAssert.Throws<InvalidOperationException>(() => db.Table<Product>().First());
         }
 
         [Test]

@@ -41,15 +41,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
         {
             using (var db = new OrmTestSession())
             {
-                try
-                {
-                    db.CreateTable<UnknownColumnType>();
-
-                    Assert.Fail();
-                }
-                catch (NotSupportedException)
-                {
-                }
+                ExceptionAssert.Throws<NotSupportedException>(() => db.CreateTable<UnknownColumnType>());
             }
         }
 
@@ -294,19 +286,7 @@ CHECK (Id <= 10)
         {
             var db = new OrmTestSession();
             db.CreateTable<Category>();
-            try
-            {
-                db.CreateTable<Book>();
-
-                Assert.Fail();
-            }
-            catch (SqliteException)
-            {
-            }
-            catch
-            {
-                Assert.Fail();
-            }
+            ExceptionAssert.Throws<SqliteException>(() => db.CreateTable<Book>());
         }
 
         public class ReferencingTable

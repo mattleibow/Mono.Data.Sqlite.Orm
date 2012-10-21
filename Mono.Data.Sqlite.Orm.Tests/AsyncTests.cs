@@ -56,7 +56,6 @@ namespace Mono.Data.Sqlite.Orm.Tests
         }
 
         [Test]
-        [NUnit.Framework.Ignore] // TODO
         public void StressAsync()
         {
             var globalConn = OrmAsyncTestSession.GetConnection();

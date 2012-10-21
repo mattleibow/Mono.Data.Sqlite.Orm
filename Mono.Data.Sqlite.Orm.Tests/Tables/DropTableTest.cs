@@ -1,4 +1,6 @@
-﻿using Mono.Data.Sqlite.Orm.ComponentModel;
+﻿using System;
+using Mono.Data.Sqlite.Orm.ComponentModel;
+
 #if SILVERLIGHT 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
@@ -47,20 +49,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             db.DropTable<Product>();
 
-            try
-            {
-                // Should throw SqliteException
-                db.Table<Product>().Count();
-
-                Assert.Fail("Expeced 'table does not exist' error.");
-            }
-            catch (SqliteException)
-            {
-            }
-            catch
-            {
-                Assert.Fail();
-            }
+            ExceptionAssert.Throws<SqliteException>(() => db.Table<Product>().Count());
         }
 
         [Test]

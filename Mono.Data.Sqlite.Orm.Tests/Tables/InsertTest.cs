@@ -247,24 +247,14 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             db.Insert(obj1);
 
-            try
-            {
-                db.Insert(obj2);
-                Assert.Fail("Expected unique constraint violation");
-            }
-            catch (SqliteException)
-            {
-            }
+            // "Expected unique constraint violation"
+            ExceptionAssert.Throws<SqliteException>(() => db.Insert(obj2));
+
             db.Insert(obj2, ConflictResolution.Replace);
 
-            try
-            {
-                db.Insert(obj3);
-                Assert.Fail("Expected unique constraint violation");
-            }
-            catch (SqliteException)
-            {
-            }
+            // "Expected unique constraint violation"
+            ExceptionAssert.Throws<SqliteException>(() => db.Insert(obj3));
+
             db.Insert(obj3, ConflictResolution.Ignore);
 
             List<TestObj> result = db.Query<TestObj>("select * from TestObj2").ToList();
