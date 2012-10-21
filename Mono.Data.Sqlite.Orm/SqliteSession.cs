@@ -8,6 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 using Mono.Data.Sqlite.Orm.ComponentModel;
 
 #if WINDOWS_PHONE
@@ -66,6 +67,9 @@ namespace Mono.Data.Sqlite.Orm
             if (autoOpen)
             {
                 Connection.Open();
+#if NETFX_CORE
+                SetTemporaryFilesDirectory(this, Windows.Storage.ApplicationData.Current.TemporaryFolder.Path);
+#endif
             }
         }
 
@@ -1157,5 +1161,26 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         #endregion
+
+#if NETFX_CORE || SILVERLIGHT || WINDOWS_PHONE
+        public enum DirectoryType : int
+        {
+            Data = 1,
+            Temp = 2
+        }
+
+        [DllImport("sqlite3", EntryPoint = "sqlite3_win32_set_directory", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
+        public static extern int SetDirectory(DirectoryType directoryType, string directoryPath);
+
+        public static void SetTemporaryFilesDirectory(SqliteSession session, string directoryPath)
+        {
+#if NETFX_CORE
+            SetDirectory(DirectoryType.Temp, directoryPath);
+#elif SILVERLIGHT || WINDOWS_PHONE
+            session.Execute("PRAGMA temp_store_directory = ?;", directoryPath);
+#else
+#endif
+        }
+#endif
     }
 }
