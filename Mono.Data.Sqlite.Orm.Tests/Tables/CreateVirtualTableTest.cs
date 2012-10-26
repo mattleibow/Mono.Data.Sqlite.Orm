@@ -48,6 +48,26 @@ namespace Mono.Data.Sqlite.Orm.Tests
             }
         }
 
+        [Test]
+        public void EnsureSimpleTableExistsUsingTableExists()
+        {
+            using (var db = new OrmTestSession())
+            {
+                db.CreateTable<SimpleTable>();
+                Assert.IsTrue(db.TableExists<SimpleTable>());
+            }
+        }
+
+        [Test]
+        public void EnsureSimpleTableExistsUsingQuery()
+        {
+            using (var db = new OrmTestSession())
+            {
+                db.CreateTable<SimpleTable>();
+                Assert.AreEqual(0, db.ExecuteScalar("SELECT COUNT(*) FROM [SimpleTable];"));
+            }
+        }
+
         [Virtual]
         [Tokenizer(CommonVirtualTableTokenizers.Porter)]
         public class TokenizedSimpleTable

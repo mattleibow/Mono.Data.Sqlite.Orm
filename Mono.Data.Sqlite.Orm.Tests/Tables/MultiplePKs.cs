@@ -16,10 +16,6 @@ using NUnit.Framework;
 
 #endif
 
-#if WINDOWS_PHONE
-using Community.CsharpSqlite.SQLiteClient;
-#endif
-
 namespace Mono.Data.Sqlite.Orm.Tests
 {
     [TestFixture]

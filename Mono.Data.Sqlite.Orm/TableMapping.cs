@@ -10,10 +10,6 @@ using System.Text;
 using Mono.Data.Sqlite.Orm.ComponentModel;
 using Mono.Data.Sqlite.Orm.DataConverter;
 
-#if WINDOWS_PHONE
-using Community.CsharpSqlite.SQLiteClient;
-#endif
-
 namespace Mono.Data.Sqlite.Orm
 {
     public class TableMapping : IDisposable

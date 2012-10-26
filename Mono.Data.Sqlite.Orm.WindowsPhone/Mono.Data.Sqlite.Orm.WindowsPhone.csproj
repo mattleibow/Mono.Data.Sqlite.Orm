@@ -41,96 +41,108 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Community.CsharpSqlite.SQLiteClient.WP, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\Libraries\Community.CsharpSqlite.SQLiteClient.WP.dll</HintPath>
+    <Reference Include="Community.CsharpSqlite.WinPhone">
+      <HintPath>..\Libraries\WP\Community.CsharpSqlite.WinPhone.dll</HintPath>
     </Reference>
-    <Reference Include="Community.CsharpSqlite.WinPhone, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\Libraries\Community.CsharpSqlite.WinPhone.dll</HintPath>
+    <Reference Include="Mono.Data.Sqlite">
+      <HintPath>..\Libraries\WP\Mono.Data.Sqlite.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.Ersatz.WinPhone, Version=3.7.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\Libraries\System.Data.Ersatz.WinPhone.dll</HintPath>
+    <Reference Include="System.Data">
+      <HintPath>..\Libraries\WP\System.Data.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.WP71">
       <HintPath>..\packages\System.Threading.Tasks.3.0.1\lib\sl4-wp71\System.Threading.Tasks.WP71.dll</HintPath>
     </Reference>
+    <Reference Include="System.Transactions">
+      <HintPath>..\Libraries\WP\System.Transactions.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\AutoIncrementAttribute.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\AutoIncrementAttribute.cs">
       <Link>ComponentModel\AutoIncrementAttribute.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\CheckAttribute.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\CheckAttribute.cs">
       <Link>ComponentModel\CheckAttribute.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\Collation.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\Collation.cs">
       <Link>ComponentModel\Collation.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\CollationAttribute.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\CollationAttribute.cs">
       <Link>ComponentModel\CollationAttribute.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\ColumnAttribute.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\ColumnAttribute.cs">
       <Link>ComponentModel\ColumnAttribute.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\ConflictResolution.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\ConflictResolution.cs">
       <Link>ComponentModel\ConflictResolution.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\DataConverterAttribute.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\DataConverterAttribute.cs">
       <Link>ComponentModel\DataConverterAttribute.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\DefaultAttribute.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\DefaultAttribute.cs">
       <Link>ComponentModel\DefaultAttribute.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\Deferred.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\Deferred.cs">
       <Link>ComponentModel\Deferred.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\Direction.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\Direction.cs">
       <Link>ComponentModel\Direction.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\EnumAffinityAttribute.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\EnumAffinityAttribute.cs">
       <Link>ComponentModel\EnumAffinityAttribute.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\ForeignKeyAction.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\ForeignKeyAction.cs">
       <Link>ComponentModel\ForeignKeyAction.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\ForeignKeyAttribute.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\ForeignKeyAttribute.cs">
       <Link>ComponentModel\ForeignKeyAttribute.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\IgnoreAttribute.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\IgnoreAttribute.cs">
       <Link>ComponentModel\IgnoreAttribute.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\IndexAttribute.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\IndexAttribute.cs">
       <Link>ComponentModel\IndexAttribute.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\IndexedAttribute.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\IndexedAttribute.cs">
       <Link>ComponentModel\IndexedAttribute.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\MaxLengthAttribute.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\MaxLengthAttribute.cs">
       <Link>ComponentModel\MaxLengthAttribute.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\NotNullAttribute.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\NotNullAttribute.cs">
       <Link>ComponentModel\NotNullAttribute.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\NullMatch.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\NullMatch.cs">
       <Link>ComponentModel\NullMatch.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\PrimaryKeyAttribute.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\PrimaryKeyAttribute.cs">
       <Link>ComponentModel\PrimaryKeyAttribute.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\RenameTableAttribute.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\RenameTableAttribute.cs">
       <Link>ComponentModel\RenameTableAttribute.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\TableAttribute.cs">
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\TableAttribute.cs">
       <Link>ComponentModel\TableAttribute.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\UniqueAttribute.cs">
+    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\TokenizerAttribute.cs">
+      <Link>ComponentModel\TokenizerAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm\componentmodel\UniqueAttribute.cs">
       <Link>ComponentModel\UniqueAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm\ComponentModel\VirtualAttribute.cs">
+      <Link>ComponentModel\VirtualAttribute.cs</Link>
     </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\DataConverter\IDataConverter.cs">
       <Link>DataConverter\IDataConverter.cs</Link>
     </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\Extensions.cs">
       <Link>Extensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm\FullTextSearchSpecialCommands.cs">
+      <Link>FullTextSearchSpecialCommands.cs</Link>
     </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\InstanceCreatedEventArgs.cs">
       <Link>InstanceCreatedEventArgs.cs</Link>
@@ -143,6 +155,9 @@
     </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteConnectionPool.cs">
       <Link>SqliteConnectionPool.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteExtensions.cs">
+      <Link>SqliteExtensions.cs</Link>
     </Compile>
     <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteSession.Async.cs">
       <Link>SqliteSession.Async.cs</Link>
@@ -168,7 +183,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties ProjectLinkReference="e38c051e-889e-485b-b685-c692d2861e7b" ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" />
+      <UserProperties ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" ProjectLinkReference="e38c051e-889e-485b-b685-c692d2861e7b" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

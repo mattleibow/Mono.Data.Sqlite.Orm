@@ -11,10 +11,6 @@ using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using Mono.Data.Sqlite.Orm.ComponentModel;
 
-#if WINDOWS_PHONE
-using Community.CsharpSqlite.SQLiteClient;
-#endif
-
 namespace Mono.Data.Sqlite.Orm
 {
     /// <summary>
