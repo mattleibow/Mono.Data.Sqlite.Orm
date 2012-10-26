@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{2299C615-7547-4AEC-B713-104E7458B04E}</ProjectGuid>
+    <ProjectGuid>{0C997849-0358-4497-8FA0-4F9075EEF0CC}</ProjectGuid>
     <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -14,9 +14,23 @@
     <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
-    <SilverlightApplication>false</SilverlightApplication>
+    <SilverlightApplication>true</SilverlightApplication>
+    <SupportedCultures>
+    </SupportedCultures>
+    <XapOutputs>true</XapOutputs>
+    <GenerateSilverlightManifest>true</GenerateSilverlightManifest>
+    <XapFilename>Mono.Data.Sqlite.Orm.Tests.Silverlight.xap</XapFilename>
+    <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
+    <SilverlightAppEntry>Mono.Data.Sqlite.Orm.Tests.Silverlight.App</SilverlightAppEntry>
+    <TestPageFileName>Mono.Data.Sqlite.Orm.Tests.SilverlightTestPage.html</TestPageFileName>
+    <CreateTestPage>true</CreateTestPage>
     <ValidateXaml>true</ValidateXaml>
+    <EnableOutOfBrowser>false</EnableOutOfBrowser>
+    <OutOfBrowserSettingsFile>Properties\OutOfBrowserSettings.xml</OutOfBrowserSettingsFile>
+    <UsePlatformExtensions>false</UsePlatformExtensions>
     <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+    <LinkedServerProject>
+    </LinkedServerProject>
   </PropertyGroup>
   <!-- This property group is only here to support building this project using the 
        MSBuild 3.5 toolset. In order to work correctly with this older toolset, it needs 
@@ -70,97 +84,116 @@
     </Reference>
     <Reference Include="System.Windows" />
     <Reference Include="system" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.Core">
+      <HintPath>$(TargetFrameworkDirectory)System.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net" />
+    <Reference Include="System.Xml" />
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Mono.Data.Sqlite.Orm.Tests\AsyncTests.cs">
-      <Link>AsyncTests.cs</Link>
+      <Link>Tests\AsyncTests.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\columns\BooleanTest.cs">
-      <Link>Columns\BooleanTest.cs</Link>
+      <Link>Tests\Columns\BooleanTest.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\columns\ByteArrayTest.cs">
-      <Link>Columns\ByteArrayTest.cs</Link>
+      <Link>Tests\Columns\ByteArrayTest.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\columns\CollateTest.cs">
-      <Link>Columns\CollateTest.cs</Link>
+      <Link>Tests\Columns\CollateTest.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\columns\ColumnTypesTest.cs">
-      <Link>Columns\ColumnTypesTest.cs</Link>
+      <Link>Tests\Columns\ColumnTypesTest.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\columns\NullableTest.cs">
-      <Link>Columns\NullableTest.cs</Link>
+      <Link>Tests\Columns\NullableTest.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\columns\UnicodeTest.cs">
-      <Link>Columns\UnicodeTest.cs</Link>
+      <Link>Tests\Columns\UnicodeTest.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\querying\ContainsTest.cs">
-      <Link>Querying\ContainsTest.cs</Link>
+      <Link>Tests\Querying\ContainsTest.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\querying\DataConverterTest.cs">
-      <Link>Querying\DataConverterTest.cs</Link>
+      <Link>Tests\Querying\DataConverterTest.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\querying\HooksTest.cs">
-      <Link>Querying\HooksTest.cs</Link>
+      <Link>Tests\Querying\HooksTest.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\querying\LinqTests.cs">
-      <Link>Querying\LinqTests.cs</Link>
+      <Link>Tests\Querying\LinqTests.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\querying\SkipTest.cs">
-      <Link>Querying\SkipTest.cs</Link>
+      <Link>Tests\Querying\SkipTest.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\tables\ConnectionTrackingTest.cs">
-      <Link>Tables\ConnectionTrackingTest.cs</Link>
+      <Link>Tests\Tables\ConnectionTrackingTest.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\tables\CreateTableTest.cs">
-      <Link>Tables\CreateTableTest.cs</Link>
+      <Link>Tests\Tables\CreateTableTest.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\tables\CreateVirtualTableTest.cs">
-      <Link>Tables\CreateVirtualTableTest.cs</Link>
+      <Link>Tests\Tables\CreateVirtualTableTest.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\tables\DropTableTest.cs">
-      <Link>Tables\DropTableTest.cs</Link>
+      <Link>Tests\Tables\DropTableTest.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\tables\FTSSpecialCommandsTest.cs">
-      <Link>Tables\FTSSpecialCommandsTest.cs</Link>
+      <Link>Tests\Tables\FTSSpecialCommandsTest.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\tables\InheritanceTest.cs">
-      <Link>Tables\InheritanceTest.cs</Link>
+      <Link>Tests\Tables\InheritanceTest.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\tables\InsertTest.cs">
-      <Link>Tables\InsertTest.cs</Link>
+      <Link>Tests\Tables\InsertTest.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\tables\InterfaceTests.cs">
-      <Link>Tables\InterfaceTests.cs</Link>
+      <Link>Tests\Tables\InterfaceTests.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\tables\MigrateTableTest.cs">
-      <Link>Tables\MigrateTableTest.cs</Link>
+      <Link>Tests\Tables\MigrateTableTest.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\tables\MultiplePKs.cs">
-      <Link>Tables\MultiplePKs.cs</Link>
+      <Link>Tests\Tables\MultiplePKs.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\tables\TransactionsTest.cs">
-      <Link>Tables\TransactionsTest.cs</Link>
+      <Link>Tests\Tables\TransactionsTest.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\testhelpers\ArrayAssert.cs">
-      <Link>TestHelpers\ArrayAssert.cs</Link>
+      <Link>Tests\TestHelpers\ArrayAssert.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\testhelpers\ExceptionAssert.cs">
-      <Link>TestHelpers\ExceptionAssert.cs</Link>
+      <Link>Tests\TestHelpers\ExceptionAssert.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\testhelpers\OrmAsyncTestSession.cs">
-      <Link>TestHelpers\OrmAsyncTestSession.cs</Link>
+      <Link>Tests\TestHelpers\OrmAsyncTestSession.cs</Link>
     </Compile>
     <Compile Include="..\mono.data.sqlite.orm.tests\testhelpers\OrmTestSession.cs">
-      <Link>TestHelpers\OrmTestSession.cs</Link>
+      <Link>Tests\TestHelpers\OrmTestSession.cs</Link>
+    </Compile>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainPage.xaml.cs">
+      <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </ApplicationDefinition>
+    <Page Include="MainPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Properties\AppManifest.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.Data.Sqlite.Orm.Silverlight\Mono.Data.Sqlite.Orm.Silverlight.csproj">
@@ -169,13 +202,6 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
-  <ProjectExtensions>
-    <VisualStudio>
-      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
-        <SilverlightProjectProperties />
-      </FlavorProperties>
-    </VisualStudio>
-  </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -183,4 +209,11 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>
