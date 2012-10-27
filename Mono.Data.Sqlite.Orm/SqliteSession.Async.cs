@@ -11,7 +11,7 @@ namespace Mono.Data.Sqlite.Orm
     {
         #region Public Methods and Operators
 
-        public Task<int> CreateTableAsync<T>() where T : new()
+        public Task<int> CreateTableAsync<T>(bool createIndexes = true) where T : new()
         {
             return Task<int>.Factory.StartNew(
                 () =>
@@ -19,7 +19,7 @@ namespace Mono.Data.Sqlite.Orm
                         SqliteSession conn = this.GetAsyncConnection();
                         using (conn.Lock())
                         {
-                            return conn.CreateTable<T>();
+                            return conn.CreateTable<T>(createIndexes);
                         }
                     });
         }

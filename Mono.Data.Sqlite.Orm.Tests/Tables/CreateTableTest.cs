@@ -417,7 +417,36 @@ REFERENCES [MultiReferencedTable] ([Id2], [Id])
         {
             var db = new OrmTestSession();
             db.CreateTable<IndexedTable>();
-            TableMapping tableMap = db.GetMapping<IndexedTable>();
+            db.Insert(new IndexedTable { Indexed = 1 });
+            ExceptionAssert.Throws<SqliteException>(
+                () => db.Insert(new IndexedTable { Indexed = 1 }));
+        }
+
+        [Test]
+        public void CreateTableWithoutIndexesTest()
+        {
+            var db = new OrmTestSession();
+            
+            // the table
+            db.CreateTable<IndexedTable>(false);
+
+            // the indexes
+            TableMapping map = db.GetMapping<IndexedTable>();
+            foreach (var index in map.Indexes)
+            {
+                db.Execute(index.GetCreateSql(map.TableName));
+            }
+
+            // the test
+            db.Insert(new IndexedTable { Indexed = 1 });
+            ExceptionAssert.Throws<SqliteException>(
+                () => db.Insert(new IndexedTable { Indexed = 1 }));
+        }
+
+        [Test]
+        public void CreateIndexesSqlTest()
+        {
+            var tableMap = new TableMapping(typeof(IndexedTable));
 
             var sql = tableMap.Indexes.Single().GetCreateSql("IndexedTable");
             var correct = @"CREATE UNIQUE INDEX [IX_TabelIndex] on [IndexedTable] (

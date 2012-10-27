@@ -14,10 +14,12 @@ using NUnit.Framework;
 
 namespace Mono.Data.Sqlite.Orm.Tests
 {
+    // TODO: no virtual table support in silverlight or windows phone
+    // https://code.google.com/p/csharp-sqlite/issues/detail?id=171
     [TestFixture]
     public class CreateVirtualTableTest
     {
-        [Virtual]
+        [Virtual(ModuleName = CommonVirtualTableModules.Fts3)]
         public class SimpleTable
         {
             public int Id { get; set; }
@@ -37,7 +39,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
                 db.CreateTable<SimpleTable>();
 
                 var sql = new TableMapping(typeof(SimpleTable)).GetCreateSql();
-                var correct = @"CREATE VIRTUAL TABLE [SimpleTable] USING FTS4 (
+                var correct = @"CREATE VIRTUAL TABLE [SimpleTable] USING FTS3 (
 [Id] integer NOT NULL,
 [Name] text ,
 [BigInt] bigint NOT NULL,

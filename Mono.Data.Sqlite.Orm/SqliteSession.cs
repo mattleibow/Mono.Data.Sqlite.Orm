@@ -174,7 +174,7 @@ namespace Mono.Data.Sqlite.Orm
             return map;
         }
 
-        private int CreateTable(TableMapping map)
+        private int CreateTable(TableMapping map, bool createIndexes)
         {
             int count = 0;
 
@@ -208,7 +208,10 @@ namespace Mono.Data.Sqlite.Orm
             }
 
             // create indexes
-            count += map.Indexes.Sum(index => Execute(index.GetCreateSql(map.TableName)));
+            if (createIndexes)
+            {
+                count += map.Indexes.Sum(index => Execute(index.GetCreateSql(map.TableName)));
+            }
 
             if (Trace)
             {
@@ -273,16 +276,19 @@ namespace Mono.Data.Sqlite.Orm
         ///   later access this schema by calling GetMapping.
         /// </summary>
         /// <typeparam name="T">The table to create.</typeparam>
+        /// <param name="createIndexes"> 
+        ///   False if you don't want to automatically create indexes.
+        /// </param>
         /// <returns>
         ///   The number of entries added to the database schema.
         /// </returns>
-        public int CreateTable<T>()
+        public int CreateTable<T>(bool createIndexes = true)
         {
             // todo - allow index clearing/re-creating
 
             using (var trans = this.Connection.BeginTransaction())
             {
-                var result = CreateTable(GetMapping<T>());
+                var result = CreateTable(GetMapping<T>(), createIndexes);
                 trans.Commit();
                 return result;
             }
@@ -295,14 +301,17 @@ namespace Mono.Data.Sqlite.Orm
         ///   later access this schema by calling GetMapping.
         /// </summary>
         /// <param name="type">The table to create.</param>
+        /// <param name="createIndexes"> 
+        ///   False if you don't want to automatically create indexes.
+        /// </param>
         /// <returns>
         ///   The number of entries added to the database schema.
         /// </returns>
-        public int CreateTable(Type type)
+        public int CreateTable(Type type, bool createIndexes = true)
         {
             using (var trans = this.Connection.BeginTransaction())
             {
-                var result = CreateTable(GetMapping(type));
+                var result = CreateTable(GetMapping(type), createIndexes);
                 trans.Commit();
                 return result;
             }
