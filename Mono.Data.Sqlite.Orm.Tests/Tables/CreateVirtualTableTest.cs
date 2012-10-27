@@ -14,8 +14,6 @@ using NUnit.Framework;
 
 namespace Mono.Data.Sqlite.Orm.Tests
 {
-    // TODO: no virtual table support in silverlight or windows phone
-    // https://code.google.com/p/csharp-sqlite/issues/detail?id=171
     [TestFixture]
     public class CreateVirtualTableTest
     {

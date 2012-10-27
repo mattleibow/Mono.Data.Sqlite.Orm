@@ -66,8 +66,6 @@ namespace Mono.Data.Sqlite.Orm.Tests
             public Guid Guid { get; set; }
         }
 
-        // BUG: Fails with UInt32 mapping to a int instead of a long using Mono.Data.Sqlite
-        //  - https://bugzilla.xamarin.com/show_bug.cgi?id=4289
         [Test]
         public void ColumnsSaveLoadMaxCorrectly()
         {
@@ -221,8 +219,6 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(test.Guid, res.Guid);
         }
 
-        // BUG: Fails with UInt32 mapping to a int instead of a long using Mono.Data.Sqlite
-        //  - https://bugzilla.xamarin.com/show_bug.cgi?id=4289
         [Test]
         public void ColumnsSaveLoadRandomValuesCorrectly()
         {

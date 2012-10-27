@@ -15,6 +15,9 @@ EndProject
 Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "Documentation", "Documentation\Documentation.shfbproj", "{2DB682BD-B45D-41E9-81E7-4044C616F2FE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{A8E7233C-3CB0-4ADB-930C-29A102215E80}"
+	ProjectSection(SolutionItems) = preProject
+		readme.mdown = readme.mdown
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Data.Sqlite.Orm.Test.Metro", "Mono.Data.Sqlite.Orm.Test.Metro\Mono.Data.Sqlite.Orm.Test.Metro.csproj", "{65CB694A-1859-4ADE-B5B0-7F9062B67BED}"
 EndProject

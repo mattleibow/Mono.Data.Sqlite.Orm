@@ -92,3 +92,31 @@ This library is based on [Frank A. Krueger's](mailto:fak@praeclarum.org) [sqlite
 This is an open source project that welcomes contributions/suggestions/bug reports from those who use it. If you have any ideas on how to improve the library, please contact [Matthew Leibowitz](mailto:mattleibowmail@gmail.com).
 
  
+# Failing Unit Tests
+
+Zero length arrays read as null
+Fails on Windows Phone & Silverlight
+http://code.google.com/p/csharp-sqlite/issues/detail?id=149
+ByteArrayTest.EmptyByteArraySavedAndRetrievedCorrectlyTest
+
+Excetions ar silently swallowed
+Fails on Windows Phone & Silverlight
+http://code.google.com/p/csharp-sqlite/issues/detail?id=130
+InsertTest.InsertWithExtra
+
+Inserting a UInt32.MaxValue into a BigInt column fails
+Fails on NetFx, Metro, Mono for Android and MonoTouch
+https://bugzilla.xamarin.com/show_bug.cgi?id=4289
+https://github.com/mono/mono/pull/438
+ColumnTypesTest.ColumnsSaveLoadMaxCorrectly
+ColumnTypesTest.ColumnsSaveLoadRandomValuesCorrectly
+
+Creating a Unique Index within a Transaction throw Exception
+Fails on Windows Phone & Silverlight
+http://code.google.com/p/csharp-sqlite/issues/detail?id=150
+CreateTableTest.CreateIndexedTable
+
+No virtual table support 
+Fails on Windows Phone & Silverlight
+https://code.google.com/p/csharp-sqlite/issues/detail?id=171
+CreateVirtualTableTest.*
