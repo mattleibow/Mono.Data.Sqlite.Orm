@@ -40,15 +40,10 @@ namespace Mono.Data.Sqlite.Orm.Tests
         public void InsertUsingSystemTransactions()
         {
             var options = new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted };
-#if NETFX_CORE
-            var tempFileName = Windows.Storage.ApplicationData.Current.TemporaryFolder.Path + "\\TempDb" + DateTime.Now.Ticks + ".db";
-#else
-            var tempFileName = Path.GetTempFileName();
 
-#endif
             SqliteSession.Trace = true;
 
-            using (var db = new SqliteSession("Data Source=" + tempFileName + ";DefaultTimeout=100", false))
+            using (var db = new SqliteSession("Data Source=TempDb" + DateTime.Now.Ticks + ".db;DefaultTimeout=100", false))
             {
                 db.Connection.Open();
                 db.CreateTable<TestObj>();
