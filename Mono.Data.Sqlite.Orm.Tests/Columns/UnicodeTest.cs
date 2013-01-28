@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 
 using Mono.Data.Sqlite.Orm.ComponentModel;
 #if SILVERLIGHT 
@@ -57,6 +57,27 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             Assert.AreEqual(1, ps.Count);
             Assert.AreEqual(TestString, ps[0].Name);
+        }
+
+        [Test]
+        public void SqlQuery()
+        {
+            var expected = "абвг";
+
+            var db = new OrmTestSession();
+            db.CreateTable<Product>();
+
+            var product = new Product { Name = TestString };
+            db.Insert(product);
+
+            db.Execute("UPDATE Product SET Name = '" + expected + "' WHERE Id = " + product.Id);
+
+            var ps = (from p in db.Table<Product>()
+                      where p.Name == expected 
+                      select p).ToList();
+
+            Assert.AreEqual(1, ps.Count);
+            Assert.AreEqual(expected, ps[0].Name);
         }
     }
 }
