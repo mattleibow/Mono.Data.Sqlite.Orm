@@ -183,6 +183,29 @@ namespace Mono.Data.Sqlite.Orm.Tests
         }
 
         [Test]
+        public void InsertObjectWithValueInPrimaryKey()
+        {
+            var db = new OrmTestSession();
+            db.CreateTable<TestObj2>();
+
+            var obj2 = new TestObj2 {Id = 5, Text = "Old"};
+
+            int numIn1 = db.Insert(obj2);
+            Assert.AreEqual(1, numIn1);
+
+            var result = db.Table<TestObj2>().Single(i => i.Id == 5);
+            Assert.AreEqual("Old", result.Text);
+
+            result.Text = "New";
+            var upd = db.Update(result);
+
+            result = db.Table<TestObj2>().Single(i => i.Id == 5);
+            Assert.AreEqual("New", result.Text);
+
+            db.Close();
+        }
+
+        [Test]
         public void InsertIntoTwoTables()
         {
             var db = new OrmTestSession();
