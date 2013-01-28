@@ -43,7 +43,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             #region ITrackConnection Members
 
             [ComponentModel.Ignore]
-            public SqliteSession Connection { get; set; }
+            public SqliteSessionBase Connection { get; set; }
 
             #endregion
         }
@@ -63,7 +63,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             #region ITrackConnection Members
 
             [ComponentModel.Ignore]
-            public SqliteSession Connection { get; set; }
+            public SqliteSessionBase Connection { get; set; }
 
             #endregion
         }

@@ -2,6 +2,6 @@ namespace Mono.Data.Sqlite.Orm
 {
     public interface ITrackConnection
     {
-        SqliteSession Connection { get; set; }
+        SqliteSessionBase Connection { get; set; }
     }
 }

@@ -26,7 +26,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             {
                 db.CreateTable<OrderLine>();
 
-                TableMapping orderLine = db.GetMapping<OrderLine>();
+                var orderLine = db.GetMapping<OrderLine>();
                 Assert.AreEqual(4, orderLine.Columns.Count, "OrderLine has 4 columns");
 
                 var l = new OrderLine { Status = OrderLineStatus.Shipped };
@@ -64,7 +64,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             {
                 db.CreateTable<OrderDetails>();
 
-                TableMapping orderLine = db.GetMapping<OrderDetails>();
+                var orderLine = db.GetMapping<OrderDetails>();
                 Assert.AreEqual(6, orderLine.Columns.Count, "OrderDetails (OrderLine) has 6 columns");
 
                 OrderDetails l = db.Table<OrderDetails>().First(x => x.ShippingStatus == OrderLineStatus.Shipped);

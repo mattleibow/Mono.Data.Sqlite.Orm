@@ -71,7 +71,6 @@
   <ItemGroup>
     <Compile Include="Tables\TransactionsTest.cs" />
     <Compile Include="TestHelpers\ArrayAssert.cs" />
-    <Compile Include="AsyncTests.cs" />
     <Compile Include="Columns\BooleanTest.cs" />
     <Compile Include="Columns\ByteArrayTest.cs" />
     <Compile Include="Tables\FTSSpecialCommandsTest.cs" />
@@ -127,6 +126,10 @@
     <ProjectReference Include="..\Mono.Data.Sqlite.Orm\Mono.Data.Sqlite.Orm.csproj">
       <Project>{E38C051E-889E-485B-B685-C692D2861E7B}</Project>
       <Name>Mono.Data.Sqlite.Orm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Shared\Mono.Data.Sqlite.Orm.Shared\Mono.Data.Sqlite.Orm.Shared.csproj">
+      <Project>{99ada565-42ca-418d-bd85-6246ffa9a20e}</Project>
+      <Name>Mono.Data.Sqlite.Orm.Shared</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

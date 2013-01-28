@@ -144,7 +144,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             db.CreateTable<CustomTable>();
 
-            TableMapping mapping = db.GetMapping<CustomTable>();
+            var mapping = db.GetMapping<CustomTable>();
 
             var sql = mapping.GetCreateSql();
             var correct = @"CREATE TABLE [DifferentName] (
@@ -176,7 +176,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             db.CreateTable<AdvancedTable>();
 
-            TableMapping mapping = db.GetMapping<AdvancedTable>();
+            var mapping = db.GetMapping<AdvancedTable>();
 
             var sql = mapping.GetCreateSql();
             var correct = @"CREATE TABLE [AdvancedTable] (
@@ -223,7 +223,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             db.CreateTable<VeryAdvancedTable>();
 
-            TableMapping mapping = db.GetMapping<VeryAdvancedTable>();
+            var mapping = db.GetMapping<VeryAdvancedTable>();
 
             var sql = mapping.GetCreateSql();
             var correct = @"CREATE TABLE [VeryAdvancedTable] (
@@ -286,7 +286,7 @@ CHECK (Id <= 10)
         {
             var db = new OrmTestSession();
             db.CreateTable<Category>();
-            ExceptionAssert.Throws<SqliteException>(() => db.CreateTable<Book>());
+            ExceptionAssert.Throws<ArgumentException>(() => db.CreateTable<Book>());
         }
 
         public class ReferencingTable
@@ -314,7 +314,7 @@ CHECK (Id <= 10)
             db.CreateTable<ReferencedTable>();
             db.CreateTable<ReferencingTable>();
 
-            TableMapping refingMap = db.GetMapping<ReferencingTable>();
+            var refingMap = db.GetMapping<ReferencingTable>();
 
             var sql = refingMap.GetCreateSql();
             var correct = @"CREATE TABLE [ReferencingTable] (
@@ -362,7 +362,7 @@ ON UPDATE CASCADE
             db.CreateTable<MultiReferencedTable>();
             db.CreateTable<MultiReferencingTable>();
 
-            TableMapping refingMap = db.GetMapping<MultiReferencingTable>();
+            var refingMap = db.GetMapping<MultiReferencingTable>();
 
             var sql = refingMap.GetCreateSql();
             var correct = @"CREATE TABLE [MultiReferencingTable] (
@@ -429,7 +429,7 @@ REFERENCES [MultiReferencedTable] ([Id2], [Id])
             db.CreateTable<IndexedTable>(false);
 
             // the indexes
-            TableMapping map = db.GetMapping<IndexedTable>();
+            var map = db.GetMapping<IndexedTable>();
             foreach (var index in map.Indexes)
             {
                 db.Execute(index.GetCreateSql(map.TableName));
@@ -463,7 +463,7 @@ REFERENCES [MultiReferencedTable] ([Id2], [Id])
         {
             var db = new OrmTestSession();
             db.CreateTable<IndexedColumnTable>();
-            TableMapping columnMap = db.GetMapping<IndexedColumnTable>();
+            var columnMap = db.GetMapping<IndexedColumnTable>();
 
             var sql = columnMap.Indexes.Single().GetCreateSql("IndexedColumnTable");
             var correct = @"CREATE INDEX [IX_SomeName] on [IndexedColumnTable] (
@@ -482,7 +482,7 @@ REFERENCES [MultiReferencedTable] ([Id2], [Id])
         {
             var db = new OrmTestSession();
             db.CreateTable<MultiIndexedTable>();
-            TableMapping multiMap = db.GetMapping<MultiIndexedTable>();
+            var multiMap = db.GetMapping<MultiIndexedTable>();
 
             var sql = multiMap.Indexes.Single().GetCreateSql("MultiIndexedTable");
             var correct = @"CREATE UNIQUE INDEX [IX_MultiIndexedTable] on [MultiIndexedTable] (

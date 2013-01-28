@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{99ADA565-42CA-418D-BD85-6246FFA9A20E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Mono.Data.Sqlite.Orm.Shared</RootNamespace>
+    <AssemblyName>Mono.Data.Sqlite.Orm.Shared</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Profile2</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .NET Framework is automatically included -->
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ComponentModel\AutoIncrementAttribute.cs" />
+    <Compile Include="ComponentModel\CheckAttribute.cs" />
+    <Compile Include="ComponentModel\Collation.cs" />
+    <Compile Include="ComponentModel\CollationAttribute.cs" />
+    <Compile Include="ComponentModel\ColumnAttribute.cs" />
+    <Compile Include="ComponentModel\ConflictResolution.cs" />
+    <Compile Include="ComponentModel\DataConverterAttribute.cs" />
+    <Compile Include="ComponentModel\DefaultAttribute.cs" />
+    <Compile Include="ComponentModel\Deferred.cs" />
+    <Compile Include="ComponentModel\Direction.cs" />
+    <Compile Include="ComponentModel\EnumAffinityAttribute.cs" />
+    <Compile Include="ComponentModel\ForeignKeyAction.cs" />
+    <Compile Include="ComponentModel\ForeignKeyAttribute.cs" />
+    <Compile Include="ComponentModel\IgnoreAttribute.cs" />
+    <Compile Include="ComponentModel\IndexAttribute.cs" />
+    <Compile Include="ComponentModel\IndexedAttribute.cs" />
+    <Compile Include="ComponentModel\MaxLengthAttribute.cs" />
+    <Compile Include="ComponentModel\NotNullAttribute.cs" />
+    <Compile Include="ComponentModel\NullMatch.cs" />
+    <Compile Include="ComponentModel\PrimaryKeyAttribute.cs" />
+    <Compile Include="ComponentModel\RenameTableAttribute.cs" />
+    <Compile Include="ComponentModel\TableAttribute.cs" />
+    <Compile Include="ComponentModel\TokenizerAttribute.cs" />
+    <Compile Include="ComponentModel\UniqueAttribute.cs" />
+    <Compile Include="ComponentModel\VirtualAttribute.cs" />
+    <Compile Include="DataConverter\IDataConverter.cs" />
+    <Compile Include="InstanceCreatedEventArgs.cs" />
+    <Compile Include="ITrackConnection.cs" />
+    <Compile Include="OrmHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqliteSessionBase.cs" />
+    <Compile Include="SqliteWriter.cs" />
+    <Compile Include="TableMappingBase.cs" />
+    <Compile Include="TableQueryBase.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

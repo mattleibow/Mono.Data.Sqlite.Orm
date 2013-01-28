@@ -47,14 +47,14 @@ namespace Mono.Data.Sqlite.Orm.Tests
             int numIn = db.InsertAll(objs);
             Assert.AreEqual(numIn, n, "Num inserted must = num objects");
 
-            TableQuery<TestObj> q = from o in db.Table<TestObj>() orderby o.Order select o;
+            var q = from o in db.Table<TestObj>() orderby o.Order select o;
 
-            TableQuery<TestObj> qs1 = q.Skip(1);
+            var qs1 = q.Skip(1);
             List<TestObj> s1 = qs1.ToList();
             Assert.AreEqual(n - 1, s1.Count);
             Assert.AreEqual(2, s1[0].Order);
 
-            TableQuery<TestObj> qs5 = q.Skip(5);
+            var qs5 = q.Skip(5);
             List<TestObj> s5 = qs5.ToList();
             Assert.AreEqual(n - 5, s5.Count);
             Assert.AreEqual(6, s5[0].Order);
