@@ -319,8 +319,12 @@ namespace Mono.Data.Sqlite.Orm
 
         private int MigrateTable(TableMapping map)
         {
-            var existingCols = this.GetTableColumns(map);
-            List<TableMapping.Column> toBeAdded = map.Columns.Where(p => existingCols.All(e => e.Name != p.Name)).ToList();
+            var existingCols = this.GetTableColumns(map).ToArray();
+            List<TableMapping.Column> toBeAdded =
+                map.Columns
+                   .Where(p => existingCols.All(
+                       e => !e.Name.Equals(p.Name, StringComparison.OrdinalIgnoreCase)))
+                   .ToList();
 
             return toBeAdded.Sum(col =>
                                      {
@@ -347,7 +351,7 @@ namespace Mono.Data.Sqlite.Orm
         {
             string query = string.Format(CultureInfo.InvariantCulture, "PRAGMA table_info([{0}]);", map.TableName);
             var existingCols = Query<TableInfo>(query);
-            return map.Columns.Where(p => existingCols.Any(e => e.Name == p.Name));
+            return map.Columns.Where(p => existingCols.Any(e => e.Name.Equals(p.Name, StringComparison.OrdinalIgnoreCase)));
         }
 
         /// <summary>

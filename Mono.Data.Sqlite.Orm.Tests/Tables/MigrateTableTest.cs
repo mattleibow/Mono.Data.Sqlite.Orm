@@ -201,5 +201,24 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             Assert.AreEqual(create.Id, migrate.Id);
         }
+
+        [Test]
+        public void ChangeCaseDoesNotThrowDuplicateErrorTest()
+        {
+            var db = new OrmTestSession();
+            db.CreateTable<InitialTable>();
+            db.CreateTable<RenamedTable>();
+        }
+
+        public class InitialTable
+        {
+            public string name { get; set; }
+        }
+
+        [Table("InitialTable")]
+        public class RenamedTable
+        {
+            public string Name { get; set; }
+        }
     }
 }
