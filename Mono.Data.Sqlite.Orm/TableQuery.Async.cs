@@ -13,11 +13,16 @@
             return Task<int>.Factory.StartNew(
                 () =>
                     {
-                        using (this.Session.Lock())
+                        using (this.DerivedSession.Lock())
                         {
                             return this.Count();
                         }
                     });
+        }
+
+        private SqliteSession DerivedSession
+        {
+            get { return this.Session as SqliteSession; }
         }
 
         public Task<T> ElementAtAsync(int index)
@@ -25,7 +30,7 @@
             return Task<T>.Factory.StartNew(
                 () =>
                     {
-                        using (this.Session.Lock())
+                        using (this.DerivedSession.Lock())
                         {
                             return this.ElementAt(index);
                         }
@@ -37,7 +42,7 @@
             return Task<T>.Factory.StartNew(
                 () =>
                     {
-                        using (this.Session.Lock())
+                        using (this.DerivedSession.Lock())
                         {
                             return this.ElementAtOrDefault(index);
                         }
@@ -49,7 +54,7 @@
             return Task<T>.Factory.StartNew(
                 () =>
                     {
-                        using (this.Session.Lock())
+                        using (this.DerivedSession.Lock())
                         {
                             return this.First();
                         }
@@ -61,7 +66,7 @@
             return Task<T>.Factory.StartNew(
                 () =>
                     {
-                        using (this.Session.Lock())
+                        using (this.DerivedSession.Lock())
                         {
                             return this.First(predicate);
                         }
@@ -73,7 +78,7 @@
             return Task<T>.Factory.StartNew(
                 () =>
                     {
-                        using (this.Session.Lock())
+                        using (this.DerivedSession.Lock())
                         {
                             return this.FirstOrDefault();
                         }
@@ -85,7 +90,7 @@
             return Task<T>.Factory.StartNew(
                 () =>
                     {
-                        using (this.Session.Lock())
+                        using (this.DerivedSession.Lock())
                         {
                             return this.FirstOrDefault(predicate);
                         }
@@ -97,7 +102,7 @@
             return Task<List<T>>.Factory.StartNew(
                 () =>
                     {
-                        using (this.Session.Lock())
+                        using (this.DerivedSession.Lock())
                         {
                             return this.ToList();
                         }

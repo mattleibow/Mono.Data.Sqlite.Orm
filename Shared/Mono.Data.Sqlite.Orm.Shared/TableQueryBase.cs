@@ -19,11 +19,21 @@ namespace Mono.Data.Sqlite.Orm
         protected List<WithColumn> _withColumns;
         protected Expression _where;
 
+        protected SqliteSessionBase Session { get; set; }
         protected TableMappingBase Table { get; set; }
 
         #region IEnumerable<T> Members
 
-        public abstract IEnumerator<T> GetEnumerator();
+        public IEnumerator<T> GetEnumerator()
+        {
+            string query;
+            object[] args;
+            this.GetSelectCommand(out query, out args);
+
+            return _deferred
+                       ? Session.DeferredQuery<T>(query, args).GetEnumerator()
+                       : Session.Query<T>(query, args).GetEnumerator();
+        }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -209,11 +219,11 @@ namespace Mono.Data.Sqlite.Orm
             _where = _where == null ? pred : Expression.AndAlso(_where, pred);
         }
 
-        protected void GenerateCommandSql(string selectionList, out List<object> args, out StringBuilder sb)
+        protected void GenerateCommandSql(string selectionList, out string query, out object[] arguments)
         {
-            args = new List<object>();
+            var args = new List<object>();
 
-            sb = new StringBuilder("SELECT ");
+            var sb = new StringBuilder("SELECT ");
             if (this._distinct)
             {
                 sb.Append("DISTINCT ");
@@ -262,6 +272,9 @@ namespace Mono.Data.Sqlite.Orm
                 sb.Append(this._offset.Value);
                 sb.AppendLine();
             }
+
+            query = sb.ToString();
+            arguments = args.ToArray();
         }
 
         private CompileResult CompileExpr(Expression expr, List<object> queryArgs)
@@ -538,7 +551,38 @@ namespace Mono.Data.Sqlite.Orm
             }
         }
 
-        public abstract int Count();
+        public int Count()
+        {
+            string query;
+            object[] args;
+
+            if (this._distinct)
+            {
+                this.GetSelectCommand(out query, out args);
+                query = string.Format("SELECT COUNT(*) FROM ({0})", query);
+            }
+            else
+            {
+                GenerateCommandSql("COUNT(*)", out query, out args);
+            }
+
+            return Session.ExecuteScalar<int>(query, args);
+        }
+
+        private void GetSelectCommand(out string query, out object[] args)
+        {
+            IEnumerable<string> columns;
+            if (this._withColumns == null || this._withColumns.Count <= 0)
+            {
+                columns = this.Table.Columns.Select(c => SqliteWriter.Quote(c.Name));
+            }
+            else
+            {
+                columns = this._withColumns.Select(c => SqliteWriter.Quote(c.ColumnName));
+            }
+
+            this.GenerateCommandSql(string.Join(", ", columns.ToArray()), out query, out args);
+        }
 
         #region Nested type: CompileResult
 

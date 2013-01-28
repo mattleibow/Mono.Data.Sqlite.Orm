@@ -331,7 +331,90 @@ namespace Mono.Data.Sqlite.Orm
         /// <returns>
         ///   The number of rows modified in the database as a result of this execution.
         /// </returns>
-        public abstract int Execute(string query, params object[] args);
+        public int Execute(string query, params object[] args)
+        {
+            return this.ExecuteInternal(new Execution {Args = args, Sql = query});
+        }
+
+        /// <summary>
+        ///   Executes the query and returns the value in the first column of the first row.
+        ///   All other fields are ignored.
+        /// </summary>
+        /// <param name = "cmdText">
+        ///   The fully escaped SQL.
+        /// </param>
+        /// <param name = "args">
+        ///   Arguments to substitute for the occurences of '?' in the command text.
+        /// </param>
+        /// <returns>The value in the first column of the first row.</returns>
+        public T ExecuteScalar<T>(string cmdText, params object[] args)
+        {
+            var scalar = this.ExecuteScalarInternal(new Execution { Args = args, Sql = cmdText });
+            return (T)Convert.ChangeType(scalar, typeof(T), CultureInfo.CurrentCulture);
+        }
+
+        /// <summary>
+        ///   Executes the query and returns the value in the first column of the first row.
+        ///   All other fields are ignored.
+        /// </summary>
+        /// <param name = "cmdText">
+        ///   The fully escaped SQL.
+        /// </param>
+        /// <param name = "args">
+        ///   Arguments to substitute for the occurences of '?' in the command text.
+        /// </param>
+        /// <returns>The value in the first column of the first row.</returns>
+        public object ExecuteScalar(string cmdText, params object[] args)
+        {
+            return this.ExecuteScalar<object>(cmdText, args);
+        }
+
+        /// <summary>
+        ///   Creates a SQLiteCommand given the command text (SQL) with arguments. Place a '?'
+        ///   in the command text for each of the arguments and then executes that command.
+        ///   It returns each row of the result using the mapping automatically generated for
+        ///   the given type.
+        /// </summary>
+        /// <param name = "query">
+        ///   The fully escaped SQL.
+        /// </param>
+        /// <param name = "args">
+        ///   Arguments to substitute for the occurences of '?' in the query.
+        /// </param>
+        /// <returns>
+        ///   An enumerable with one result for each row returned by the query.
+        ///   The enumerator will call sqlite3_step on each call to MoveNext, so the database
+        ///   connection must remain open for the lifetime of the enumerator.
+        /// </returns>
+        public IEnumerable<T> DeferredQuery<T>(string query, params object[] args)
+        {
+            return DeferredQuery(typeof(T), query, args).Cast<T>();
+        }
+
+        /// <summary>
+        ///   Creates a SQLiteCommand given the command text (SQL) with arguments. Place a '?'
+        ///   in the command text for each of the arguments and then executes that command.
+        ///   It returns each row of the result using the mapping automatically generated for
+        ///   the given type.
+        /// </summary>
+        /// <param name = "query">
+        ///   The fully escaped SQL.
+        /// </param>
+        /// <param name = "args">
+        ///   Arguments to substitute for the occurences of '?' in the query.
+        /// </param>
+        /// <returns>
+        ///   An enumerable with one result for each row returned by the query.
+        ///   The enumerator will call sqlite3_step on each call to MoveNext, so the database
+        ///   connection must remain open for the lifetime of the enumerator.
+        /// </returns>
+        public IEnumerable DeferredQuery(Type type, string query, params object[] args)
+        {
+            var ex = new Execution {Map = GetMapping(type), Sql = query, Args = args};
+
+            return from object result in this.ExecuteDeferredQueryInternal(ex)
+                   select result;
+        }
 
         /// <summary>
         ///   Creates a SQLiteCommand given the command text (SQL) with arguments. Place a '?'
@@ -377,82 +460,6 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        ///   Creates a SQLiteCommand given the command text (SQL) with arguments. Place a '?'
-        ///   in the command text for each of the arguments and then executes that command.
-        ///   It returns each row of the result using the mapping automatically generated for
-        ///   the given type.
-        /// </summary>
-        /// <param name = "query">
-        ///   The fully escaped SQL.
-        /// </param>
-        /// <param name = "args">
-        ///   Arguments to substitute for the occurences of '?' in the query.
-        /// </param>
-        /// <returns>
-        ///   An enumerable with one result for each row returned by the query.
-        ///   The enumerator will call sqlite3_step on each call to MoveNext, so the database
-        ///   connection must remain open for the lifetime of the enumerator.
-        /// </returns>
-        public abstract IEnumerable<T> DeferredQuery<T>(string query, params object[] args) where T : new();
-
-        /// <summary>
-        ///   Creates a SQLiteCommand given the command text (SQL) with arguments. Place a '?'
-        ///   in the command text for each of the arguments and then executes that command.
-        ///   It returns each row of the result using the mapping automatically generated for
-        ///   the given type.
-        /// </summary>
-        /// <param name="type">
-        ///   The type of object to return
-        /// </param>
-        /// <param name = "query">
-        ///   The fully escaped SQL.
-        /// </param>
-        /// <param name = "args">
-        ///   Arguments to substitute for the occurences of '?' in the query.
-        /// </param>
-        /// <returns>
-        ///   An enumerable with one result for each row returned by the query.
-        ///   The enumerator will call sqlite3_step on each call to MoveNext, so the database
-        ///   connection must remain open for the lifetime of the enumerator.
-        /// </returns>
-        public abstract IEnumerable DeferredQuery(Type type, string query, params object[] args);
-
-        /// <summary>
-        ///   Executes the query and returns the value in the first column of the first row.
-        ///   All other fields are ignored.
-        /// </summary>
-        /// <param name = "cmdText">
-        ///   The fully escaped SQL.
-        /// </param>
-        /// <param name = "args">
-        ///   Arguments to substitute for the occurences of '?' in the command text.
-        /// </param>
-        /// <returns>The value in the first column of the first row.</returns>
-        public abstract T ExecuteScalar<T>(string cmdText, params object[] args);
-
-        /// <summary>
-        ///   Executes the query and returns the value in the first column of the first row.
-        ///   All other fields are ignored.
-        /// </summary>
-        /// <param name = "cmdText">
-        ///   The fully escaped SQL.
-        /// </param>
-        /// <param name = "args">
-        ///   Arguments to substitute for the occurences of '?' in the command text.
-        /// </param>
-        /// <returns>The value in the first column of the first row.</returns>
-        public abstract object ExecuteScalar(string cmdText, params object[] args);
-
-        /// <summary>
-        ///   Returns a queryable interface to the table represented by the given type.
-        /// </summary>
-        /// <returns>
-        ///   A queryable object that is able to translate Where, OrderBy, and Take
-        ///   queries into native SQL.
-        /// </returns>
-        public abstract TableQueryBase<T> Table<T>() where T : new();
-
-        /// <summary>
         ///   Retrieves the objects matching the given primary key(s) from the table
         ///   associated with the specified type. Use of this method requires that
         ///   the given type has one or more designated PrimaryKey(s) (using the
@@ -463,7 +470,7 @@ namespace Mono.Data.Sqlite.Orm
         /// <returns>The list of objects with the given primary key(s).</returns>
         public IList<T> GetList<T>(object pk, params object[] pks) where T : new()
         {
-            return GetList(typeof(T), pk, pks).Cast<T>().ToList();
+            return this.GetListInternal(typeof(T), pk, pks).Cast<T>().ToList();
         }
 
         /// <summary>
@@ -476,7 +483,24 @@ namespace Mono.Data.Sqlite.Orm
         /// <param name = "pk">The primary key for 'type'.</param>
         /// <param name = "pks">Any addition primary keys for multiple primaryKey tables</param>
         /// <returns>The list of objects with the given primary key(s).</returns>
-        public abstract IList GetList(Type type, object pk, params object[] pks);
+        public IList GetList(Type type, object pk, params object[] pks)
+        {
+            return this.GetListInternal(type, pk, pks).Cast<object>().ToList();
+        }
+
+        private IEnumerable GetListInternal(Type type, object pk, object[] pks)
+        {
+            var map = this.GetMapping(type);
+            if (map.PrimaryKey == null)
+            {
+                throw new ArgumentException("There are no primary keys");
+            }
+
+            var sql = map.GetSelectSql();
+            var args = new[] {pk}.Concat(pks).ToArray();
+
+            return this.DeferredQuery(type, sql, args);
+        }
 
         /// <summary>
         ///   Attempts to retrieve an object with the given primary key from the table
@@ -548,6 +572,29 @@ namespace Mono.Data.Sqlite.Orm
             var list = GetList(type, primaryKey, primaryKeys);
             return list.Count > 0 ? list[0] : null;
         }
+
+        public class Execution
+        {
+            public string Sql { get; set; }
+            public object[] Args { get; set; }
+            public TableMappingBase Map { get; set; }
+        }
+
+        /// <summary>
+        /// This function does the actual calls on the database.
+        /// </summary>
+        protected abstract IEnumerable ExecuteDeferredQueryInternal(Execution execution);
+        protected abstract object ExecuteScalarInternal(Execution execution);
+        protected abstract int ExecuteInternal(Execution execution);
+
+        /// <summary>
+        ///   Returns a queryable interface to the table represented by the given type.
+        /// </summary>
+        /// <returns>
+        ///   A queryable object that is able to translate Where, OrderBy, and Take
+        ///   queries into native SQL.
+        /// </returns>
+        public abstract TableQueryBase<T> Table<T>() where T : new();
 
         /// <summary>
         ///   Inserts all specified objects.
@@ -634,8 +681,49 @@ namespace Mono.Data.Sqlite.Orm
         {
             return Insert(obj, ConflictResolution.Default);
         }
+        
+        /// <summary>
+        ///   Inserts the given object and retrieves its
+        ///   auto incremented primary key if it has one.
+        /// </summary>
+        /// <param name = "obj">
+        ///   The object to insert.
+        /// </param>
+        /// <param name = "extra">
+        ///   Literal SQL code that gets placed into the command. INSERT {extra} INTO ...
+        /// </param>
+        /// <returns>
+        ///   The number of rows added to the table.
+        /// </returns>
+        public int Insert(object obj, ConflictResolution extra)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException("obj", "Cannot insert a null object.");
+            }
 
-        public abstract int Insert(object obj, ConflictResolution extra);
+            TableMappingBase map = GetMapping(obj.GetType());
+
+            var args = map.EditableColumns.Select(x => x.GetValue(obj)).ToArray();
+            var count = this.InsertInternal(args, extra, map);
+
+            var tracked = obj as ITrackConnection;
+            if (tracked != null)
+            {
+                tracked.Connection = this;
+            }
+
+            if (map.AutoIncrementColumn != null)
+            {
+                map.AutoIncrementColumn.SetValue(obj, GetLastInsertRowId());
+            }
+
+            return count;
+        }
+
+        protected abstract long GetLastInsertRowId();
+
+        protected abstract int InsertInternal(object[] args, ConflictResolution extra, TableMappingBase mapBase);
 
         /// <summary>
         ///   Updates all of the columns of a table using the specified object
