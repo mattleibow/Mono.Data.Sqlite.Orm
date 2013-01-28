@@ -261,5 +261,44 @@ namespace Mono.Data.Sqlite.Orm.Tests
                 ArrayAssert.AreEqual(new[] { 2, 3 }, bit);
             }
         }
+
+        public abstract class TestObjBase<T>
+        {
+            [AutoIncrement]
+            [PrimaryKey]
+            public int Id { get; set; }
+            public T Data { get; set; }
+            public DateTime Date { get; set; }
+        }
+        
+        public class TestObjString : TestObjBase<string>
+        {
+            
+        }
+
+        [Test]
+        public void CanCompareAnyField()
+        {
+            var db = new OrmTestSession();
+            db.CreateTable<TestObjString>();
+            db.Insert(new TestObjString
+                {
+                    Data = Convert.ToString(3),
+                    Date = new DateTime(2013, 1, 3)
+                });
+
+            var results = db.Table<TestObjString>().Where(o => o.Data.Equals("3"));
+            Assert.AreEqual(1, results.Count());
+            Assert.AreEqual("3", results.FirstOrDefault().Data);
+
+            results = db.Table<TestObjString>().Where(o => o.Id.Equals(1));
+            Assert.AreEqual(1, results.Count());
+            Assert.AreEqual("3", results.FirstOrDefault().Data);
+
+            var date = new DateTime(2013, 1, 3);
+            results = db.Table<TestObjString>().Where(o => o.Date.Equals(date));
+            Assert.AreEqual(1, results.Count());
+            Assert.AreEqual("3", results.FirstOrDefault().Data);
+        }
     }
 }
