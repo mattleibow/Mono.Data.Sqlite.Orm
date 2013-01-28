@@ -82,6 +82,28 @@ namespace Mono.Data.Sqlite.Orm.Tests
         }
 
         [Test]
+        public void OrderByCast()
+        {
+            var db = new OrmTestSession();
+            db.CreateTable<CoolTable>();
+
+            db.Insert(new CoolTable {Name = "A", Price = 20});
+            db.Insert(new CoolTable {Name = "B", Price = 100});
+
+            var nocast = (from p in db.Table<CoolTable>()
+                          orderby p.Price descending
+                          select p).ToList();
+            Assert.AreEqual(2, nocast.Count);
+            Assert.AreEqual("B", nocast[0].Name);
+
+            var cast = (from p in db.Table<CoolTable>()
+                        orderby (int) p.Price descending
+                        select p).ToList();
+            Assert.AreEqual(2, cast.Count);
+            Assert.AreEqual("B", cast[0].Name);
+        }
+
+        [Test]
         public void GetWithExpressionTest()
         {
             var db = new OrmTestSession();

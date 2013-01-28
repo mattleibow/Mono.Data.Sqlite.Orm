@@ -170,7 +170,16 @@ namespace Mono.Data.Sqlite.Orm
             }
 
             var lambda = (LambdaExpression) orderExpr;
-            var mem = lambda.Body as MemberExpression;
+            MemberExpression mem;
+            var unary = lambda.Body as UnaryExpression;
+            if (unary != null && unary.NodeType == ExpressionType.Convert)
+            {
+                mem = unary.Operand as MemberExpression;
+            }
+            else
+            {
+                mem = lambda.Body as MemberExpression;
+            }
 
             if (mem == null || (mem.Expression.NodeType != ExpressionType.Parameter))
             {
