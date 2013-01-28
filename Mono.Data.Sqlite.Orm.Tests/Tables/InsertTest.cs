@@ -290,5 +290,24 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual("Default Text", inObjs.Text);
             Assert.AreEqual(33, inObjs.Number);
         }
+
+        [Test]
+        public void InsertAllWithinATransactionSucceeds()
+        {
+            var db = new OrmTestSession();
+            db.CreateTable<TestObj>();
+
+            var first = new TestObj { Text = "First" };
+            var second = new TestObj { Text = "Second" };
+            var third = new TestObj { Text = "Third" };
+
+            using (var trans = db.BeginTransaction())
+            {
+                var inObjs = db.InsertAll(new[] { first, second, third }, false);
+                trans.Commit();
+            }
+
+            Assert.AreEqual(3, db.Table<TestObj>().Count());
+        }
     }
 }

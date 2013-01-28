@@ -836,17 +836,69 @@ namespace Mono.Data.Sqlite.Orm
         /// <param name = "objects">
         ///   An <see cref = "IEnumerable" /> of the objects to insert.
         /// </param>
+        /// <param name = "createTransaction">
+        ///   True if this operation should create (or use a current) and control a transaction.
+        /// </param>
         /// <returns>
         ///   The number of rows added to the table.
         /// </returns>
-        public int InsertAll<T>(IEnumerable<T> objects)
+        public int InsertAll(IEnumerable objects, bool createTransaction = true)
         {
-            using (var trans = this.Connection.BeginTransaction())
+            return RunInTransaction(() => objects.Cast<object>().Sum(r => this.Insert(r)), createTransaction);
+        }
+
+        /// <summary>
+        ///   Updates all specified objects.
+        /// </summary>
+        /// <param name = "objects">
+        ///   An <see cref = "IEnumerable" /> of the objects to update.
+        /// </param>
+        /// <param name = "createTransaction">
+        ///   True if this operation should create (or use a current) and control a transaction.
+        /// </param>
+        /// <returns>
+        ///   The number of rows updated in the table.
+        /// </returns>
+        public int UpdateAll(IEnumerable objects, bool createTransaction = true)
+        {
+            return RunInTransaction(() => objects.Cast<object>().Sum(r => this.Update(r)), createTransaction);
+        }
+
+        private TResult RunInTransaction<TResult>(Func<TResult> action, bool createTransaction)
+        {
+            TResult result;
+            
+            SqliteTransaction trans = null;
+            if (createTransaction)
             {
-                var result = objects.Sum(r => Insert(r));
-                trans.Commit();
-                return result;
+                trans = this.Connection.BeginTransaction();
             }
+            try
+            {
+                result = action();
+                if (createTransaction)
+                {
+                    trans.Commit();
+                }
+            }
+            catch
+            {
+                if (createTransaction)
+                {
+                    trans.Rollback();
+                }
+
+                throw;
+            }
+            finally
+            {
+                if (createTransaction)
+                {
+                    trans.Dispose();
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -884,7 +936,7 @@ namespace Mono.Data.Sqlite.Orm
         /// <returns>
         ///   The number of rows added to the table.
         /// </returns>
-        public int Insert<T>(T obj)
+        public int Insert(object obj)
         {
             return Insert(obj, ConflictResolution.Default);
         }
@@ -902,16 +954,14 @@ namespace Mono.Data.Sqlite.Orm
         /// <returns>
         ///   The number of rows added to the table.
         /// </returns>
-        public int Insert<T>(T obj, ConflictResolution extra)
+        public int Insert(object obj, ConflictResolution extra)
         {
-            var instance = obj as object;
-
-            if (instance == null)
+            if (obj == null)
             {
                 throw new ArgumentNullException("obj", "Cannot insert a null object.");
             }
 
-            TableMapping map = GetMapping<T>();
+            TableMapping map = GetMapping(obj.GetType());
 
             DbCommand insertCmd = map.GetInsertCommand(Connection, extra, false);
 
@@ -923,7 +973,7 @@ namespace Mono.Data.Sqlite.Orm
 
             int count = insertCmd.ExecuteNonQuery();
 
-                var tracked = obj as ITrackConnection;
+            var tracked = obj as ITrackConnection;
                 if (tracked != null)
                 {
                     tracked.Connection = this;
@@ -964,7 +1014,7 @@ namespace Mono.Data.Sqlite.Orm
         /// <returns>
         ///   The number of rows updated.
         /// </returns>
-        public int Update<T>(T obj)
+        public int Update(object obj)
         {
             var tracked = obj as ITrackConnection;
             if (tracked != null)
@@ -973,7 +1023,7 @@ namespace Mono.Data.Sqlite.Orm
             }
 
             var args = new List<object>();
-            string sql = GetMapping<T>().GetUpdateSql(obj, args);
+            string sql = GetMapping(obj.GetType()).GetUpdateSql(obj, args);
             return Execute(sql, args.ToArray());
         }
 
