@@ -52,7 +52,6 @@
     <Compile Include="SqliteExtensions.cs" />
     <Compile Include="SqliteSession.Async.cs" />
     <Compile Include="SqliteSession.cs" />
-    <Compile Include="TableMapping.cs" />
     <Compile Include="TableQuery.cs" />
   </ItemGroup>
   <ItemGroup>

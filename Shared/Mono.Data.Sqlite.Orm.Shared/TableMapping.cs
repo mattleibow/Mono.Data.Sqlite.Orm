@@ -8,7 +8,7 @@ using Mono.Data.Sqlite.Orm.DataConverter;
 
 namespace Mono.Data.Sqlite.Orm
 {
-    public abstract class TableMappingBase : IDisposable
+    public class TableMapping : IDisposable
     {
         private readonly PropertyInfo[] _properties;
         private IList<Column> _columns;
@@ -18,7 +18,7 @@ namespace Mono.Data.Sqlite.Orm
         protected ConflictResolution _updateExtra;
         protected string _updateSql;
 
-        public TableMappingBase(Type type)
+        public TableMapping(Type type)
         {
             this.MappedType = type;
 
@@ -282,7 +282,7 @@ namespace Mono.Data.Sqlite.Orm
                 return value;
             }
 
-            public string GetCreateSql(TableMappingBase table)
+            public string GetCreateSql(TableMapping table)
             {
                 var constraints = new List<string>();
 
@@ -407,6 +407,9 @@ namespace Mono.Data.Sqlite.Orm
 
         #endregion
 
-        public abstract void Dispose();
+        public void Dispose()
+        {
+            
+        }
     }
 }

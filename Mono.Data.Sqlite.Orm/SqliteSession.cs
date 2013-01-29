@@ -1,14 +1,9 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.InteropServices;
 using Mono.Data.Sqlite.Orm.ComponentModel;
 
 namespace Mono.Data.Sqlite.Orm
@@ -18,8 +13,6 @@ namespace Mono.Data.Sqlite.Orm
     /// </summary>
     public partial class SqliteSession : SqliteSessionBase
     {
-        private DbCommand _lastInsertRowIdCommand;
-
         public SqliteSession(string connectionString, bool autoOpen = true)
             : base(connectionString, autoOpen)
         {
@@ -76,15 +69,14 @@ namespace Mono.Data.Sqlite.Orm
             return new TableQuery<T>(this);
         }
 
-        protected override TableMappingBase CreateTableMapping(Type type)
+        protected override TableMapping CreateTableMapping(Type type)
         {
             return new TableMapping(type);
         }
 
-        protected override int InsertInternal(object[] args, ConflictResolution extra, TableMappingBase mapBase)
+        protected override int InsertInternal(object[] args, ConflictResolution extra, TableMapping map)
         {
-            var map = mapBase as TableMapping;
-            var insertCmd = map.GetInsertCommand(this.Connection, extra, false);
+            var insertCmd = this.CreateCommand(map.GetInsertSql(extra, false));
             AddCommandParameters(insertCmd, args);
 
             this.TraceCommand(insertCmd);
@@ -100,8 +92,8 @@ namespace Mono.Data.Sqlite.Orm
         /// </returns>
         public override int InsertDefaults<T>(ConflictResolution extra)
         {
-            var mapping = GetMapping<T>() as TableMapping;
-            DbCommand insertCmd = mapping.GetInsertCommand(Connection, extra, true);
+            var mapping = this.GetMapping<T>();
+            var insertCmd = this.CreateCommand(mapping.GetInsertSql(extra, true));
             TraceCommand(insertCmd);
             return insertCmd.ExecuteNonQuery();
         }
@@ -123,13 +115,13 @@ namespace Mono.Data.Sqlite.Orm
         ///   The fully escaped SQL.
         /// </param>
         /// <param name = "args">
-        ///   Arguments to substitute for the occurences of '?' in the command text.
+        ///   Arguments to substitute for the occurrences of '?' in the command text.
         /// </param>
         /// <returns>
         ///   A <see cref = "DbCommand" />
         /// </returns>
         [SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities")]
-        internal DbCommand CreateCommand(string cmdText, params object[] args)
+        private DbCommand CreateCommand(string cmdText, params object[] args)
         {
             DbCommand cmd = Connection.CreateCommand();
             cmd.CommandText = cmdText;
@@ -143,10 +135,10 @@ namespace Mono.Data.Sqlite.Orm
         /// Add the specified arguments to the specified command.
         /// </summary>
         /// <param name="cmd">
-        /// The command that will recieve the arguments.
+        /// The command that will receive the arguments.
         /// </param>
         /// <param name="args">The arguments to add.</param>
-        protected static void AddCommandParameters(DbCommand cmd, params object[] args)
+        private static void AddCommandParameters(DbCommand cmd, params object[] args)
         {
             if (args != null)
             {
@@ -189,7 +181,7 @@ namespace Mono.Data.Sqlite.Orm
 
             using (DbDataReader reader = cmd.ExecuteReader())
             {
-                var cols = new TableMappingBase.Column[reader.FieldCount];
+                var cols = new TableMapping.Column[reader.FieldCount];
 
                 for (int i = 0; i < cols.Length; i++)
                 {
@@ -233,7 +225,6 @@ namespace Mono.Data.Sqlite.Orm
             return cmd.ExecuteNonQuery();
         }
 
-
         protected override TResult RunInTransaction<TResult>(Func<TResult> action, bool createTransaction)
         {
             TResult result;
@@ -272,54 +263,6 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        ///   Executes a "create table if not exists" on the database. It also
-        ///   creates any specified indexes on the columns of the table. It uses
-        ///   a schema automatically generated from the specified type. You can
-        ///   later access this schema by calling GetMapping.
-        /// </summary>
-        /// <typeparam name="T">The table to create.</typeparam>
-        /// <param name="createIndexes"> 
-        ///   False if you don't want to automatically create indexes.
-        /// </param>
-        /// <returns>
-        ///   The number of entries added to the database schema.
-        /// </returns>
-        public override int CreateTable<T>(bool createIndexes = true)
-        {
-            // todo - allow index clearing/re-creating
-
-            using (var trans = this.Connection.BeginTransaction())
-            {
-                var result = CreateTable(GetMapping<T>(), createIndexes);
-                trans.Commit();
-                return result;
-            }
-        }
-
-        /// <summary>
-        ///   Executes a "create table if not exists" on the database. It also
-        ///   creates any specified indexes on the columns of the table. It uses
-        ///   a schema automatically generated from the specified type. You can
-        ///   later access this schema by calling GetMapping.
-        /// </summary>
-        /// <param name="type">The table to create.</param>
-        /// <param name="createIndexes"> 
-        ///   False if you don't want to automatically create indexes.
-        /// </param>
-        /// <returns>
-        ///   The number of entries added to the database schema.
-        /// </returns>
-        public override int CreateTable(Type type, bool createIndexes = true)
-        {
-            using (var trans = this.Connection.BeginTransaction())
-            {
-                var result = CreateTable(GetMapping(type), createIndexes);
-                trans.Commit();
-                return result;
-            }
-        }
-
-        /// <summary>
         /// Closes the connection to the database.
         /// </summary>
         public void Close()
@@ -330,30 +273,9 @@ namespace Mono.Data.Sqlite.Orm
             }
         }
 
-        /// <summary>
-        /// Returns the id of last inserted record.
-        /// </summary>
-        /// <returns>
-        /// The autogenerated id.
-        /// </returns>
-        protected override long GetLastInsertRowId()
-        {
-            if (_lastInsertRowIdCommand == null)
-            {
-                _lastInsertRowIdCommand = Connection.CreateCommand();
-                _lastInsertRowIdCommand.CommandText = "SELECT last_insert_rowid() as Id";
-            }
-            return (long)_lastInsertRowIdCommand.ExecuteScalar();
-        }
-
         public override void Dispose()
         {
             Close();
-
-            if (_lastInsertRowIdCommand != null)
-            {
-                _lastInsertRowIdCommand.Dispose();
-            }
 
             base.Dispose();
         }

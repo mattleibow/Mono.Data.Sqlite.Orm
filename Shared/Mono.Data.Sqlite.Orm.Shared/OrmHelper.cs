@@ -36,7 +36,7 @@ namespace Mono.Data.Sqlite.Orm
             return result;
         }
 
-        internal static string SqlType(TableMappingBase.Column p)
+        internal static string SqlType(TableMapping.Column p)
         {
             Type clrType = p.ColumnType;
             int len = p.MaxStringLength;
@@ -129,9 +129,9 @@ namespace Mono.Data.Sqlite.Orm
             return attrs.Any() ? attrs.First().OnPrimaryKeyConflict : ConflictResolution.Default;
         }
 
-        internal static IList<TableMappingBase.Index> GetIndexes(Type info, PropertyInfo[] properties)
+        internal static IList<TableMapping.Index> GetIndexes(Type info, PropertyInfo[] properties)
         {
-            var indices = new List<TableMappingBase.Index>();
+            var indices = new List<TableMapping.Index>();
 
             IndexAttribute tblAtt = info.GetAttributes<IndexAttribute>().FirstOrDefault();
             if (tblAtt != null)
@@ -141,21 +141,21 @@ namespace Mono.Data.Sqlite.Orm
                     throw new NotSupportedException("Only one index attribute per index allowed on a table class.");
                 }
 
-                indices.Add(new TableMappingBase.Index(tblAtt.Name) {Unique = tblAtt.Unique});
+                indices.Add(new TableMapping.Index(tblAtt.Name) {Unique = tblAtt.Unique});
             }
 
             foreach (PropertyInfo prop in properties)
             {
                 foreach (IndexedAttribute att in prop.GetAttributes<IndexedAttribute>())
                 {
-                    TableMappingBase.Index index = indices.FirstOrDefault(x => x.IndexName == att.Name);
+                    TableMapping.Index index = indices.FirstOrDefault(x => x.IndexName == att.Name);
                     if (index == null)
                     {
-                        index = new TableMappingBase.Index(att.Name);
+                        index = new TableMapping.Index(att.Name);
                         indices.Add(index);
                     }
 
-                    var indexedCol = new TableMappingBase.Index.IndexedColumn(GetColumnName(prop))
+                    var indexedCol = new TableMapping.Index.IndexedColumn(GetColumnName(prop))
                                          {
                                              Order = att.Order,
                                              Collation = att.Collation,
@@ -176,17 +176,17 @@ namespace Mono.Data.Sqlite.Orm
                     select p).ToArray();
         }
 
-        internal static TableMappingBase.PrimaryKeyDefinition GetPrimaryKey(
-            IEnumerable<TableMappingBase.Column> columns, 
-            out TableMappingBase.Column autoIncCol)
+        internal static TableMapping.PrimaryKeyDefinition GetPrimaryKey(
+            IEnumerable<TableMapping.Column> columns, 
+            out TableMapping.Column autoIncCol)
         {
-            TableMappingBase.PrimaryKeyDefinition primaryKey = null;
+            TableMapping.PrimaryKeyDefinition primaryKey = null;
             autoIncCol = null;
 
             var pkCols = columns.Where(c => c.PrimaryKey != null).OrderBy(c => c.PrimaryKey.Order).ToArray();
             if (pkCols.Any())
             {
-                primaryKey = new TableMappingBase.PrimaryKeyDefinition
+                primaryKey = new TableMapping.PrimaryKeyDefinition
                     {
                         Columns = pkCols,
                         Name = GetPrimaryKeyName(pkCols)
@@ -207,7 +207,7 @@ namespace Mono.Data.Sqlite.Orm
             return string.IsNullOrEmpty(text) || string.IsNullOrEmpty(text.Trim());
         }
 
-        private static string GetPrimaryKeyName(IEnumerable<TableMappingBase.Column> pkCols)
+        private static string GetPrimaryKeyName(IEnumerable<TableMapping.Column> pkCols)
         {
             var pkNameCol = pkCols.FirstOrDefault(c => !c.PrimaryKey.Name.IsNullOrWhitespace());
             string pkName = pkNameCol == null ? null : pkNameCol.PrimaryKey.Name;
@@ -228,9 +228,9 @@ namespace Mono.Data.Sqlite.Orm
             return mappedType.GetAttributes<CheckAttribute>().Select(x => x.Expression).ToList();
         }
 
-        internal static IList<TableMappingBase.ForeignKey> GetForeignKeys(PropertyInfo[] properties)
+        internal static IList<TableMapping.ForeignKey> GetForeignKeys(PropertyInfo[] properties)
         {
-            var foreignKeys = new List<TableMappingBase.ForeignKey>();
+            var foreignKeys = new List<TableMapping.ForeignKey>();
 
             var attributes = from attribute in
                                  (from p in properties
@@ -246,11 +246,11 @@ namespace Mono.Data.Sqlite.Orm
 
             foreach (var att in attributes)
             {
-                TableMappingBase.ForeignKey key = foreignKeys.FirstOrDefault(fk => fk.Name == att.Attribute.Name);
+                TableMapping.ForeignKey key = foreignKeys.FirstOrDefault(fk => fk.Name == att.Attribute.Name);
                 var childTable = att.Attribute.ChildTable;
                 if (key == null)
                 {
-                    key = new TableMappingBase.ForeignKey
+                    key = new TableMapping.ForeignKey
                               {
                                   Name = att.Attribute.Name,
                                   ChildTable = GetTableName(childTable),

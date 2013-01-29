@@ -6,7 +6,7 @@ namespace Mono.Data.Sqlite.Orm
 {
     public static class SqliteWriter
     {
-        public static string GetInsertSql(this TableMappingBase table, ConflictResolution extra, bool withDefaults)
+        public static string GetInsertSql(this TableMapping table, ConflictResolution extra, bool withDefaults)
         {
             var sb = new StringBuilder();
 
@@ -35,7 +35,7 @@ namespace Mono.Data.Sqlite.Orm
             return sb.ToString();
         }
 
-        public static string GetSelectSql(this TableMappingBase table)
+        public static string GetSelectSql(this TableMapping table)
         {
             var sb = new StringBuilder();
 
@@ -58,7 +58,7 @@ namespace Mono.Data.Sqlite.Orm
             return sb.ToString();
         }
 
-        public static string GetRenameSql(this TableMappingBase table)
+        public static string GetRenameSql(this TableMapping table)
         {
             var sb = new StringBuilder();
             sb.Append("ALTER TABLE ");
@@ -68,7 +68,7 @@ namespace Mono.Data.Sqlite.Orm
             return sb.ToString();
         }
 
-        public static string GetCreateSql(this TableMappingBase.Index index, string tableName)
+        public static string GetCreateSql(this TableMapping.Index index, string tableName)
         {
             var sb = new StringBuilder();
             sb.Append("CREATE ");
@@ -106,7 +106,7 @@ namespace Mono.Data.Sqlite.Orm
             return sb.ToString();
         }
 
-        public static string GetCreateSql(this TableMappingBase table)
+        public static string GetCreateSql(this TableMapping table)
         {
             var sb = new StringBuilder();
             sb.Append("CREATE ");
@@ -179,7 +179,7 @@ namespace Mono.Data.Sqlite.Orm
             return sb.ToString();
         }
 
-        public static string GetCreateSql(this TableMappingBase.PrimaryKeyDefinition primaryKey)
+        public static string GetCreateSql(this TableMapping.PrimaryKeyDefinition primaryKey)
         {
             var sb = new StringBuilder();
             if (!primaryKey.Name.IsNullOrWhitespace())
@@ -208,7 +208,7 @@ namespace Mono.Data.Sqlite.Orm
             return sb.ToString();
         }
 
-        public static string GetCreateSql(this TableMappingBase.ForeignKey foreignKey)
+        public static string GetCreateSql(this TableMapping.ForeignKey foreignKey)
         {
             var sb = new StringBuilder();
             if (!foreignKey.Name.IsNullOrWhitespace())

@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Mono.Data.Sqlite.Orm
 {
-    public abstract partial class TableQueryBase<T> : IEnumerable<T>
+    public abstract class TableQueryBase<T> : IEnumerable<T>
         where T : new()
     {
         protected bool _deferred;
@@ -20,7 +20,18 @@ namespace Mono.Data.Sqlite.Orm
         protected Expression _where;
 
         protected SqliteSessionBase Session { get; set; }
-        protected TableMappingBase Table { get; set; }
+        protected TableMapping Table { get; set; }
+
+        protected TableQueryBase(SqliteSessionBase session, TableMapping table)
+        {
+            this.Session = session;
+            this.Table = table;
+        }
+
+        public TableQueryBase(SqliteSessionBase session)
+            : this(session, session.GetMapping<T>())
+        {
+        }
 
         #region IEnumerable<T> Members
 

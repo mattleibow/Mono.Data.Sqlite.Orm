@@ -68,7 +68,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqliteSessionBase.cs" />
     <Compile Include="SqliteWriter.cs" />
-    <Compile Include="TableMappingBase.cs" />
+    <Compile Include="TableMapping.cs" />
     <Compile Include="TableQueryBase.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

@@ -22,7 +22,7 @@ namespace Mono.Data.Sqlite.Orm
         /// </summary>
         private static readonly bool PreserveDuringLinkMagic = true;
 
-        private Dictionary<string, TableMappingBase> _tables;
+        private Dictionary<string, TableMapping> _tables;
 
         static SqliteSessionBase()
         {
@@ -86,7 +86,7 @@ namespace Mono.Data.Sqlite.Orm
         ///   The mapping represents the schema of the columns of the database and contains 
         ///   methods to set and get properties of objects.
         /// </returns>
-        public TableMappingBase GetMapping<T>()
+        public TableMapping GetMapping<T>()
         {
             return GetMapping(typeof (T));
         }
@@ -101,15 +101,15 @@ namespace Mono.Data.Sqlite.Orm
         ///   The mapping represents the schema of the columns of the database and contains 
         ///   methods to set and get properties of objects.
         /// </returns>
-        public TableMappingBase GetMapping(Type type)
+        public TableMapping GetMapping(Type type)
         {
             string typeFullName = type.FullName;
 
             if (_tables == null)
             {
-                _tables = new Dictionary<string, TableMappingBase>();
+                _tables = new Dictionary<string, TableMapping>();
             }
-            TableMappingBase map;
+            TableMapping map;
             if (!_tables.TryGetValue(typeFullName, out map))
             {
                 map = CreateTableMapping(type);
@@ -118,13 +118,87 @@ namespace Mono.Data.Sqlite.Orm
             return map;
         }
 
-        protected abstract TableMappingBase CreateTableMapping(Type type);
+        protected abstract TableMapping CreateTableMapping(Type type);
 
-        protected int CreateTable(TableMappingBase map, bool createIndexes)
+        /// <summary>
+        /// Checks to see if a particular table exists.
+        /// </summary>
+        /// <typeparam name="T">The table to check for.</typeparam>
+        /// <returns>
+        /// True if the table exists in the database, otherwise False.
+        /// </returns>
+        public bool TableExists<T>()
         {
+            return TableExists(GetMapping<T>().TableName);
+        }
+
+        /// <summary>
+        /// Checks to see if a particular table exists.
+        /// </summary>
+        /// <param name="type">The table to check for.</param>
+        /// <returns>
+        /// True if the table exists in the database, otherwise False.
+        /// </returns>
+        public bool TableExists(Type type)
+        {
+            return TableExists(GetMapping(type).TableName);
+        }
+
+        /// <summary>
+        /// Checks to see if a particular table exists.
+        /// </summary>
+        /// <param name="tableName">The table to check for.</param>
+        /// <returns>
+        /// True if the table exists in the database, otherwise False.
+        /// </returns>
+        private bool TableExists(string tableName)
+        {
+            return this.Table<SqliteMasterTable>().Where(t => t.Name == tableName && t.Type == "table").Take(1).Any();
+        }
+
+        /// <summary>
+        ///   Executes a "create table if not exists" on the database. It also
+        ///   creates any specified indexes on the columns of the table. It uses
+        ///   a schema automatically generated from the specified type. You can
+        ///   later access this schema by calling GetMapping.
+        /// </summary>
+        /// <typeparam name="T">The table to create.</typeparam>
+        /// <param name="createIndexes"> 
+        ///   False if you don't want to automatically create indexes.
+        /// </param>
+        /// <returns>
+        ///   The number of entries added to the database schema.
+        /// </returns>
+        public int CreateTable<T>(bool createIndexes = true)
+        {
+            return this.RunInTransaction(() => this.CreateTable(GetMapping<T>(), createIndexes), true);
+        }
+
+        /// <summary>
+        ///   Executes a "create table if not exists" on the database. It also
+        ///   creates any specified indexes on the columns of the table. It uses
+        ///   a schema automatically generated from the specified type. You can
+        ///   later access this schema by calling GetMapping.
+        /// </summary>
+        /// <param name="type">The table to create.</param>
+        /// <param name="createIndexes"> 
+        ///   False if you don't want to automatically create indexes.
+        /// </param>
+        /// <returns>
+        ///   The number of entries added to the database schema.
+        /// </returns>
+        public int CreateTable(Type type, bool createIndexes = true)
+        {
+            return this.RunInTransaction(() => this.CreateTable(GetMapping(type), createIndexes), true);
+        }
+
+        private int CreateTable(TableMapping map, bool createIndexes)
+        {
+            // todo: allow index clearing/re-creating
+
             int count = 0;
 
-            bool exists = this.TableExists(map);
+            bool exists = this.TableExists(map.TableName);
 
             if (map.OldTableName != map.TableName && !string.IsNullOrEmpty(map.OldTableName))
             {
@@ -167,73 +241,10 @@ namespace Mono.Data.Sqlite.Orm
             return count;
         }
 
-        /// <summary>
-        /// Checks to see if a particular table exists.
-        /// </summary>
-        /// <typeparam name="T">The table to check for.</typeparam>
-        /// <returns>
-        /// True if the table exists in the database, otherwise False.
-        /// </returns>
-        public bool TableExists<T>()
-        {
-            return TableExists(GetMapping<T>());
-        }
-
-        /// <summary>
-        /// Checks to see if a particular table exists.
-        /// </summary>
-        /// <param name="type">The table to check for.</param>
-        /// <returns>
-        /// True if the table exists in the database, otherwise False.
-        /// </returns>
-        public bool TableExists(Type type)
-        {
-            return TableExists(GetMapping(type));
-        }
-
-        /// <summary>
-        /// Checks to see if a particular table exists.
-        /// </summary>
-        /// <param name="map">The table mapping to use.</param>
-        /// <returns>
-        /// True if the table exists in the database, otherwise False.
-        /// </returns>
-        private bool TableExists(TableMappingBase map)
-        {
-            return this.TableExists(map.TableName);
-        }
-
-        /// <summary>
-        /// Checks to see if a particular table exists.
-        /// </summary>
-        /// <param name="tableName">The table to check for.</param>
-        /// <returns>
-        /// True if the table exists in the database, otherwise False.
-        /// </returns>
-        private bool TableExists(string tableName)
-        {
-            return this.Table<SqliteMasterTable>().Where(t => t.Name == tableName && t.Type == "table").Take(1).Any();
-        }
-
-        /// <summary>
-        ///   Executes a "create table if not exists" on the database. It also
-        ///   creates any specified indexes on the columns of the table. It uses
-        ///   a schema automatically generated from the specified type. You can
-        ///   later access this schema by calling GetMapping.
-        /// </summary>
-        /// <typeparam name="T">The table to create.</typeparam>
-        /// <param name="createIndexes"> 
-        ///   False if you don't want to automatically create indexes.
-        /// </param>
-        /// <returns>
-        ///   The number of entries added to the database schema.
-        /// </returns>
-        public abstract int CreateTable<T>(bool createIndexes = true);
-
-        private int MigrateTable(TableMappingBase map)
+        private int MigrateTable(TableMapping map)
         {
             var existingCols = this.GetTableColumns(map).ToArray();
-            List<TableMappingBase.Column> toBeAdded =
+            List<TableMapping.Column> toBeAdded =
                 map.Columns
                    .Where(p => existingCols.All(
                        e => !e.Name.Equals(p.Name, StringComparison.OrdinalIgnoreCase)))
@@ -260,7 +271,7 @@ namespace Mono.Data.Sqlite.Orm
         /// <returns>
         ///   The columns that exist in both the mapping and the database.
         /// </returns>
-        public IEnumerable<TableMappingBase.Column> GetTableColumns(TableMappingBase map)
+        public IEnumerable<TableMapping.Column> GetTableColumns(TableMapping map)
         {
             string query = string.Format(CultureInfo.InvariantCulture, "PRAGMA table_info([{0}]);", map.TableName);
             var existingCols = Query<TableInfo>(query);
@@ -282,7 +293,7 @@ namespace Mono.Data.Sqlite.Orm
         /// <param name="type">The table to drop.</param>
         public int DropTable(Type type)
         {
-            TableMappingBase map = GetMapping(type);
+            TableMapping map = GetMapping(type);
 
             string query = string.Format("DROP TABLE IF EXISTS [{0}]", map.TableName);
 
@@ -290,6 +301,7 @@ namespace Mono.Data.Sqlite.Orm
 
             return count;
         }
+
         /// <summary>
         ///   Executes a "delete from table" on the database. This is non-recoverable.
         /// </summary>
@@ -305,7 +317,7 @@ namespace Mono.Data.Sqlite.Orm
         /// <param name="type">The table to clear.</param>
         public int ClearTable(Type type)
         {
-            TableMappingBase map = GetMapping(type);
+            TableMapping map = GetMapping(type);
 
             string query = string.Format("DELETE FROM [{0}]", map.TableName);
 
@@ -397,11 +409,14 @@ namespace Mono.Data.Sqlite.Orm
         ///   It returns each row of the result using the mapping automatically generated for
         ///   the given type.
         /// </summary>
+        /// <param name="type">
+        ///   The type of object to return
+        /// </param>
         /// <param name = "query">
         ///   The fully escaped SQL.
         /// </param>
         /// <param name = "args">
-        ///   Arguments to substitute for the occurences of '?' in the query.
+        ///   Arguments to substitute for the occurrences of '?' in the query.
         /// </param>
         /// <returns>
         ///   An enumerable with one result for each row returned by the query.
@@ -573,13 +588,6 @@ namespace Mono.Data.Sqlite.Orm
             return list.Count > 0 ? list[0] : null;
         }
 
-        public class Execution
-        {
-            public string Sql { get; set; }
-            public object[] Args { get; set; }
-            public TableMappingBase Map { get; set; }
-        }
-
         /// <summary>
         /// This function does the actual calls on the database.
         /// </summary>
@@ -645,21 +653,6 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        ///   Executes a "create table if not exists" on the database. It also
-        ///   creates any specified indexes on the columns of the table. It uses
-        ///   a schema automatically generated from the specified type. You can
-        ///   later access this schema by calling GetMapping.
-        /// </summary>
-        /// <param name="type">The table to create.</param>
-        /// <param name="createIndexes"> 
-        ///   False if you don't want to automatically create indexes.
-        /// </param>
-        /// <returns>
-        ///   The number of entries added to the database schema.
-        /// </returns>
-        public abstract int CreateTable(Type type, bool createIndexes = true);
-
-        /// <summary>
         ///   Inserts a record in the table with the specified defaults as the column values.
         /// </summary>
         /// <returns>
@@ -702,7 +695,7 @@ namespace Mono.Data.Sqlite.Orm
                 throw new ArgumentNullException("obj", "Cannot insert a null object.");
             }
 
-            TableMappingBase map = GetMapping(obj.GetType());
+            TableMapping map = GetMapping(obj.GetType());
 
             var args = map.EditableColumns.Select(x => x.GetValue(obj)).ToArray();
             var count = this.InsertInternal(args, extra, map);
@@ -721,9 +714,12 @@ namespace Mono.Data.Sqlite.Orm
             return count;
         }
 
-        protected abstract long GetLastInsertRowId();
+        protected long GetLastInsertRowId()
+        {
+            return this.ExecuteScalar<long>("SELECT last_insert_rowid() as Id;");
+        }
 
-        protected abstract int InsertInternal(object[] args, ConflictResolution extra, TableMappingBase mapBase);
+        protected abstract int InsertInternal(object[] args, ConflictResolution extra, TableMapping mapBase);
 
         /// <summary>
         ///   Updates all of the columns of a table using the specified object
@@ -782,7 +778,7 @@ namespace Mono.Data.Sqlite.Orm
         /// <returns>
         ///   The number of rows deleted.
         /// </returns>
-        public int Delete<T>(T obj)
+        public int Delete(object obj)
         {
             var tracked = obj as ITrackConnection;
             if (tracked != null)
@@ -791,7 +787,7 @@ namespace Mono.Data.Sqlite.Orm
             }
 
             var args = new List<object>();
-            string sql = GetMapping<T>().GetDeleteSql(obj, args);
+            string sql = GetMapping(obj.GetType()).GetDeleteSql(obj, args);
             return Execute(sql, args.ToArray());
         }
 
@@ -898,6 +894,17 @@ namespace Mono.Data.Sqlite.Orm
             public string TableName { get; set; }
 
             public string Sql { get; set; }
+        }
+
+        #endregion
+
+        #region Nested type: Execution
+
+        protected class Execution
+        {
+            public string Sql { get; set; }
+            public object[] Args { get; set; }
+            public TableMapping Map { get; set; }
         }
 
         #endregion
