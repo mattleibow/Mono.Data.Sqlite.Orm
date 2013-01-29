@@ -658,7 +658,10 @@ namespace Mono.Data.Sqlite.Orm
         /// <returns>
         ///   The number of rows added to the table.
         /// </returns>
-        public abstract int InsertDefaults<T>(ConflictResolution extra);
+        public int InsertDefaults<T>(ConflictResolution extra)
+        {
+            return this.InsertInternal(null, extra, this.GetMapping<T>());
+        }
 
         /// <summary>
         ///   Inserts the given object and retrieves its

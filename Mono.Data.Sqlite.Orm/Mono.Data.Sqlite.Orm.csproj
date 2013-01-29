@@ -48,6 +48,7 @@
     </Compile>
     <Compile Include="FullTextSearchSpecialCommands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryCache.cs" />
     <Compile Include="SqliteConnectionPool.cs" />
     <Compile Include="SqliteExtensions.cs" />
     <Compile Include="SqliteSession.Async.cs" />

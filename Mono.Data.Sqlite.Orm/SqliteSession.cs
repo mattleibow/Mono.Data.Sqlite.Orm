@@ -25,12 +25,16 @@ namespace Mono.Data.Sqlite.Orm
                 SetTemporaryFilesDirectory(this, Windows.Storage.ApplicationData.Current.TemporaryFolder.Path);
 #endif
             }
+
+            this.QueryCache = new QueryCache(this.Connection);
         }
 
         /// <summary>
         /// Gets the current connection to the database.
         /// </summary>
         public SqliteConnection Connection { get; private set; }
+
+        public QueryCache QueryCache { get; private set; }
 
         /// <summary>
         /// Write all the details about a command to the debug log.
@@ -76,25 +80,8 @@ namespace Mono.Data.Sqlite.Orm
 
         protected override int InsertInternal(object[] args, ConflictResolution extra, TableMapping map)
         {
-            var insertCmd = this.CreateCommand(map.GetInsertSql(extra, false));
-            AddCommandParameters(insertCmd, args);
-
+            var insertCmd = QueryCache.GetInsertCommand(map, extra, args);
             this.TraceCommand(insertCmd);
-
-            return insertCmd.ExecuteNonQuery();
-        }
-
-        /// <summary>
-        ///   Inserts a record in the table with the specified defaults as the column values.
-        /// </summary>
-        /// <returns>
-        ///   The number of rows added to the table.
-        /// </returns>
-        public override int InsertDefaults<T>(ConflictResolution extra)
-        {
-            var mapping = this.GetMapping<T>();
-            var insertCmd = this.CreateCommand(mapping.GetInsertSql(extra, true));
-            TraceCommand(insertCmd);
             return insertCmd.ExecuteNonQuery();
         }
 
@@ -108,78 +95,15 @@ namespace Mono.Data.Sqlite.Orm
         }
 
         /// <summary>
-        ///   Creates a new SQLiteCommand given the command text with arguments. Place a '?'
-        ///   in the command text for each of the arguments.
-        /// </summary>
-        /// <param name = "cmdText">
-        ///   The fully escaped SQL.
-        /// </param>
-        /// <param name = "args">
-        ///   Arguments to substitute for the occurrences of '?' in the command text.
-        /// </param>
-        /// <returns>
-        ///   A <see cref = "DbCommand" />
-        /// </returns>
-        [SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities")]
-        private DbCommand CreateCommand(string cmdText, params object[] args)
-        {
-            DbCommand cmd = Connection.CreateCommand();
-            cmd.CommandText = cmdText;
-
-            AddCommandParameters(cmd, args);
-
-            return cmd;
-        }
-
-        /// <summary>
-        /// Add the specified arguments to the specified command.
-        /// </summary>
-        /// <param name="cmd">
-        /// The command that will receive the arguments.
-        /// </param>
-        /// <param name="args">The arguments to add.</param>
-        private static void AddCommandParameters(DbCommand cmd, params object[] args)
-        {
-            if (args != null)
-            {
-                int count = cmd.Parameters.Count;
-
-                for (int i = 0; i < args.Length; i++)
-                {
-                    object value = args[i];
-
-                    if (value != null)
-                    {
-                        if (value is Guid)
-                        {
-                            value = value.ToString();
-                        }
-                    }
-
-                    if (count > i)
-                    {
-                        cmd.Parameters[i].Value = value;
-                    }
-                    else
-                    {
-                        DbParameter param = cmd.CreateParameter();
-                        param.Value = value;
-                        cmd.Parameters.Add(param);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// This function does the actual calls on the database.
         /// </summary>
         protected override IEnumerable ExecuteDeferredQueryInternal(Execution execution)
         {
-            var cmd = this.CreateCommand(execution.Sql, execution.Args);
+            var cmd = QueryCache.CreateCommand(execution.Sql, execution.Args);
 
             TraceCommand(cmd);
 
-            using (DbDataReader reader = cmd.ExecuteReader())
+            using (var reader = cmd.ExecuteReader())
             {
                 var cols = new TableMapping.Column[reader.FieldCount];
 
@@ -214,13 +138,13 @@ namespace Mono.Data.Sqlite.Orm
         }
         protected override object ExecuteScalarInternal(Execution execution)
         {
-            var cmd = this.CreateCommand(execution.Sql, execution.Args);
+            var cmd = QueryCache.CreateCommand(execution.Sql, execution.Args);
             TraceCommand(cmd);
             return cmd.ExecuteScalar();
         }
         protected override int ExecuteInternal(Execution execution)
         {
-            var cmd = this.CreateCommand(execution.Sql, execution.Args);
+            var cmd = QueryCache.CreateCommand(execution.Sql, execution.Args);
             TraceCommand(cmd);
             return cmd.ExecuteNonQuery();
         }
@@ -277,6 +201,7 @@ namespace Mono.Data.Sqlite.Orm
         {
             Close();
 
+            this.QueryCache.Dispose();
             base.Dispose();
         }
     }
