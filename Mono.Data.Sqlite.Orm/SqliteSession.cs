@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Mono.Data.Sqlite.Orm.ComponentModel;
 
 namespace Mono.Data.Sqlite.Orm
@@ -78,9 +80,34 @@ namespace Mono.Data.Sqlite.Orm
             return new TableMapping(type);
         }
 
-        protected override int InsertInternal(object[] args, ConflictResolution extra, TableMapping map)
+        protected override int InsertInternal(object obj, ConflictResolution extra)
         {
-            var insertCmd = QueryCache.GetInsertCommand(map, extra, args);
+            TableMapping map;
+            object[] args = null;
+            if (obj is Type)
+            {
+                map = GetMapping(obj as Type);
+            }
+            else
+            {
+                map = GetMapping(obj.GetType());
+                args = map.EditableColumns.Select(x => x.GetValue(obj)).ToArray();
+            }
+
+            var insertCmd = this.QueryCache.GetInsertCommand(map, extra, args);
+            this.TraceCommand(insertCmd);
+            return insertCmd.ExecuteNonQuery();
+        }
+
+        protected override int UpdateInternal(object obj)
+        {
+            var map = GetMapping(obj.GetType());
+
+            var args = new List<object>();
+            args.AddRange(map.EditableColumns.Select(c => c.GetValue(obj)));
+            args.AddRange(map.PrimaryKey.Columns.Select(c => c.GetValue(obj)));
+
+            var insertCmd = QueryCache.GetUpdateCommand(map, ConflictResolution.Default, args.ToArray());
             this.TraceCommand(insertCmd);
             return insertCmd.ExecuteNonQuery();
         }

@@ -332,5 +332,24 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
             Assert.AreEqual(3, db.Table<TestObj>().Count());
         }
+
+        [Test]
+        public void CheckInertAndUpdateTwiceWorks()
+        {
+            var db = new OrmTestSession();
+            db.CreateTable<TestObj>();
+
+            var first = new TestObj { Text = "First" };
+
+            db.Insert(first);
+            
+            first.Text = "Second";
+            db.Update(first);
+
+            first.Text = "Third";
+            db.Update(first);
+
+            Assert.AreEqual("Third", db.Table<TestObj>().Single().Text);
+        }
     }
 }

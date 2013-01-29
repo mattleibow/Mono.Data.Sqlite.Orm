@@ -70,12 +70,12 @@ namespace Mono.Data.Sqlite.Orm
             return this.Columns.FirstOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
 
-        public string GetUpdateSql<T>(T obj, List<object> args)
+        public string GetUpdateSql()
         {
-            return this.GetUpdateSql(obj, ConflictResolution.Default, args);
+            return this.GetUpdateSql(ConflictResolution.Default);
         }
 
-        public string GetUpdateSql<T>(T obj, ConflictResolution extra, List<object> args)
+        public string GetUpdateSql(ConflictResolution extra)
         {
             if (this.PrimaryKey == null)
             {
@@ -100,12 +100,6 @@ namespace Mono.Data.Sqlite.Orm
                                            extra == ConflictResolution.Default
                                                ? string.Empty
                                                : string.Format(CultureInfo.InvariantCulture, "OR {0}", extra));
-            }
-
-            if (args != null)
-            {
-                args.AddRange(this.EditableColumns.Select(c => c.GetValue(obj)));
-                args.AddRange(this.PrimaryKey.Columns.Select(c => c.GetValue(obj)));
             }
 
             return this._updateSql;

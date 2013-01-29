@@ -660,7 +660,7 @@ namespace Mono.Data.Sqlite.Orm
         /// </returns>
         public int InsertDefaults<T>(ConflictResolution extra)
         {
-            return this.InsertInternal(null, extra, this.GetMapping<T>());
+            return this.InsertInternal(typeof(T), extra);
         }
 
         /// <summary>
@@ -700,8 +700,7 @@ namespace Mono.Data.Sqlite.Orm
 
             TableMapping map = GetMapping(obj.GetType());
 
-            var args = map.EditableColumns.Select(x => x.GetValue(obj)).ToArray();
-            var count = this.InsertInternal(args, extra, map);
+            var count = this.InsertInternal(obj, extra);
 
             var tracked = obj as ITrackConnection;
             if (tracked != null)
@@ -722,7 +721,7 @@ namespace Mono.Data.Sqlite.Orm
             return this.ExecuteScalar<long>("SELECT last_insert_rowid() as Id;");
         }
 
-        protected abstract int InsertInternal(object[] args, ConflictResolution extra, TableMapping mapBase);
+        protected abstract int InsertInternal(object obj, ConflictResolution extra);
 
         /// <summary>
         ///   Updates all of the columns of a table using the specified object
@@ -743,10 +742,10 @@ namespace Mono.Data.Sqlite.Orm
                 tracked.Connection = this;
             }
 
-            var args = new List<object>();
-            string sql = GetMapping(obj.GetType()).GetUpdateSql(obj, args);
-            return Execute(sql, args.ToArray());
+            return this.UpdateInternal(obj);
         }
+
+        protected abstract int UpdateInternal(object obj);
 
         /// <summary>
         ///   Updates just the field specified by the propertyName with the values passed in the propertyValue

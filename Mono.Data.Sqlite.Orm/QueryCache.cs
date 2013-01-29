@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -7,6 +9,9 @@ using Mono.Data.Sqlite.Orm.ComponentModel;
 // dictionary[TypeMapping, Extras, IsDefaultValueInsert]  = DbCommad
 using InsertCommandDictionary = System.Collections.Concurrent.ConcurrentDictionary<System.Tuple<Mono.Data.Sqlite.Orm.TableMapping, Mono.Data.Sqlite.Orm.ComponentModel.ConflictResolution, bool>, System.Data.Common.DbCommand>;
 
+// dictionary[TypeMapping]  = DbCommad
+using MappingCommandDictionary = System.Collections.Concurrent.ConcurrentDictionary<System.Tuple<Mono.Data.Sqlite.Orm.TableMapping, Mono.Data.Sqlite.Orm.ComponentModel.ConflictResolution>, System.Data.Common.DbCommand>;
+
 // dictionary[Sql] = DbCommad
 using CommandDictionary = System.Collections.Concurrent.ConcurrentDictionary<System.String, System.Data.Common.DbCommand>;
 
@@ -14,11 +19,13 @@ namespace Mono.Data.Sqlite.Orm
 {
     public class QueryCache : IDisposable
     {
+        private readonly MappingCommandDictionary updateCommands;
         private readonly InsertCommandDictionary insertCommands;
         private readonly CommandDictionary cachedCommands;
 
         public QueryCache(SqliteConnection connection)
         {
+            this.updateCommands = new MappingCommandDictionary();
             this.insertCommands = new InsertCommandDictionary();
             this.cachedCommands = new CommandDictionary();
 
@@ -116,6 +123,31 @@ namespace Mono.Data.Sqlite.Orm
             if (SqliteSessionBase.Trace)
             {
                 Debug.WriteLine("Creating insert command: {0}", created);
+            }
+
+            if (args != null)
+            {
+                AddCommandParameters(command, args);
+            }
+
+            return command;
+        }
+
+        public DbCommand GetUpdateCommand(TableMapping mapping, ConflictResolution extra, object[] args)
+        {
+            var key = new Tuple<TableMapping, ConflictResolution>(mapping, extra);
+            bool created = false;
+            var command = updateCommands.GetOrAdd(key, tuple =>
+                {
+                    created = true;
+                    DbCommand cmd = this.Connection.CreateCommand();
+                    cmd.CommandText = mapping.GetUpdateSql(extra);
+                    return cmd;
+                });
+
+            if (SqliteSessionBase.Trace)
+            {
+                Debug.WriteLine("Creating update command: {0}", created);
             }
 
             if (args != null)
