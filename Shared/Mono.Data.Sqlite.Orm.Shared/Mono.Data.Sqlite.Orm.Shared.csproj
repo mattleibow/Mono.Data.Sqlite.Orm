@@ -62,6 +62,7 @@
     <Compile Include="ComponentModel\UniqueAttribute.cs" />
     <Compile Include="ComponentModel\VirtualAttribute.cs" />
     <Compile Include="DataConverter\IDataConverter.cs" />
+    <Compile Include="FullTextSearchSpecialCommands.cs" />
     <Compile Include="InstanceCreatedEventArgs.cs" />
     <Compile Include="ITrackConnection.cs" />
     <Compile Include="OrmHelper.cs" />
