@@ -594,7 +594,7 @@ namespace Mono.Data.Sqlite.Orm
         protected abstract IEnumerable ExecuteDeferredQueryInternal(Execution execution);
         protected abstract object ExecuteScalarInternal(Execution execution);
         protected abstract int ExecuteInternal(Execution execution);
-
+        
         /// <summary>
         ///   Returns a queryable interface to the table represented by the given type.
         /// </summary>
@@ -602,8 +602,11 @@ namespace Mono.Data.Sqlite.Orm
         ///   A queryable object that is able to translate Where, OrderBy, and Take
         ///   queries into native SQL.
         /// </returns>
-        public abstract TableQueryBase<T> Table<T>() where T : new();
-
+        public TableQuery<T> Table<T>() where T : new()
+        {
+            return new TableQuery<T>(this);
+        }
+        
         /// <summary>
         ///   Inserts all specified objects.
         /// </summary>
@@ -937,25 +940,6 @@ namespace Mono.Data.Sqlite.Orm
 
         #endregion
 
-#if NETFX_CORE || SILVERLIGHT || WINDOWS_PHONE
-        public enum DirectoryType : int
-        {
-            Data = 1,
-            Temp = 2
-        }
-
-        [DllImport("sqlite3", EntryPoint = "sqlite3_win32_set_directory", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-        public static extern int SetDirectory(DirectoryType directoryType, string directoryPath);
-
-        public static void SetTemporaryFilesDirectory(SqliteSessionBase session, string directoryPath)
-        {
-#if NETFX_CORE
-            SetDirectory(DirectoryType.Temp, directoryPath);
-#elif SILVERLIGHT || WINDOWS_PHONE
-            session.Execute("PRAGMA temp_store_directory = ?;", directoryPath);
-#else
-#endif
-        }
-#endif
+        public abstract object GetExpressionMemberValue(Expression expression, MemberExpression member, object obj);
     }
 }

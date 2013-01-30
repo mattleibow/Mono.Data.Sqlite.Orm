@@ -69,7 +69,7 @@
     <Compile Include="SqliteSessionBase.cs" />
     <Compile Include="SqliteWriter.cs" />
     <Compile Include="TableMapping.cs" />
-    <Compile Include="TableQueryBase.cs" />
+    <Compile Include="TableQuery.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -51,12 +51,7 @@
     <Compile Include="QueryCache.cs" />
     <Compile Include="SqliteConnectionPool.cs" />
     <Compile Include="SqliteExtensions.cs" />
-    <Compile Include="SqliteSession.Async.cs" />
     <Compile Include="SqliteSession.cs" />
-    <Compile Include="TableQuery.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="TableQuery.Async.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shared\Mono.Data.Sqlite.Orm.Shared\Mono.Data.Sqlite.Orm.Shared.csproj">

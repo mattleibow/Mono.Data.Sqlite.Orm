@@ -8,27 +8,27 @@ using System.Text;
 
 namespace Mono.Data.Sqlite.Orm
 {
-    public abstract class TableQueryBase<T> : IEnumerable<T>
+    public class TableQuery<T> : IEnumerable<T>
         where T : new()
     {
-        protected bool _deferred;
-        protected bool _distinct;
-        protected int? _limit;
-        protected int? _offset;
-        protected List<Ordering> _orderBys;
-        protected List<WithColumn> _withColumns;
-        protected Expression _where;
+        private bool _deferred;
+        private bool _distinct;
+        private int? _limit;
+        private int? _offset;
+        private List<Ordering> _orderBys;
+        private List<WithColumn> _withColumns;
+        private Expression _where;
 
-        protected SqliteSessionBase Session { get; set; }
-        protected TableMapping Table { get; set; }
+        private SqliteSessionBase Session { get; set; }
+        private TableMapping Table { get; set; }
 
-        protected TableQueryBase(SqliteSessionBase session, TableMapping table)
+        private TableQuery(SqliteSessionBase session, TableMapping table)
         {
             this.Session = session;
             this.Table = table;
         }
 
-        public TableQueryBase(SqliteSessionBase session)
+        public TableQuery(SqliteSessionBase session)
             : this(session, session.GetMapping<T>())
         {
         }
@@ -53,14 +53,16 @@ namespace Mono.Data.Sqlite.Orm
 
         #endregion
 
-        private TableQueryBase<T> Clone()
+        private TableQuery<T> Clone()
         {
-            var q = CloneInternal();
+            var q = new TableQuery<T>(this.Session, this.Table)
+                {
+                    _where = this._where,
+                    _deferred = this._deferred,
+                    _limit = this._limit,
+                    _offset = this._offset
+                };
 
-            q._where = this._where;
-            q._deferred = this._deferred;
-            q._limit = this._limit;
-            q._offset = this._offset;
             if (_orderBys != null)
             {
                 q._orderBys = new List<Ordering>(_orderBys);
@@ -72,15 +74,13 @@ namespace Mono.Data.Sqlite.Orm
             return q;
         }
 
-        protected abstract TableQueryBase<T> CloneInternal();
-
-        public TableQueryBase<T> Where(Expression<Func<T, bool>> predExpr)
+        public TableQuery<T> Where(Expression<Func<T, bool>> predExpr)
         {
             if (predExpr.NodeType == ExpressionType.Lambda)
             {
                 var lambda = (LambdaExpression)predExpr;
                 Expression pred = lambda.Body;
-                TableQueryBase<T> q = Clone();
+                TableQuery<T> q = Clone();
                 q.AddWhere(pred);
                 return q;
             }
@@ -88,35 +88,35 @@ namespace Mono.Data.Sqlite.Orm
             throw new NotSupportedException("Must be a predicate");
         }
 
-        public TableQueryBase<T> With(params Expression<Func<T, object>>[] expressions)
+        public TableQuery<T> With(params Expression<Func<T, object>>[] expressions)
         {
             return this.AddWith(expressions);
         }
 
-        public TableQueryBase<T> Take(int n)
+        public TableQuery<T> Take(int n)
         {
-            TableQueryBase<T> q = Clone();
+            TableQuery<T> q = Clone();
             q._limit = n;
             return q;
         }
 
-        public TableQueryBase<T> Skip(int n)
+        public TableQuery<T> Skip(int n)
         {
-            TableQueryBase<T> q = Clone();
+            TableQuery<T> q = Clone();
             q._offset = n;
             return q;
         }
 
-        public TableQueryBase<T> Deferred()
+        public TableQuery<T> Deferred()
         {
-            TableQueryBase<T> q = Clone();
+            TableQuery<T> q = Clone();
             q._deferred = true;
             return q;
         }
 
-        public TableQueryBase<T> Distinct()
+        public TableQuery<T> Distinct()
         {
-            TableQueryBase<T> q = Clone();
+            TableQuery<T> q = Clone();
             q._distinct = true;
             return q;
         }
@@ -151,17 +151,17 @@ namespace Mono.Data.Sqlite.Orm
             return Skip(index).Take(1).FirstOrDefault();
         }
 
-        public TableQueryBase<T> OrderBy<U>(Expression<Func<T, U>> orderExpr)
+        public TableQuery<T> OrderBy<U>(Expression<Func<T, U>> orderExpr)
         {
             return AddOrderBy(orderExpr, true);
         }
 
-        public TableQueryBase<T> OrderByDescending<U>(Expression<Func<T, U>> orderExpr)
+        public TableQuery<T> OrderByDescending<U>(Expression<Func<T, U>> orderExpr)
         {
             return AddOrderBy(orderExpr, false);
         }
 
-        private TableQueryBase<T> AddOrderBy<U>(Expression<Func<T, U>> orderExpr, bool asc)
+        private TableQuery<T> AddOrderBy<U>(Expression<Func<T, U>> orderExpr, bool asc)
         {
             if (orderExpr.NodeType != ExpressionType.Lambda)
             {
@@ -185,7 +185,7 @@ namespace Mono.Data.Sqlite.Orm
                 throw new NotSupportedException("Order By does not support: " + orderExpr);
             }
 
-            TableQueryBase<T> q = Clone();
+            TableQuery<T> q = Clone();
             if (q._orderBys == null)
             {
                 q._orderBys = new List<Ordering>();
@@ -210,9 +210,9 @@ namespace Mono.Data.Sqlite.Orm
             return body.Member;
         }
 
-        private TableQueryBase<T> AddWith(params Expression<Func<T, object>>[] expressions)
+        private TableQuery<T> AddWith(params Expression<Func<T, object>>[] expressions)
         {
-            TableQueryBase<T> q = Clone();
+            TableQuery<T> q = Clone();
             if (q._withColumns == null)
             {
                 q._withColumns = new List<WithColumn>();
@@ -436,29 +436,7 @@ namespace Mono.Data.Sqlite.Orm
                         obj = r.Value;
                     }
 
-                    //
-                    // Get the member value
-                    //
-                    object val = null;
-
-                    if (mem.Member is PropertyInfo)
-                    {
-                        var m = (PropertyInfo)mem.Member;
-                        val = m.GetValue(obj, null);
-                    }
-                    else if (mem.Member is FieldInfo)
-                    {
-#if SILVERLIGHT
-                        val = Expression.Lambda(expr).Compile().DynamicInvoke();
-#else
-                        var m = (FieldInfo)mem.Member;
-                        val = m.GetValue(obj);
-#endif
-                    }
-                    else
-                    {
-                        throw new NotSupportedException("MemberExpr: " + mem.Member.GetType().Name);
-                    }
+                    var val = this.Session.GetExpressionMemberValue(expr, mem, obj);
 
                     //
                     // Work special magic for enumerables

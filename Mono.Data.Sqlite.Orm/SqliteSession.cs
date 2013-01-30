@@ -2,10 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using Mono.Data.Sqlite.Orm.ComponentModel;
 
 namespace Mono.Data.Sqlite.Orm
@@ -18,17 +18,17 @@ namespace Mono.Data.Sqlite.Orm
         public SqliteSession(string connectionString, bool autoOpen = true)
             : base(connectionString, autoOpen)
         {
-            Connection = new SqliteConnection(this.ConnectionString);
+            this.Connection = new SqliteConnection(this.ConnectionString);
+
+            this.QueryCache = new QueryCache(this.Connection);
             
             if (autoOpen)
             {
-                Connection.Open();
+                this.Connection.Open();
 #if NETFX_CORE
                 SetTemporaryFilesDirectory(this, Windows.Storage.ApplicationData.Current.TemporaryFolder.Path);
 #endif
             }
-
-            this.QueryCache = new QueryCache(this.Connection);
         }
 
         /// <summary>
@@ -61,18 +61,6 @@ namespace Mono.Data.Sqlite.Orm
 
                 Debug.WriteLine("-- End --");
             }
-        }
-
-        /// <summary>
-        ///   Returns a queryable interface to the table represented by the given type.
-        /// </summary>
-        /// <returns>
-        ///   A queryable object that is able to translate Where, OrderBy, and Take
-        ///   queries into native SQL.
-        /// </returns>
-        public override TableQueryBase<T> Table<T>()
-        {
-            return new TableQuery<T>(this);
         }
 
         protected override TableMapping CreateTableMapping(Type type)
@@ -111,6 +99,35 @@ namespace Mono.Data.Sqlite.Orm
             this.TraceCommand(insertCmd);
             return insertCmd.ExecuteNonQuery();
         }
+
+        /// <summary>
+        /// Get the member value.
+        /// </summary>
+        /// <param name="expression">The expression to evaluate.</param>
+        /// <param name="member">The member to evaluate.</param>
+        /// <param name="obj">The object on which to perform the evaluation.</param>
+        /// <returns>The value from the expression.</returns>
+        public override object GetExpressionMemberValue(Expression expression, MemberExpression member, object obj)
+        {
+            var propertyInfo = member.Member as PropertyInfo;
+            if (propertyInfo != null)
+            {
+                return propertyInfo.GetValue(obj, null);
+            }
+            
+            var fieldInfo = member.Member as FieldInfo;
+            if (fieldInfo != null)
+            {
+#if SILVERLIGHT
+                return Expression.Lambda(expression).Compile().DynamicInvoke();
+#else
+                return fieldInfo.GetValue(obj);
+#endif
+            }
+            
+            throw new NotSupportedException("Member Expression: " + member.Member.GetType().Name);
+        }
+
 
         /// <summary>
         ///   Begins a new transaction. Call <see cref = "SqliteTransaction.Commit" /> or 
@@ -212,6 +229,27 @@ namespace Mono.Data.Sqlite.Orm
 
             return result;
         }
+
+#if NETFX_CORE || SILVERLIGHT || WINDOWS_PHONE
+        public enum DirectoryType : int
+        {
+            Data = 1,
+            Temp = 2
+        }
+
+        [DllImport("sqlite3", EntryPoint = "sqlite3_win32_set_directory", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
+        public static extern int SetDirectory(DirectoryType directoryType, string directoryPath);
+
+        public static void SetTemporaryFilesDirectory(SqliteSessionBase session, string directoryPath)
+        {
+#if NETFX_CORE
+            SetDirectory(DirectoryType.Temp, directoryPath);
+#elif SILVERLIGHT || WINDOWS_PHONE
+            session.Execute("PRAGMA temp_store_directory = ?;", directoryPath);
+#else
+#endif
+        }
+#endif
 
         /// <summary>
         /// Closes the connection to the database.
