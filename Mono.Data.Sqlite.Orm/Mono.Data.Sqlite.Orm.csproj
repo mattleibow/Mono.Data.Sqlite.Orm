@@ -53,7 +53,7 @@
     <Compile Include="SqliteSession.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Shared\Mono.Data.Sqlite.Orm.Shared\Mono.Data.Sqlite.Orm.Shared.csproj">
+    <ProjectReference Include="..\Mono.Data.Sqlite.Orm.Shared\Mono.Data.Sqlite.Orm.Shared.csproj">
       <Project>{99ada565-42ca-418d-bd85-6246ffa9a20e}</Project>
       <Name>Mono.Data.Sqlite.Orm.Shared</Name>
     </ProjectReference>

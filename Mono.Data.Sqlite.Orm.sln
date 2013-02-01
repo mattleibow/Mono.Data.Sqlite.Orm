@@ -35,9 +35,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Data.Sqlite.Orm.Tests.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Data.Sqlite.Orm.Tests.Silverlight", "Mono.Data.Sqlite.Orm.Tests.Silverlight\Mono.Data.Sqlite.Orm.Tests.Silverlight.csproj", "{0C997849-0358-4497-8FA0-4F9075EEF0CC}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{D463C63E-25F9-4FF5-8799-635E1BCEF271}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{FD00EBB5-9601-4194-BE83-C14F31DC5BFE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Data.Sqlite.Orm.Shared", "Shared\Mono.Data.Sqlite.Orm.Shared\Mono.Data.Sqlite.Orm.Shared.csproj", "{99ADA565-42CA-418D-BD85-6246FFA9A20E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Data.Sqlite.Orm.Shared", "Mono.Data.Sqlite.Orm.Shared\Mono.Data.Sqlite.Orm.Shared.csproj", "{99ADA565-42CA-418D-BD85-6246FFA9A20E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -198,7 +198,7 @@ Global
 		{BDE6E6EB-EB99-434B-84DB-ED243EC2BDC8} = {FF6B04C0-4E6D-4E8F-AF4A-6C67EC0E9FB0}
 		{0C997849-0358-4497-8FA0-4F9075EEF0CC} = {FF6B04C0-4E6D-4E8F-AF4A-6C67EC0E9FB0}
 		{2DB682BD-B45D-41E9-81E7-4044C616F2FE} = {A8E7233C-3CB0-4ADB-930C-29A102215E80}
-		{99ADA565-42CA-418D-BD85-6246FFA9A20E} = {D463C63E-25F9-4FF5-8799-635E1BCEF271}
+		{99ADA565-42CA-418D-BD85-6246FFA9A20E} = {FD00EBB5-9601-4194-BE83-C14F31DC5BFE}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = TestRunner.Silverlight\TestRunner.Silverlight.csproj
