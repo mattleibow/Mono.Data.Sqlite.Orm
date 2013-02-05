@@ -39,6 +39,33 @@ namespace Mono.Data.Sqlite.Orm.Tests
             }
         }
 
+        public enum MyEnum
+        {
+            First = 1,
+            Second = 2,
+            Third = 3
+        }
+
+        public class NullableEnumClass
+        {
+            [PrimaryKey]
+            [AutoIncrement]
+            public int Id { get; set; }
+
+            public MyEnum? NullableEnum { get; set; }
+
+            public override bool Equals(object obj)
+            {
+                var other = (NullableEnumClass)obj;
+                return Id == other.Id && NullableEnum == other.NullableEnum;
+            }
+
+            public override int GetHashCode()
+            {
+                return Id.GetHashCode() ^ NullableEnum.GetHashCode();
+            }
+        }
+
         public class NullableFloatClass
         {
             [PrimaryKey]
@@ -132,6 +159,27 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(with0, results[1]);
             Assert.AreEqual(with1, results[2]);
             Assert.AreEqual(withMinus1, results[3]);
+        }
+
+        [Test]
+        // [Description("Create a table with a nullable Enum column then insert and select against it")]
+        public void NullableEnum()
+        {
+            var db = new OrmTestSession();
+            db.CreateTable<NullableEnumClass>();
+
+            var withNull = new NullableEnumClass { NullableEnum = null };
+            var withFirst = new NullableEnumClass { NullableEnum = MyEnum.First };
+
+            db.Insert(withNull);
+            db.Insert(withFirst);
+
+            NullableEnumClass[] results = db.Table<NullableEnumClass>().OrderBy(x => x.Id).ToArray();
+
+            Assert.AreEqual(2, results.Length);
+
+            Assert.AreEqual(withNull, results[0]);
+            Assert.AreEqual(withFirst, results[1]);
         }
 
         [Test]

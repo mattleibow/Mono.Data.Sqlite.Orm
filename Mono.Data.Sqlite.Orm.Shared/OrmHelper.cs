@@ -344,21 +344,47 @@ namespace Mono.Data.Sqlite.Orm
 
         internal static Type GetColumnType(PropertyInfo prop)
         {
-            Type nullableType = Nullable.GetUnderlyingType(prop.PropertyType);
-            var type = nullableType ?? prop.PropertyType;
+            var type = GetRealType(prop);
+            if (type.IsEnum)
+            {
+                var attribute = prop.GetAttributes<EnumAffinityAttribute>().FirstOrDefault();
+                type = attribute == null ? typeof(int) : attribute.Type;
+            }
+            else if (type == typeof(TimeSpan))
+            {
+                type = typeof(long);
+            }
+            else if (type == typeof(Guid))
+            {
+                type = typeof(string);
+            }
 
+            return type;
+        }
+
+        internal static Type GetEnumType(PropertyInfo prop)
+        {
+            var type = GetRealType(prop);
+            if (type.IsEnum)
+            {
+                return type;
+            }
+            return null;
+        }
+
+        private static Type GetRealType(PropertyInfo prop)
+        {
+            Type type = null;
             DataConverterAttribute[] attrs = prop.GetAttributes<DataConverterAttribute>().ToArray();
             if (attrs.Any())
             {
                 type = attrs.First().StorageType;
             }
-            else if (type.IsEnum)
+            else
             {
-                var attribute = prop.GetAttributes<EnumAffinityAttribute>().FirstOrDefault();
-                type = attribute == null ? typeof (int) : attribute.Type;
+                type = prop.PropertyType;
             }
-
-            return type;
+            return Nullable.GetUnderlyingType(type) ?? type;
         }
 
         public static VirtualAttribute GetVirtual(Type mappedType)

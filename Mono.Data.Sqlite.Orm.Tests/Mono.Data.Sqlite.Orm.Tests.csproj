@@ -56,7 +56,6 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="AsyncTests.cs" />
     <Compile Include="Columns\BooleanTest.cs" />
     <Compile Include="Columns\ByteArrayTest.cs" />
     <Compile Include="Columns\CollateTest.cs" />

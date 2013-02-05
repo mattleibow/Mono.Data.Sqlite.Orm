@@ -29,6 +29,30 @@ namespace Mono.Data.Sqlite.Orm.Tests
     [TestFixture]
     public class DataConverterTest
     {
+        public class EnumConverter : IDataConverter
+        {
+            // convert to db type
+            public object Convert(object value, Type targetType, object parameter)
+            {
+                if (value == null)
+                {
+                    return null;
+                }
+                return Enum.Parse(typeof(MyEnum), value.ToString(), true);
+            }
+
+            // convert to c# type
+            public object ConvertBack(object value, Type targetType, object parameter)
+            {
+                if (value == null)
+                {
+                    return null;
+                }
+
+                return value.ToString();
+            }
+        }
+
         public class ColorConverter : IDataConverter
         {
             public object Convert(object value, Type targetType, object parameter)
@@ -88,6 +112,70 @@ namespace Mono.Data.Sqlite.Orm.Tests
             public int Id { get; set; }
 
             public string Color { get; set; }
+        }
+
+        public class EnumTestTable
+        {
+            [AutoIncrement]
+            [PrimaryKey]
+            public int Id { get; set; }
+
+            public MyEnum? EnumColumn { get; set; }
+        }
+
+        [Table("EnumTestTable")]
+        public class EnumTestTablePlain
+        {
+            [AutoIncrement]
+            [PrimaryKey]
+            public int Id { get; set; }
+
+            [DataConverter(typeof(EnumConverter), typeof(MyEnum?))]
+            public string EnumColumn { get; set; }
+        }
+
+        public enum MyEnum
+        {
+            First = 1,
+            Second = 2,
+            Third = 3
+        }
+
+        [Test]
+        public void EnumDataConverterTest()
+        {
+            var db = new OrmTestSession();
+            db.CreateTable<EnumTestTable>();
+
+            db.Insert(new EnumTestTable { EnumColumn = MyEnum.Second });
+            db.Insert(new EnumTestTable { EnumColumn = null });
+
+            var plain = db.Get<EnumTestTablePlain>(1);
+            Assert.AreEqual("2", plain.EnumColumn);
+
+            plain = db.Get<EnumTestTablePlain>(2);
+            Assert.IsNull(plain.EnumColumn);
+
+            var rich = db.Get<EnumTestTable>(1);
+            Assert.AreEqual(MyEnum.Second, rich.EnumColumn);
+
+            rich = db.Get<EnumTestTable>(2);
+            Assert.IsNull(rich.EnumColumn);
+
+            db.Insert(new EnumTestTablePlain { EnumColumn = "2" });
+            db.Insert(new EnumTestTablePlain { EnumColumn = null });
+
+            plain = db.Get<EnumTestTablePlain>(3);
+            Assert.AreEqual("2", plain.EnumColumn);
+
+            plain = db.Get<EnumTestTablePlain>(4);
+            Assert.IsNull(plain.EnumColumn);
+
+            rich = db.Get<EnumTestTable>(3);
+            Assert.AreEqual(MyEnum.Second, rich.EnumColumn);
+
+            rich = db.Get<EnumTestTable>(4);
+            Assert.IsNull(rich.EnumColumn);
         }
 
         [Test]

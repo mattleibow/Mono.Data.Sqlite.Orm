@@ -169,6 +169,7 @@ namespace Mono.Data.Sqlite.Orm
                 // If this type is Nullable<T> then Nullable.GetUnderlyingType returns the T,
                 // otherwise it returns null, so get the the actual type instead
                 this.ColumnType = OrmHelper.GetColumnType(prop);
+                this.EnumType = OrmHelper.GetEnumType(prop);
                 this.Collation = OrmHelper.GetCollation(prop);
                 this.PrimaryKey = OrmHelper.GetPrimaryKey(prop);
                 this.IsNullable = this.PrimaryKey == null && OrmHelper.GetIsColumnNullable(prop);
@@ -186,6 +187,7 @@ namespace Mono.Data.Sqlite.Orm
             public PrimaryKeyAttribute PrimaryKey { get; private set; }
             public bool IsAutoIncrement { get; private set; }
             public bool IsNullable { get; private set; }
+            public Type EnumType { get; private set; }
             public UniqueAttribute Unique { get; private set; }
             public int MaxStringLength { get; private set; }
             public string DefaultValue { get; private set; }
@@ -242,16 +244,16 @@ namespace Mono.Data.Sqlite.Orm
 
                     object v;
 
-                    if (this.ColumnType == typeof (Guid))
+                    if (this._prop.PropertyType == typeof(Guid))
                     {
                         string text = value.ToString();
                         v = text.Length > 0 ? new Guid(text) : Guid.Empty;
                     }
-                    else if (this.ColumnType.IsEnum)
+                    else if (this.EnumType != null)
                     {
-                        v = Enum.Parse(this.ColumnType, value.ToString(), true);
+                        v = Enum.Parse(this.EnumType, value.ToString(), true);
                     }
-                    else if (this.ColumnType == typeof(TimeSpan))
+                    else if (this._prop.PropertyType == typeof(TimeSpan))
                     {
                         v = TimeSpan.FromTicks((long)value);
                     }
@@ -272,16 +274,19 @@ namespace Mono.Data.Sqlite.Orm
                 {
                     value = this.DataConverter.Convert(value, this._prop.PropertyType, this.DataConverterAttribute.Parameter);
                 }
-                else if (value != null)
+
+                if (this._prop.PropertyType == typeof(TimeSpan))
                 {
-                    if (this.ColumnType == typeof(TimeSpan))
-                    {
-                        value = ((TimeSpan)value).Ticks;
-                    }
-                    else
-                    {
-                        value = Convert.ChangeType(value, this.ColumnType, CultureInfo.InvariantCulture);
-                    }
+                    value = ((TimeSpan)value).Ticks;
+                }
+                else if (this._prop.PropertyType == typeof(Guid))
+                {
+                    value = value.ToString();
+                }
+                
+                if (value != null)
+                {
+                    value = Convert.ChangeType(value, this.ColumnType, CultureInfo.InvariantCulture);
                 }
 
                 return value;
