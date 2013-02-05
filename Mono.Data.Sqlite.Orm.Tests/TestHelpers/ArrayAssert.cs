@@ -1,4 +1,4 @@
-#if SILVERLIGHT
+#if SILVERLIGHT || MS_TEST
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 #elif NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;

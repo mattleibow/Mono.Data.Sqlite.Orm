@@ -1,5 +1,5 @@
 ﻿using Mono.Data.Sqlite.Orm.ComponentModel;
-#if SILVERLIGHT 
+#if SILVERLIGHT || MS_TEST|| MS_TEST
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
 using TestAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;

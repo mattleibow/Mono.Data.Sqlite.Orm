@@ -7,16 +7,14 @@ using Mono.Data.Sqlite.Orm.ComponentModel;
 
 namespace Mono.Data.Sqlite.Orm
 {
-    public partial class SqliteSession
+    public static class SqliteSessionExtensions
     {
-        #region Public Methods and Operators
-
-        public Task<int> CreateTableAsync<T>(bool createIndexes = true) where T : new()
+        public static Task<int> CreateTableAsync<T>(this SqliteSessionBase session, bool createIndexes = true) where T : new()
         {
             return Task<int>.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = this.GetAsyncConnection();
+                        var conn = GetAsyncConnection(session);
                         using (conn.Lock())
                         {
                             return conn.CreateTable<T>(createIndexes);
@@ -24,12 +22,12 @@ namespace Mono.Data.Sqlite.Orm
                     });
         }
 
-        public Task<int> DeleteAsync<T>(T item)
+        public static Task<int> DeleteAsync<T>(this SqliteSessionBase session, T item)
         {
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = this.GetAsyncConnection();
+                        SqliteSession conn = GetAsyncConnection(session);
                         using (conn.Lock())
                         {
                             return conn.Delete(item);
@@ -37,12 +35,12 @@ namespace Mono.Data.Sqlite.Orm
                     });
         }
 
-        public Task<int> DropTableAsync<T>() where T : new()
+        public static Task<int> DropTableAsync<T>(this SqliteSessionBase session) where T : new()
         {
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = this.GetAsyncConnection();
+                        SqliteSession conn = GetAsyncConnection(session);
                         using (conn.Lock())
                         {
                             return conn.DropTable<T>();
@@ -50,12 +48,12 @@ namespace Mono.Data.Sqlite.Orm
                     });
         }
 
-        public Task<int> ClearTableAsync<T>() where T : new()
+        public static Task<int> ClearTableAsync<T>(this SqliteSessionBase session) where T : new()
         {
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = this.GetAsyncConnection();
+                        SqliteSession conn = GetAsyncConnection(session);
                         using (conn.Lock())
                         {
                             return conn.ClearTable<T>();
@@ -63,12 +61,12 @@ namespace Mono.Data.Sqlite.Orm
                     });
         }
 
-        public Task<int> ExecuteAsync(string query, params object[] args)
+        public static Task<int> ExecuteAsync(this SqliteSessionBase session, string query, params object[] args)
         {
             return Task<int>.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = this.GetAsyncConnection();
+                        SqliteSession conn = GetAsyncConnection(session);
                         using (conn.Lock())
                         {
                             return conn.Execute(query, args);
@@ -76,12 +74,12 @@ namespace Mono.Data.Sqlite.Orm
                     });
         }
 
-        public Task<T> ExecuteScalarAsync<T>(string sql, params object[] args)
+        public static Task<T> ExecuteScalarAsync<T>(this SqliteSessionBase session, string sql, params object[] args)
         {
             return Task<T>.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = this.GetAsyncConnection();
+                        SqliteSession conn = GetAsyncConnection(session);
                         using (conn.Lock())
                         {
                             return conn.ExecuteScalar<T>(sql, args);
@@ -89,12 +87,12 @@ namespace Mono.Data.Sqlite.Orm
                     });
         }
 
-        public Task<T> GetAsync<T>(object pk, params object[] primaryKeys) where T : new()
+        public static Task<T> GetAsync<T>(this SqliteSessionBase session, object pk, params object[] primaryKeys) where T : new()
         {
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = this.GetAsyncConnection();
+                        SqliteSession conn = GetAsyncConnection(session);
                         using (conn.Lock())
                         {
                             return conn.Get<T>(pk, primaryKeys);
@@ -102,12 +100,12 @@ namespace Mono.Data.Sqlite.Orm
                     });
         }
 
-        public Task<T> GetAsync<T>(Expression<Func<T, bool>> expression) where T : new()
+        public static Task<T> GetAsync<T>(this SqliteSessionBase session, Expression<Func<T, bool>> expression) where T : new()
         {
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = this.GetAsyncConnection();
+                        SqliteSession conn = GetAsyncConnection(session);
                         using (conn.Lock())
                         {
                             return conn.Get(expression);
@@ -115,12 +113,12 @@ namespace Mono.Data.Sqlite.Orm
                     });
         }
 
-        public Task<T> FindAsync<T>(object pk, params object[] primaryKeys) where T : new()
+        public static Task<T> FindAsync<T>(this SqliteSessionBase session, object pk, params object[] primaryKeys) where T : new()
         {
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = this.GetAsyncConnection();
+                        SqliteSession conn = GetAsyncConnection(session);
                         using (conn.Lock())
                         {
                             return conn.Find<T>(pk, primaryKeys);
@@ -128,12 +126,12 @@ namespace Mono.Data.Sqlite.Orm
                     });
         }
 
-        public Task<int> InsertAllAsync<T>(IEnumerable<T> items)
+        public static Task<int> InsertAllAsync<T>(this SqliteSessionBase session, IEnumerable<T> items)
         {
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = this.GetAsyncConnection();
+                        SqliteSession conn = GetAsyncConnection(session);
                         using (conn.Lock())
                         {
                             return conn.InsertAll(items);
@@ -141,12 +139,12 @@ namespace Mono.Data.Sqlite.Orm
                     });
         }
 
-        public Task<int> InsertAsync<T>(T item)
+        public static Task<int> InsertAsync<T>(this SqliteSessionBase session, T item)
         {
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = this.GetAsyncConnection();
+                        SqliteSession conn = GetAsyncConnection(session);
                         using (conn.Lock())
                         {
                             return conn.Insert(item);
@@ -154,12 +152,12 @@ namespace Mono.Data.Sqlite.Orm
                     });
         }
 
-        public Task<int> InsertAsync<T>(T item, ConflictResolution extra)
+        public static Task<int> InsertAsync<T>(this SqliteSessionBase session, T item, ConflictResolution extra)
         {
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = this.GetAsyncConnection();
+                        SqliteSession conn = GetAsyncConnection(session);
                         using (conn.Lock())
                         {
                             return conn.Insert(item, extra);
@@ -167,13 +165,12 @@ namespace Mono.Data.Sqlite.Orm
                     });
         }
 
-        public Task<int> InsertDefaultsAsync<T>()
-            where T : class
+        public static Task<int> InsertDefaultsAsync<T>(this SqliteSessionBase session) where T : class
         {
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = this.GetAsyncConnection();
+                        SqliteSession conn = GetAsyncConnection(session);
                         using (conn.Lock())
                         {
                             return conn.InsertDefaults<T>();
@@ -181,12 +178,12 @@ namespace Mono.Data.Sqlite.Orm
                     });
         }
 
-        public Task<List<T>> QueryAsync<T>(string sql, params object[] args) where T : new()
+        public static Task<List<T>> QueryAsync<T>(this SqliteSessionBase session, string sql, params object[] args) where T : new()
         {
             return Task<List<T>>.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = this.GetAsyncConnection();
+                        SqliteSession conn = GetAsyncConnection(session);
                         using (conn.Lock())
                         {
                             return conn.Query<T>(sql, args);
@@ -194,12 +191,12 @@ namespace Mono.Data.Sqlite.Orm
                     });
         }
 
-        public Task<int> UpdateAsync<T>(T item)
+        public static Task<int> UpdateAsync<T>(this SqliteSessionBase session, T item)
         {
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = this.GetAsyncConnection();
+                        SqliteSession conn = GetAsyncConnection(session);
                         using (conn.Lock())
                         {
                             return conn.Update(item);
@@ -207,12 +204,12 @@ namespace Mono.Data.Sqlite.Orm
                     });
         }
 
-        public Task<int> UpdateAllAsync<T>(string propertyName, object propertyValue)
+        public static Task<int> UpdateAllAsync<T>(this SqliteSessionBase session, string propertyName, object propertyValue)
         {
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = this.GetAsyncConnection();
+                        SqliteSession conn = GetAsyncConnection(session);
                         using (conn.Lock())
                         {
                             return conn.UpdateAll<T>(propertyName, propertyValue);
@@ -220,56 +217,10 @@ namespace Mono.Data.Sqlite.Orm
                     });
         }
 
-        #endregion
 
-        #region Methods
-
-        private SqliteSession GetAsyncConnection()
+        private static SqliteSession GetAsyncConnection(SqliteSessionBase session)
         {
-            return SqliteConnectionPool.Shared.GetConnection(this.ConnectionString);
+            return SqliteConnectionPool.Shared.GetConnection(session.ConnectionString);
         }
-
-        #region Public Methods and Operators
-
-        public IDisposable Lock()
-        {
-            return new LockWrapper(this);
-        }
-
-        #endregion
-
-        #region Nested type: LockWrapper
-
-        private class LockWrapper : IDisposable
-        {
-            #region Constants and Fields
-
-            private readonly object _lockPoint;
-
-            #endregion
-
-            #region Constructors and Destructors
-
-            public LockWrapper(object lockPoint)
-            {
-                this._lockPoint = lockPoint;
-                Monitor.Enter(this._lockPoint);
-            }
-
-            #endregion
-
-            #region Public Methods and Operators
-
-            public void Dispose()
-            {
-                Monitor.Exit(this._lockPoint);
-            }
-
-            #endregion
-        }
-
-        #endregion
-
-        #endregion
     }
 }

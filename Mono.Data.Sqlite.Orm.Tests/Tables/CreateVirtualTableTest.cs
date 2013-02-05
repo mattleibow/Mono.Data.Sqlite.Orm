@@ -1,6 +1,6 @@
 ﻿using Mono.Data.Sqlite.Orm.ComponentModel;
 
-#if SILVERLIGHT 
+#if SILVERLIGHT || MS_TEST
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
 using TestAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
@@ -64,7 +64,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             using (var db = new OrmTestSession())
             {
                 db.CreateTable<SimpleTable>();
-                Assert.AreEqual(0, db.ExecuteScalar("SELECT COUNT(*) FROM [SimpleTable];"));
+                Assert.AreEqual(0, db.ExecuteScalar<int>("SELECT COUNT(*) FROM [SimpleTable];"));
             }
         }
 

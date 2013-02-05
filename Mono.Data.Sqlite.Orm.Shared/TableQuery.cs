@@ -19,8 +19,8 @@ namespace Mono.Data.Sqlite.Orm
         private List<WithColumn> _withColumns;
         private Expression _where;
 
-        private SqliteSessionBase Session { get; set; }
-        private TableMapping Table { get; set; }
+        public SqliteSessionBase Session { get; private set; }
+        public TableMapping Table { get; private set; }
 
         private TableQuery(SqliteSessionBase session, TableMapping table)
         {

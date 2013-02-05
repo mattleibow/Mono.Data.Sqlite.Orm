@@ -1,4 +1,4 @@
-#if SILVERLIGHT
+#if SILVERLIGHT || MS_TEST
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 #elif NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -13,7 +13,7 @@ namespace System
         public static void Throws<TException>(Action blockToExecute) 
             where TException : Exception
         {
-#if SILVERLIGHT
+#if SILVERLIGHT || MS_TEST
            Type expectedType = typeof (TException);
 
            try

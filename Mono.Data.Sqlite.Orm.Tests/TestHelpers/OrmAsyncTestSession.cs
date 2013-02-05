@@ -22,7 +22,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
 
         public static SqliteSession GetConnection()
         {
-#if SILVERLIGHT || WINDOWS_PHONE
+#if SILVERLIGHT || MS_TEST|| WINDOWS_PHONE
             var path = ("Data Source=Some" + DateTime.Now.Ticks + ".db,DefaultTimeout=100");
 #elif NETFX_CORE
             var path = ("Data Source=" + ApplicationData.Current.TemporaryFolder.Path + "\\TestDatabase" + DateTime.Now.Ticks + ".db,DefaultTimeout=100");

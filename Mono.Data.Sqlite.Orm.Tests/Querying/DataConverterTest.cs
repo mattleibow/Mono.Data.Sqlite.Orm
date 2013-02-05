@@ -1,7 +1,7 @@
 namespace Mono.Data.Sqlite.Orm.Tests
 {
     using System;
-#if SILVERLIGHT 
+#if SILVERLIGHT
     using System.Windows.Media;
 #elif NETFX_CORE
     using Windows.UI;
@@ -13,7 +13,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
     using ComponentModel;
 
     using DataConverter;
-#if SILVERLIGHT 
+#if SILVERLIGHT || MS_TEST
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
     using TestAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Transactions;
 
 using Mono.Data.Sqlite.Orm.ComponentModel;
-#if SILVERLIGHT 
+#if SILVERLIGHT || MS_TEST
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
 using TestAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
@@ -197,7 +197,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
                 trans.CreateSavepoint("First");
                 trans.Commit();
 
-#if SILVERLIGHT
+#if SILVERLIGHT || MS_TEST
                 ExceptionAssert.Throws<SqliteException>(() => trans.RollbackSavepoint("First"));
 #elif NETFX_CORE
                 Assert.ThrowsException<SqliteException>(() => trans.RollbackSavepoint("First"));

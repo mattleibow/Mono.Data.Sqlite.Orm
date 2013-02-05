@@ -7,7 +7,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
     public class OrmTestSession : SqliteSession
     {
         public OrmTestSession()
-#if SILVERLIGHT || WINDOWS_PHONE
+#if SILVERLIGHT || MS_TEST|| WINDOWS_PHONE
             : base("Data Source=Some" + DateTime.Now.Ticks + ".db,DefaultTimeout=100")
 #elif NETFX_CORE
             : base("Data Source=" + Windows.Storage.ApplicationData.Current.TemporaryFolder.Path + "\\TestDatabase" + DateTime.Now.Ticks + ".db,DefaultTimeout=100;Pooling=true")
