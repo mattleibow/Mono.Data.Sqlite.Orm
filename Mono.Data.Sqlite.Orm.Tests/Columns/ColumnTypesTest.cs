@@ -64,6 +64,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
             public byte[] Blob { get; set; }
 
             public Guid Guid { get; set; }
+
+            public TimeSpan TimeSpan { get; set; }
         }
 
         [Test]
@@ -91,7 +93,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
                                Enum2 = EEnum.EnumVal2,
                                Timestamp = DateTime.Parse("2012-04-05 15:08:24.723"),
                                Blob = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
-                               Guid = Guid.NewGuid()
+                               Guid = Guid.NewGuid(),
+                               TimeSpan = TimeSpan.MaxValue
                            };
 
             db.Insert(test);
@@ -115,6 +118,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(test.Timestamp, res.Timestamp);
             ArrayAssert.AreEqual(test.Blob, res.Blob);
             Assert.AreEqual(test.Guid, res.Guid);
+            Assert.AreEqual(test.TimeSpan, res.TimeSpan);
         }
 
         [Test]
@@ -142,7 +146,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
                                Enum2 = EEnum.EnumVal2,
                                Timestamp = DateTime.Parse("2012-04-05 15:08:24.723"),
                                Blob = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
-                               Guid = Guid.NewGuid()
+                               Guid = Guid.NewGuid(),
+                               TimeSpan = TimeSpan.MinValue
                            };
 
             db.Insert(test);
@@ -166,6 +171,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(test.Timestamp, res.Timestamp);
             ArrayAssert.AreEqual(test.Blob, res.Blob);
             Assert.AreEqual(test.Guid, res.Guid);
+            Assert.AreEqual(test.TimeSpan, res.TimeSpan);
         }
 
         [Test]
@@ -193,7 +199,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
                                Enum2 = EEnum.EnumVal2,
                                Timestamp = DateTime.Parse("0001-01-01 00:00:00.000"),
                                Blob = new byte[] { 0 },
-                               Guid = Guid.NewGuid()
+                               Guid = Guid.NewGuid(),
+                               TimeSpan = TimeSpan.Zero
                            };
 
             db.Insert(test);
@@ -217,6 +224,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(test.Timestamp, res.Timestamp);
             ArrayAssert.AreEqual(test.Blob, res.Blob);
             Assert.AreEqual(test.Guid, res.Guid);
+            Assert.AreEqual(test.TimeSpan, res.TimeSpan);
         }
 
         [Test]
@@ -235,7 +243,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
                                SByte = -128,
                                Int16 = -32768,
                                Boolean = false,
-                               UInt32 = 0xdeadbeef,
+                               UInt32 = 0xdead,
                                Int64 = 0x123456789abcdef,
                                Single = 6.283185f,
                                Double = 6.283185307179586476925286766559,
@@ -244,7 +252,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
                                Enum2 = EEnum.EnumVal2,
                                Timestamp = DateTime.Parse("2012-04-05 15:08:24.723"),
                                Blob = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
-                               Guid = Guid.NewGuid()
+                               Guid = Guid.NewGuid(),
+                               TimeSpan = TimeSpan.FromMinutes(7)
                            };
 
             db.Insert(test);
@@ -268,6 +277,7 @@ namespace Mono.Data.Sqlite.Orm.Tests
             Assert.AreEqual(test.Timestamp, res.Timestamp);
             ArrayAssert.AreEqual(test.Blob, res.Blob);
             Assert.AreEqual(test.Guid, res.Guid);
+            Assert.AreEqual(test.TimeSpan, res.TimeSpan);
         }
     }
 }

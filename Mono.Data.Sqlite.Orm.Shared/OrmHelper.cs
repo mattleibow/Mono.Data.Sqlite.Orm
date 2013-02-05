@@ -57,6 +57,7 @@ namespace Mono.Data.Sqlite.Orm
                 return "integer";
             }
             if (clrType == typeof (UInt32) ||
+                clrType == typeof (TimeSpan) ||
                 clrType == typeof (Int64))
             {
                 return "bigint";

@@ -251,6 +251,10 @@ namespace Mono.Data.Sqlite.Orm
                     {
                         v = Enum.Parse(this.ColumnType, value.ToString(), true);
                     }
+                    else if (this.ColumnType == typeof(TimeSpan))
+                    {
+                        v = TimeSpan.FromTicks((long)value);
+                    }
                     else
                     {
                         v = Convert.ChangeType(value, this.ColumnType, CultureInfo.CurrentCulture);
@@ -270,7 +274,14 @@ namespace Mono.Data.Sqlite.Orm
                 }
                 else if (value != null)
                 {
-                    value = Convert.ChangeType(value, this.ColumnType, CultureInfo.InvariantCulture);
+                    if (this.ColumnType == typeof(TimeSpan))
+                    {
+                        value = ((TimeSpan)value).Ticks;
+                    }
+                    else
+                    {
+                        value = Convert.ChangeType(value, this.ColumnType, CultureInfo.InvariantCulture);
+                    }
                 }
 
                 return value;
