@@ -12,7 +12,8 @@ namespace Mono.Data.Sqlite.Orm.Tests
     {
         public static SqliteSession GetConnection(string connectionString)
         {
-            SqliteSession session = SqliteConnectionPool.Shared.GetConnection(connectionString);
+            SqliteSession session = new SqliteSession(connectionString, false);
+            session.OpenAsync().Wait();
 
             SqliteSession.Trace = true;
             Debug.WriteLine(session.Connection.ConnectionString);

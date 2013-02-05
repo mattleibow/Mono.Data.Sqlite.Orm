@@ -24,11 +24,16 @@ namespace Mono.Data.Sqlite.Orm
             
             if (autoOpen)
             {
-                this.Connection.Open();
-#if NETFX_CORE
-                SetTemporaryFilesDirectory(this, Windows.Storage.ApplicationData.Current.TemporaryFolder.Path);
-#endif
+                this.Open();
             }
+        }
+
+        public override void Open()
+        {
+            this.Connection.Open();
+#if NETFX_CORE
+            SetTemporaryFilesDirectory(this, Windows.Storage.ApplicationData.Current.TemporaryFolder.Path);
+#endif
         }
 
         /// <summary>

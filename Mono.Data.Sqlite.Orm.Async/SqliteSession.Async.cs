@@ -9,15 +9,38 @@ namespace Mono.Data.Sqlite.Orm
 {
     public static class SqliteSessionExtensions
     {
+        public static Task OpenAsync(this SqliteSessionBase session)
+        {
+            return Task.Factory.StartNew(
+                () =>
+                    {
+                        using (session.Lock())
+                        {
+                            session.Open();
+                        }
+                    });
+        }
+        
+        public static Task<bool> TableExistsAsync<T>(this SqliteSessionBase session) where T : new()
+        {
+            return Task<bool>.Factory.StartNew(
+                () =>
+                    {
+                        using (session.Lock())
+                        {
+                            return session.TableExists<T>();
+                        }
+                    });
+        }
+
         public static Task<int> CreateTableAsync<T>(this SqliteSessionBase session, bool createIndexes = true) where T : new()
         {
             return Task<int>.Factory.StartNew(
                 () =>
                     {
-                        var conn = GetAsyncConnection(session);
-                        using (conn.Lock())
+                        using (session.Lock())
                         {
-                            return conn.CreateTable<T>(createIndexes);
+                            return session.CreateTable<T>(createIndexes);
                         }
                     });
         }
@@ -27,10 +50,9 @@ namespace Mono.Data.Sqlite.Orm
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = GetAsyncConnection(session);
-                        using (conn.Lock())
+                        using (session.Lock())
                         {
-                            return conn.Delete(item);
+                            return session.Delete(item);
                         }
                     });
         }
@@ -40,10 +62,9 @@ namespace Mono.Data.Sqlite.Orm
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = GetAsyncConnection(session);
-                        using (conn.Lock())
+                        using (session.Lock())
                         {
-                            return conn.DropTable<T>();
+                            return session.DropTable<T>();
                         }
                     });
         }
@@ -53,10 +74,9 @@ namespace Mono.Data.Sqlite.Orm
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = GetAsyncConnection(session);
-                        using (conn.Lock())
+                        using (session.Lock())
                         {
-                            return conn.ClearTable<T>();
+                            return session.ClearTable<T>();
                         }
                     });
         }
@@ -66,10 +86,9 @@ namespace Mono.Data.Sqlite.Orm
             return Task<int>.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = GetAsyncConnection(session);
-                        using (conn.Lock())
+                        using (session.Lock())
                         {
-                            return conn.Execute(query, args);
+                            return session.Execute(query, args);
                         }
                     });
         }
@@ -79,10 +98,9 @@ namespace Mono.Data.Sqlite.Orm
             return Task<T>.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = GetAsyncConnection(session);
-                        using (conn.Lock())
+                        using (session.Lock())
                         {
-                            return conn.ExecuteScalar<T>(sql, args);
+                            return session.ExecuteScalar<T>(sql, args);
                         }
                     });
         }
@@ -92,10 +110,9 @@ namespace Mono.Data.Sqlite.Orm
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = GetAsyncConnection(session);
-                        using (conn.Lock())
+                        using (session.Lock())
                         {
-                            return conn.Get<T>(pk, primaryKeys);
+                            return session.Get<T>(pk, primaryKeys);
                         }
                     });
         }
@@ -105,10 +122,9 @@ namespace Mono.Data.Sqlite.Orm
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = GetAsyncConnection(session);
-                        using (conn.Lock())
+                        using (session.Lock())
                         {
-                            return conn.Get(expression);
+                            return session.Get(expression);
                         }
                     });
         }
@@ -118,10 +134,9 @@ namespace Mono.Data.Sqlite.Orm
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = GetAsyncConnection(session);
-                        using (conn.Lock())
+                        using (session.Lock())
                         {
-                            return conn.Find<T>(pk, primaryKeys);
+                            return session.Find<T>(pk, primaryKeys);
                         }
                     });
         }
@@ -131,10 +146,9 @@ namespace Mono.Data.Sqlite.Orm
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = GetAsyncConnection(session);
-                        using (conn.Lock())
+                        using (session.Lock())
                         {
-                            return conn.InsertAll(items);
+                            return session.InsertAll(items);
                         }
                     });
         }
@@ -144,10 +158,9 @@ namespace Mono.Data.Sqlite.Orm
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = GetAsyncConnection(session);
-                        using (conn.Lock())
+                        using (session.Lock())
                         {
-                            return conn.Insert(item);
+                            return session.Insert(item);
                         }
                     });
         }
@@ -157,10 +170,9 @@ namespace Mono.Data.Sqlite.Orm
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = GetAsyncConnection(session);
-                        using (conn.Lock())
+                        using (session.Lock())
                         {
-                            return conn.Insert(item, extra);
+                            return session.Insert(item, extra);
                         }
                     });
         }
@@ -170,10 +182,9 @@ namespace Mono.Data.Sqlite.Orm
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = GetAsyncConnection(session);
-                        using (conn.Lock())
+                        using (session.Lock())
                         {
-                            return conn.InsertDefaults<T>();
+                            return session.InsertDefaults<T>();
                         }
                     });
         }
@@ -183,10 +194,9 @@ namespace Mono.Data.Sqlite.Orm
             return Task<List<T>>.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = GetAsyncConnection(session);
-                        using (conn.Lock())
+                        using (session.Lock())
                         {
-                            return conn.Query<T>(sql, args);
+                            return session.Query<T>(sql, args);
                         }
                     });
         }
@@ -196,10 +206,9 @@ namespace Mono.Data.Sqlite.Orm
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = GetAsyncConnection(session);
-                        using (conn.Lock())
+                        using (session.Lock())
                         {
-                            return conn.Update(item);
+                            return session.Update(item);
                         }
                     });
         }
@@ -209,18 +218,11 @@ namespace Mono.Data.Sqlite.Orm
             return Task.Factory.StartNew(
                 () =>
                     {
-                        SqliteSession conn = GetAsyncConnection(session);
-                        using (conn.Lock())
+                        using (session.Lock())
                         {
-                            return conn.UpdateAll<T>(propertyName, propertyValue);
+                            return session.UpdateAll<T>(propertyName, propertyValue);
                         }
                     });
-        }
-
-
-        private static SqliteSession GetAsyncConnection(SqliteSessionBase session)
-        {
-            return SqliteConnectionPool.Shared.GetConnection(session.ConnectionString);
         }
     }
 }

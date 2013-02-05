@@ -61,6 +61,8 @@ namespace Mono.Data.Sqlite.Orm
         /// </summary>
         public string ConnectionString { get; private set; }
 
+        public abstract void Open();
+
         #region IDisposable Members
 
         public virtual void Dispose()

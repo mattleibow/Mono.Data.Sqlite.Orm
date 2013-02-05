@@ -44,6 +44,54 @@
                     });
         }
 
+        public static Task<T> SingleAsync<T>(this TableQuery<T> tableQuery) where T : new()
+        {
+            return Task<T>.Factory.StartNew(
+                () =>
+                    {
+                        using (tableQuery.Session.Lock())
+                        {
+                            return tableQuery.Single();
+                        }
+                    });
+        }
+
+        public static Task<T> SingleAsync<T>(this TableQuery<T> tableQuery, Expression<Func<T, bool>> predicate) where T : new()
+        {
+            return Task<T>.Factory.StartNew(
+                () =>
+                    {
+                        using (tableQuery.Session.Lock())
+                        {
+                            return tableQuery.Single(predicate);
+                        }
+                    });
+        }
+
+        public static Task<T> SingleOrDefaultAsync<T>(this TableQuery<T> tableQuery) where T : new()
+        {
+            return Task<T>.Factory.StartNew(
+                () =>
+                    {
+                        using (tableQuery.Session.Lock())
+                        {
+                            return tableQuery.SingleOrDefault();
+                        }
+                    });
+        }
+
+        public static Task<T> SingleOrDefaultAsync<T>(this TableQuery<T> tableQuery, Expression<Func<T, bool>> predicate) where T : new()
+        {
+            return Task<T>.Factory.StartNew(
+                () =>
+                    {
+                        using (tableQuery.Session.Lock())
+                        {
+                            return tableQuery.SingleOrDefault(predicate);
+                        }
+                    });
+        }
+
         public static Task<T> FirstAsync<T>(this TableQuery<T> tableQuery) where T : new()
         {
             return Task<T>.Factory.StartNew(

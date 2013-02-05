@@ -126,6 +126,26 @@ namespace Mono.Data.Sqlite.Orm
             return Skip(index).Take(1).First();
         }
 
+        public T SingleOrDefault()
+        {
+            return Take(2).ToList().SingleOrDefault();
+        }
+
+        public T SingleOrDefault(Expression<Func<T, bool>> predicate)
+        {
+            return Where(predicate).Take(2).ToList().SingleOrDefault();
+        }
+        
+        public T Single()
+        {
+            return Take(2).ToList().Single();
+        }
+
+        public T Single(Expression<Func<T, bool>> predicate)
+        {
+            return Where(predicate).Take(2).ToList().Single();
+        }
+
         public T First()
         {
             return Take(1).ToList().First();
