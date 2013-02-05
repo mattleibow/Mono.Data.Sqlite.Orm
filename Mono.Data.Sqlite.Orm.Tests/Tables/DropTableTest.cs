@@ -49,6 +49,16 @@ namespace Mono.Data.Sqlite.Orm.Tests
         }
 
         [Test]
+        public void DropTableUsingSqlString()
+        {
+            var db = new OrmTestSession();
+            
+            db.CreateTable<Product>();
+            
+            var results = db.Execute("DROP TABLE IF EXISTS Product;");
+        }
+
+        [Test]
         public void ClearTableTest()
         {
             // setup
