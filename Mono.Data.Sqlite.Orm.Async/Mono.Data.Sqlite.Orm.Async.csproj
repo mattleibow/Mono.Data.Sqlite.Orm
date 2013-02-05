@@ -53,10 +53,6 @@
       <Project>{99ada565-42ca-418d-bd85-6246ffa9a20e}</Project>
       <Name>Mono.Data.Sqlite.Orm.Shared</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Mono.Data.Sqlite.Orm\Mono.Data.Sqlite.Orm.csproj">
-      <Project>{e38c051e-889e-485b-b685-c692d2861e7b}</Project>
-      <Name>Mono.Data.Sqlite.Orm</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
