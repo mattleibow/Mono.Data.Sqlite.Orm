@@ -5,12 +5,12 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{BDE6E6EB-EB99-434B-84DB-ED243EC2BDC8}</ProjectGuid>
+    <ProjectGuid>{A31C1208-3FA6-46AE-95E3-5279B66F87DA}</ProjectGuid>
     <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Mono.Data.Sqlite.Orm</RootNamespace>
-    <AssemblyName>Mono.Data.Sqlite.Orm</AssemblyName>
+    <RootNamespace>Mono.Data.Sqlite.Orm.Async</RootNamespace>
+    <AssemblyName>Mono.Data.Sqlite.Orm.Async</AssemblyName>
     <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
@@ -49,35 +49,28 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mono.Data.Sqlite">
-      <HintPath>..\Libraries\Silverlight\Mono.Data.Sqlite.dll</HintPath>
-    </Reference>
     <Reference Include="mscorlib" />
-    <Reference Include="System.Data">
-      <HintPath>..\Libraries\Silverlight\System.Data.dll</HintPath>
-    </Reference>
     <Reference Include="System.Threading.Tasks.SL4">
       <HintPath>..\packages\System.Threading.Tasks.3.0.1\lib\sl40\System.Threading.Tasks.SL4.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows" />
     <Reference Include="system" />
-    <Reference Include="System.Core" />
+    <Reference Include="System.Core">
+      <HintPath>$(TargetFrameworkDirectory)System.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Net" />
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\Extensions.cs">
-      <Link>Extensions.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Async\AsyncExtensions.cs">
+      <Link>AsyncExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\QueryCache.cs">
-      <Link>QueryCache.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Async\SqliteSession.Async.cs">
+      <Link>SqliteSession.Async.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteExtensions.cs">
-      <Link>SqliteExtensions.cs</Link>
-    </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteSession.cs">
-      <Link>SqliteSession.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Async\TableQuery.Async.cs">
+      <Link>TableQuery.Async.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
