@@ -214,14 +214,26 @@
     <Content Include="sqlite3.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Mono.Data.Sqlite.Orm.Async.Metro\Mono.Data.Sqlite.Orm.Async.Metro.csproj">
+      <Project>{722faa45-216c-49de-8384-9ee08d13f08f}</Project>
+      <Name>Mono.Data.Sqlite.Orm.Async.Metro</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Mono.Data.Sqlite.Orm.Metro\Mono.Data.Sqlite.Orm.Metro.csproj">
       <Project>{b76e23cf-7fcb-4489-ae62-466f5e2d6579}</Project>
       <Name>Mono.Data.Sqlite.Orm.Metro</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mono.Data.Sqlite.Orm.Shared\Mono.Data.Sqlite.Orm.Shared.csproj">
+      <Project>{99ADA565-42CA-418D-BD85-6246FFA9A20E}</Project>
+      <Name>Mono.Data.Sqlite.Orm.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Mono.Data.Sqlite">
       <HintPath>..\Libraries\Metro\Mono.Data.Sqlite.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDataSqliteWrapper, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\Metro\MonoDataSqliteWrapper.winmd</HintPath>
     </Reference>
     <Reference Include="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>

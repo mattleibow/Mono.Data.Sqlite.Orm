@@ -194,6 +194,14 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Mono.Data.Sqlite.Orm.Async.WindowsPhone\Mono.Data.Sqlite.Orm.Async.WindowsPhone.csproj">
+      <Project>{3879DF23-CB0D-4146-B8B7-30B701E6BED2}</Project>
+      <Name>Mono.Data.Sqlite.Orm.Async.WindowsPhone</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mono.Data.Sqlite.Orm.Shared\Mono.Data.Sqlite.Orm.Shared.csproj">
+      <Project>{99ADA565-42CA-418D-BD85-6246FFA9A20E}</Project>
+      <Name>Mono.Data.Sqlite.Orm.Shared</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Mono.Data.Sqlite.Orm.WindowsPhone\Mono.Data.Sqlite.Orm.WindowsPhone.csproj">
       <Project>{0170CF92-AE0D-4B27-A25D-9320E10067A2}</Project>
       <Name>Mono.Data.Sqlite.Orm.WindowsPhone</Name>

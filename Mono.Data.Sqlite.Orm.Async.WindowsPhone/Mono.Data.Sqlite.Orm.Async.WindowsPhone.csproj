@@ -5,12 +5,12 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0170CF92-AE0D-4B27-A25D-9320E10067A2}</ProjectGuid>
+    <ProjectGuid>{3879DF23-CB0D-4146-B8B7-30B701E6BED2}</ProjectGuid>
     <ProjectTypeGuids>{C089C8C0-30E0-4E22-80C0-CE093F111A43};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Mono.Data.Sqlite.Orm</RootNamespace>
-    <AssemblyName>Mono.Data.Sqlite.Orm.WindowsPhone</AssemblyName>
+    <RootNamespace>Mono.Data.Sqlite.Orm.Async</RootNamespace>
+    <AssemblyName>Mono.Data.Sqlite.Orm.Async</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
     <TargetFrameworkProfile>WindowsPhone71</TargetFrameworkProfile>
@@ -41,36 +41,25 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Community.CsharpSqlite.WinPhone">
-      <HintPath>..\Libraries\WP\Community.CsharpSqlite.WinPhone.dll</HintPath>
+    <Reference Include="System.Threading.Tasks.WP71">
+      <HintPath>..\packages\System.Threading.Tasks.3.0.1\lib\sl4-wp71\System.Threading.Tasks.WP71.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Data.Sqlite">
-      <HintPath>..\Libraries\WP\Mono.Data.Sqlite.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoDataSqliteWrapper">
-      <HintPath>..\Libraries\WP\MonoDataSqliteWrapper.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
+    <Reference Include="System.Windows" />
+    <Reference Include="system" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data">
-      <HintPath>..\Libraries\WP\System.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Transactions">
-      <HintPath>..\Libraries\WP\System.Transactions.dll</HintPath>
-    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Net" />
+    <Reference Include="mscorlib.extensions" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\Extensions.cs">
-      <Link>Extensions.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Async\AsyncExtensions.cs">
+      <Link>AsyncExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\QueryCache.cs">
-      <Link>QueryCache.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Async\SqliteSession.Async.cs">
+      <Link>SqliteSession.Async.cs</Link>
     </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteExtensions.cs">
-      <Link>SqliteExtensions.cs</Link>
-    </Compile>
-    <Compile Include="..\Mono.Data.Sqlite.Orm\SqliteSession.cs">
-      <Link>SqliteSession.cs</Link>
+    <Compile Include="..\Mono.Data.Sqlite.Orm.Async\TableQuery.Async.cs">
+      <Link>TableQuery.Async.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -85,11 +74,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
-  <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties ProjectLinkReference="e38c051e-889e-485b-b685-c692d2861e7b" ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" />
-    </VisualStudio>
-  </ProjectExtensions>
+  <ProjectExtensions />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
