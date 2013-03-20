@@ -1,0 +1,293 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.20506</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{344271F7-B56E-4530-BE11-9D4991BC6CB9}</ProjectGuid>
+    <ProjectTypeGuids>{C089C8C0-30E0-4E22-80C0-CE093F111A43};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Mono.Data.Sqlite.Orm.Tests.WindowsPhone8</RootNamespace>
+    <AssemblyName>Mono.Data.Sqlite.Orm.Tests.WindowsPhone8</AssemblyName>
+    <TargetFrameworkIdentifier>WindowsPhone</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
+    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
+    <SilverlightApplication>true</SilverlightApplication>
+    <SupportedCultures>
+    </SupportedCultures>
+    <XapOutputs>true</XapOutputs>
+    <GenerateSilverlightManifest>true</GenerateSilverlightManifest>
+    <XapFilename>Mono.Data.Sqlite.Orm.Tests.WindowsPhone8_$(Configuration)_$(Platform).xap</XapFilename>
+    <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
+    <SilverlightAppEntry>Mono.Data.Sqlite.Orm.Tests.WindowsPhone8.App</SilverlightAppEntry>
+    <ValidateXaml>true</ValidateXaml>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\Debug</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MS_TEST;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Release</OutputPath>
+    <DefineConstants>TRACE;MS_TEST;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\x86\Debug</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MS_TEST;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\x86\Release</OutputPath>
+    <DefineConstants>TRACE;MS_TEST;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|ARM' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\ARM\Debug</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MS_TEST;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|ARM' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\ARM\Release</OutputPath>
+    <DefineConstants>TRACE;MS_TEST;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\mono.data.sqlite.orm.tests\AsyncTests.cs">
+      <Link>Tests\AsyncTests.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\columns\BooleanTest.cs">
+      <Link>Tests\Columns\BooleanTest.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\columns\ByteArrayTest.cs">
+      <Link>Tests\Columns\ByteArrayTest.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\columns\CollateTest.cs">
+      <Link>Tests\Columns\CollateTest.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\columns\ColumnTypesTest.cs">
+      <Link>Tests\Columns\ColumnTypesTest.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\columns\NullableTest.cs">
+      <Link>Tests\Columns\NullableTest.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\columns\UnicodeTest.cs">
+      <Link>Tests\Columns\UnicodeTest.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\querying\ContainsTest.cs">
+      <Link>Tests\Querying\ContainsTest.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\querying\DataConverterTest.cs">
+      <Link>Tests\Querying\DataConverterTest.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\querying\HooksTest.cs">
+      <Link>Tests\Querying\HooksTest.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\querying\LinqTests.cs">
+      <Link>Tests\Querying\LinqTests.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\querying\SkipTest.cs">
+      <Link>Tests\Querying\SkipTest.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\tables\ConnectionTrackingTest.cs">
+      <Link>Tests\Tables\ConnectionTrackingTest.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\tables\CreateTableTest.cs">
+      <Link>Tests\Tables\CreateTableTest.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\tables\CreateVirtualTableTest.cs">
+      <Link>Tests\Tables\CreateVirtualTableTest.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\tables\DropTableTest.cs">
+      <Link>Tests\Tables\DropTableTest.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\tables\FTSSpecialCommandsTest.cs">
+      <Link>Tests\Tables\FTSSpecialCommandsTest.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\tables\InheritanceTest.cs">
+      <Link>Tests\Tables\InheritanceTest.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\tables\InsertTest.cs">
+      <Link>Tests\Tables\InsertTest.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\tables\InterfaceTests.cs">
+      <Link>Tests\Tables\InterfaceTests.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\tables\MigrateTableTest.cs">
+      <Link>Tests\Tables\MigrateTableTest.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\tables\MultiplePKs.cs">
+      <Link>Tests\Tables\MultiplePKs.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\tables\TransactionsTest.cs">
+      <Link>Tests\Tables\TransactionsTest.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\testhelpers\ArrayAssert.cs">
+      <Link>Tests\TestHelpers\ArrayAssert.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\testhelpers\ExceptionAssert.cs">
+      <Link>Tests\TestHelpers\ExceptionAssert.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\testhelpers\OrmAsyncTestSession.cs">
+      <Link>Tests\TestHelpers\OrmAsyncTestSession.cs</Link>
+    </Compile>
+    <Compile Include="..\mono.data.sqlite.orm.tests\testhelpers\OrmTestSession.cs">
+      <Link>Tests\TestHelpers\OrmTestSession.cs</Link>
+    </Compile>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LocalizedStrings.cs" />
+    <Compile Include="MainPage.xaml.cs">
+      <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\AppResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AppResources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </ApplicationDefinition>
+    <Page Include="MainPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+    <None Include="Properties\AppManifest.xml" />
+    <None Include="Properties\WMAppManifest.xml">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\AlignmentGrid.png" />
+    <Content Include="Assets\ApplicationIcon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Tiles\FlipCycleTileLarge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Tiles\FlipCycleTileMedium.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Tiles\FlipCycleTileSmall.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Tiles\IconicTileMediumLarge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Tiles\IconicTileSmall.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="README_FIRST.txt" />
+    <Content Include="Toolkit.Content\ApplicationBar.Cancel.png" />
+    <Content Include="Toolkit.Content\ApplicationBar.Check.png" />
+    <Content Include="Toolkit.Content\ApplicationBar.Delete.png" />
+    <Content Include="Toolkit.Content\ApplicationBar.Email.png" />
+    <Content Include="Toolkit.Content\ApplicationBar.Play.png" />
+    <Content Include="Toolkit.Content\ApplicationBar.Save.png" />
+    <Content Include="Toolkit.Content\ApplicationBar.Select.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\AppResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AppResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Phone.Controls.Toolkit">
+      <HintPath>..\packages\WPtoolkit.4.2012.10.30\lib\wp8\Microsoft.Phone.Controls.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Phone.Toolkit.Testing">
+      <HintPath>..\packages\WPToolkitTestFx.4.2012.11.14\lib\wp8\Microsoft.Phone.Toolkit.Testing.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTesting.Phone">
+      <HintPath>..\packages\WPToolkitTestFx.4.2012.11.14\lib\wp8\Microsoft.VisualStudio.QualityTools.UnitTesting.Phone.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Data.Sqlite">
+      <HintPath>..\Libraries\WP8\Mono.Data.Sqlite.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDataSqliteWrapper">
+      <HintPath>..\Libraries\WP8\MonoDataSqliteWrapper.winmd</HintPath>
+    </Reference>
+    <Reference Include="System.Data">
+      <HintPath>..\Libraries\WP8\System.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions">
+      <HintPath>..\Libraries\WP8\System.Transactions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mono.Data.Sqlite.Orm.Async.WindowsPhone8\Mono.Data.Sqlite.Orm.Async.WindowsPhone8.csproj">
+      <Project>{09449A4A-00C0-4CFB-BE61-8634E0781207}</Project>
+      <Name>Mono.Data.Sqlite.Orm.Async.WindowsPhone8</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mono.Data.Sqlite.Orm.Shared\Mono.Data.Sqlite.Orm.Shared.csproj">
+      <Project>{99ADA565-42CA-418D-BD85-6246FFA9A20E}</Project>
+      <Name>Mono.Data.Sqlite.Orm.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mono.Data.Sqlite.Orm.WindowsPhone8\Mono.Data.Sqlite.Orm.WindowsPhone8.csproj">
+      <Project>{D7C5E75A-0736-407C-BBF5-FA2A57611646}</Project>
+      <Name>Mono.Data.Sqlite.Orm.WindowsPhone8</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="SQLite.WP80, Version=3.7.16">
+      <Name>SQLite for Windows Phone</Name>
+    </SDKReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions />
+</Project>

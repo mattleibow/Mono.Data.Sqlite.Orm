@@ -220,6 +220,10 @@ namespace System
     }
 }
 
+#endif
+
+#if SILVERLIGHT || WINDOWS_PHONE
+
 namespace System.Collections.Concurrent
 {
     public class ConcurrentDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
