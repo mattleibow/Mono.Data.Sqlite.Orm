@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Silverlight.UnitTest</id>
+    <version>4.0.40413.2011</version>
+    <title>Silverlight.UnitTest</title>
+    <authors>Jeff Wilcox</authors>
+    <owners>Jeff Wilcox</owners>
+    <licenseUrl>http://archive.msdn.microsoft.com/silverlightut</licenseUrl>
+    <projectUrl>http://archive.msdn.microsoft.com/silverlightut</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Silverlight unit testing framework. Add to a Silverlight 4 application, then follow instructions in Readme.txt.</description>
+    <summary>Silverlight unit testing framework. Add to a Silverlight 4 application, then follow instructions in Readme.txt.</summary>
+    <releaseNotes />
+    <copyright />
+    <language />
+    <tags>silverlight unit-test unittest</tags>
+    <references>
+      <reference file="Microsoft.Silverlight.Testing.dll" />
+      <reference file="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll" />
+    </references>
+  </metadata>
+</package>
