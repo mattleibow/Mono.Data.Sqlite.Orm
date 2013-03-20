@@ -1,5 +1,5 @@
 ﻿using Microsoft.Phone.Controls;
-using Microsoft.Silverlight.Testing;
+using Microsoft.Phone.Testing;
 
 namespace TestRunner.WindowsPhone
 {
@@ -11,23 +11,7 @@ namespace TestRunner.WindowsPhone
         {
             InitializeComponent();
 
-            Loaded += (sender, args) =>
-            {
-                const bool RunUnitTests = true;
-
-                if (RunUnitTests)
-                {
-                    var testPage = UnitTestSystem.CreateTestPage();
-
-                    var imtp = testPage as IMobileTestPage;
-                    if (imtp != null)
-                    {
-                        BackKeyPress += (x, xe) => xe.Cancel = imtp.NavigateBack();
-                    }
-
-                    ((PhoneApplicationFrame)Application.Current.RootVisual).Content = testPage;
-                }
-            };
+            this.Content = UnitTestSystem.CreateTestPage();
         }
     }
 }

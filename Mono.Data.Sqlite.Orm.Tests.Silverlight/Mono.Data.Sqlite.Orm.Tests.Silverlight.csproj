@@ -66,11 +66,11 @@
     <Reference Include="Community.CsharpSqlite.Silverlight">
       <HintPath>..\Libraries\Silverlight\Community.CsharpSqlite.Silverlight.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Silverlight.Testing">
-      <HintPath>..\Libraries\Silverlight\Microsoft.Silverlight.Testing.dll</HintPath>
+    <Reference Include="Microsoft.Phone.Toolkit.Testing">
+      <HintPath>..\packages\WPToolkitTestFx.4.2012.11.14\lib\sl4-wp71\Microsoft.Phone.Toolkit.Testing.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight">
-      <HintPath>..\Libraries\Silverlight\Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll</HintPath>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTesting.Phone">
+      <HintPath>..\packages\WPToolkitTestFx.4.2012.11.14\lib\sl4-wp71\Microsoft.VisualStudio.QualityTools.UnitTesting.Phone.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Data.Sqlite">
       <HintPath>..\Libraries\Silverlight\Mono.Data.Sqlite.dll</HintPath>
@@ -215,6 +215,24 @@
       <Project>{bde6e6eb-eb99-434b-84db-ed243ec2bdc8}</Project>
       <Name>Mono.Data.Sqlite.Orm.Silverlight</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Toolkit.Content\ApplicationBar.Select.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Toolkit.Content\ApplicationBar.Delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Toolkit.Content\ApplicationBar.Check.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Toolkit.Content\ApplicationBar.Cancel.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="README_FIRST.txt" />
+    <Resource Include="Toolkit.Content\ApplicationBar.Email.png" />
+    <Resource Include="Toolkit.Content\ApplicationBar.Play.png" />
+    <Resource Include="Toolkit.Content\ApplicationBar.Save.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

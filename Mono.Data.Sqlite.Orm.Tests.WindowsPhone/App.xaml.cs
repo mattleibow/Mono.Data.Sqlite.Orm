@@ -6,8 +6,6 @@ using Microsoft.Phone.Shell;
 
 namespace TestRunner.WindowsPhone
 {
-    using Microsoft.Silverlight.Testing;
-
     public partial class App : Application
     {
         /// <summary>

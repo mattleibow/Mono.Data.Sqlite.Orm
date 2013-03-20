@@ -4,7 +4,7 @@
     using System.Windows;
     using System.Windows.Controls;
 
-    using Microsoft.Silverlight.Testing;
+    using Microsoft.Phone.Testing;
 
     public partial class MainPage : UserControl
     {
