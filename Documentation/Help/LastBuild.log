@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shfbBuild product="Sandcastle Help File Builder" version="1.9.7.0" projectFile="C:\Projects\Mono.Data.Sqlite.Orm\Documentation\Documentation.shfbproj" started="6/1/2013 8:55:07 PM">
+<buildStep step="Initializing">
+    Last step completed in 00:00:00.0040
+</buildStep>
+<buildStep step="Failed">
+
+SHFB: Error BE0075: For MS Help Viewer builds, the HtmlHelpName property cannot contain periods as they are not valid in the help file name.
+
+</buildStep>
+</shfbBuild>

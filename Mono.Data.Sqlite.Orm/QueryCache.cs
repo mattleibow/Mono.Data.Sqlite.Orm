@@ -174,54 +174,6 @@ namespace Mono.Data.Sqlite.Orm
     }
 }
 
-#if SILVERLIGHT
-
-namespace System
-{
-    public class Tuple<TItem1, TItem2>
-    {
-        public TItem1 Item1 { get; set; }
-        public TItem2 Item2 { get; set; }
-
-        public Tuple(TItem1 item1, TItem2 item2)
-        {
-            Item1 = item1;
-            Item2 = item2;
-        }
-
-        public override bool Equals(object obj)
-        {
-            var other = obj as Tuple<TItem1, TItem2>;
-            if (other == null)
-                return false;
-            return Item1.Equals(other.Item1) && Item2.Equals(other.Item2);
-        }
-    }
-    public class Tuple<TItem1, TItem2, TItem3>
-    {
-        public TItem1 Item1 { get; set; }
-        public TItem2 Item2 { get; set; }
-        public TItem3 Item3 { get; set; }
-
-        public Tuple(TItem1 item1, TItem2 item2, TItem3 item3)
-        {
-            Item1 = item1;
-            Item2 = item2;
-            Item3 = item3;
-        }
-
-        public override bool Equals(object obj)
-        {
-            var other = obj as Tuple<TItem1, TItem2, TItem3>;
-            if (other == null)
-                return false;
-            return Item1.Equals(other.Item1) && Item2.Equals(other.Item2) && Item3.Equals(other.Item3);
-        }
-    }
-}
-
-#endif
-
 #if SILVERLIGHT || WINDOWS_PHONE
 
 namespace System.Collections.Concurrent
